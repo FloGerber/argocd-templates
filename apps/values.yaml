@@ -1,0 +1,19 @@
+config:
+  spec:
+    destination:
+      server: https://kubernetes.default.svc
+    source:
+      repoURL: https://github.com/FloGerber/argocd-templates
+      targetRevision: master
+
+applications:
+  # - name: blue-green
+  #   tool:
+  #     helm:
+  #       releaseName: blue-green
+  - name: strimzi
+  - name: cassandra
+  - name: cloudNativePg
+  - name: keykloak
+  - name: kongApiGw
+  - name: vault
