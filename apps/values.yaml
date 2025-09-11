@@ -7,10 +7,6 @@ config:
       targetRevision: master
 
 applications:
-  # - name: blue-green
-  #   tool:
-  #     helm:
-  #       releaseName: blue-green
   - name: strimzi
   - name: cassandra
   - name: cloudNativePg
