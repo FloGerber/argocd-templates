@@ -4,7 +4,7 @@ config:
       server: https://kubernetes.default.svc
     source:
       repoURL: https://github.com/FloGerber/argocd-templates
-      targetRevision: master
+      targetRevision: main
 
 applications:
   - name: strimzi
