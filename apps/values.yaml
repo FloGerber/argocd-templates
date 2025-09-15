@@ -9,7 +9,7 @@ config:
 applications:
   - name: strimzi
   - name: cassandra
-  - name: cloudNativePg
+  - name: cloudnativepg
   - name: keykloak
-  - name: kongApiGw
+  - name: kongapigw
   - name: vault
