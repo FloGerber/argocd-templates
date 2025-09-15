@@ -1,0 +1,30 @@
+# channel: stable-4.12
+# version: 4.12.35
+subscriptions:
+  - name: keycloak-operator
+    namespace: operators
+    channel: fast
+    source: operatorhubio-catalog
+  - name: strimzi-kafka-operator
+    namespace: operators
+    channel: stable
+    source: operatorhubio-catalog
+  - name: cloudnative-pg
+    namespace: operators
+    channel: stable
+    source: operatorhubio-catalog
+  - name: kong
+    namespace: operators
+    channel: alpha
+    source: operatorhubio-catalog
+# acs:
+#   enabled: false
+# sealedsecrets:
+#   enabled: false
+# gitops:
+#   enabled: true
+# knative:
+#   enabled: true
+# kafka:
+#   enabled: true
+#   dedicatedNode: false
