@@ -1,0 +1,26 @@
+{{- range .Values.operators }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .name }}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: {{ .repoURL }}
+    chart: {{ .chart }}
+    targetRevision: {{ .version }}
+    helm:
+      values: |
+        {{ toYaml .values | indent 8 }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+{{- end }}
