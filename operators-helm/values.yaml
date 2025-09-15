@@ -26,21 +26,21 @@ operators:
     namespace: cassandra
     repoURL: https://helm.k8ssandra.io/stable
     chart: k8ssandra-operator
-    version: 0.1.0
+    version: 1.26.0
     values: {}
 
   - name: cloudnativepg
     namespace: postgres
     repoURL: https://cloudnative-pg.github.io/charts
     chart: cloudnative-pg
-    version: 0.20.0
+    version: 0.26.0
     values: {}
 
   - name: kong
     namespace: kong
     repoURL: https://charts.konghq.com
     chart: gateway-operator
-    version: 1.0.0
+    version: 0.6.1
     values: {}
 
   - name: valkey
@@ -54,5 +54,5 @@ operators:
     namespace: openbao
     repoURL: https://openbao.github.io/openbao-helm
     chart: openbao
-    version: 0.2.0
+    version: 0.18.1
     values: {}
