@@ -15,7 +15,7 @@ subscriptions:
     source: operatorhubio-catalog
   - name: strimzi-kafka-operator
     namespace: operators
-    channel: stable
+    channel: strimzi-0.47.x
     source: operatorhubio-catalog
   - name: cloudnative-pg
     namespace: operators
