@@ -10,6 +10,6 @@ applications:
   - name: strimzi
   - name: cassandra
   - name: cloudnativepg
-  - name: keykloak
+  - name: keycloak
   - name: kongapigw
   - name: vault
