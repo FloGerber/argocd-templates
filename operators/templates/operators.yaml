@@ -1,11 +1,48 @@
 {{- range .Values.subscriptions }}
-apiVersion: operators.coreos.com/v1alpha1 # (1)
-kind: Subscription
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
 metadata:
-  name: {{ printf "ktc.%s" .name | quote }}
+  name: operatorhubio-catalog
+  namespace: olm
+  annotations:
+    argocd.argoproj.io/sync-wave: "1" 
+spec:
+  sourceType: grpc
+  image: quay.io/operatorhubio/catalog:latest
+  displayName: OperatorHub.io Catalog
+  publisher: OperatorHub.io
+
+---
+
+{{- if ne .namespace "operators" }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2" 
+
+---
+
+apiVersion: operators.coreos.com/v1alpha2 
+kind: OperatorGroup
+metadata:
+  name: {{ .name }}
   namespace: {{ .namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "2" # (3)
+    argocd.argoproj.io/sync-wave: "3"
+spec: {}
+
+---
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {{ .name | quote }}
+  namespace: {{ .namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "4" 
 spec:
   channel: {{ .channel }}
   installPlanApproval: Automatic
@@ -13,22 +50,6 @@ spec:
   source: {{ .source }}
   sourceNamespace: olm
 ---
-{{- if ne .namespace "openshift-operators" }}
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ .namespace }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "1" # (3)
----
-apiVersion: operators.coreos.com/v1alpha2 # (2)
-kind: OperatorGroup
-metadata:
-  name: {{ .name }}
-  namespace: {{ .namespace }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "2" # (3)
-spec: {}
----
+
 {{- end }}
 {{- end }}
