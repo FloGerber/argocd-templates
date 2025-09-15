@@ -24,6 +24,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "2" 
 
 ---
+{{- end }}
 
 apiVersion: operators.coreos.com/v1alpha2 
 kind: OperatorGroup
@@ -51,5 +52,4 @@ spec:
   sourceNamespace: olm
 ---
 
-{{- end }}
 {{- end }}
