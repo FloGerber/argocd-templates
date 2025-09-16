@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ printf "operator.%s" .name | quote }}
+  name: {{ printf "operator-%s" .name | quote }}
   namespace: argocd
 spec:
   project: default
