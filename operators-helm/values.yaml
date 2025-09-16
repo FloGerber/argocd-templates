@@ -26,7 +26,7 @@ operators:
     namespace: k8ssandra-operator
     repoURL: https://helm.k8ssandra.io/stable
     chart: k8ssandra-operator
-    version: 1.26.0
+    version: 1.25.0
     values: {}
 
   - name: cloudnativepg
