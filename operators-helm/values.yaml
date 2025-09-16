@@ -37,7 +37,7 @@ operators:
     values: {}
 
   - name: kong
-    namespace: kong
+    namespace: kong-system
     repoURL: https://charts.konghq.com
     chart: gateway-operator
     version: 0.6.1
