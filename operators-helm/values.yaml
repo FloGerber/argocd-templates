@@ -9,7 +9,7 @@ config:
 operators:
   - name: strimzi-kafka
     namespace: kafka
-    repoURL: https://strimzi.io/charts/
+    repoURL: oci://quay.io/strimzi-helm/strimzi-kafka-operator
     chart: strimzi-kafka-operator
     version: 0.36.0
     values: {}
