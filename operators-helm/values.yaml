@@ -47,7 +47,7 @@ operators:
     namespace: valkey
     repoURL: oci://ghcr.io/hyperspike/valkey-operator
     chart: valkey-operator
-    version: 0.1.0
+    version: v0.0.59-chart
     values: {}
 
   - name: openbao
