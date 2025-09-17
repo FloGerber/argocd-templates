@@ -12,7 +12,8 @@ operators:
     repoURL: oci://quay.io/strimzi-helm/strimzi-kafka-operator
     chart: strimzi-kafka-operator
     version: 0.47.0
-    values: {}
+    values:
+      watchNamespaces: strimzi
 
   # - name: keycloak
   #   namespace: keycloak
