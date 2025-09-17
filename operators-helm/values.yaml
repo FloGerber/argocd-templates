@@ -13,7 +13,7 @@ operators:
     chart: strimzi-kafka-operator
     version: 0.47.0
     values:
-      watchNamespaces: [strimzi]
+      watchNamespaces: "strimzi,strimzi-operator"
 
   # - name: keycloak
   #   namespace: keycloak
