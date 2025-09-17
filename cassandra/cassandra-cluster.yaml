@@ -1,7 +1,7 @@
 apiVersion: k8ssandra.io/v1alpha1
 kind: K8ssandraCluster
 metadata:
-  name: demo
+  name: ktc-k8ssandra
 spec:
   cassandra:
     serverVersion: "4.0.1"
