@@ -43,7 +43,7 @@ metadata:
   annotations:
     strimzi.io/node-pools: enabled
     strimzi.io/kraft: enabled
-    strimzi.io/pause-reconciliation: "false" # set to true if you need to recover a cluster, after that you need to set the old cluster id to the status
+    strimzi.io/pause-reconciliation: "true" # set to true if you need to recover a cluster, after that you need to set the old cluster id to the status
 spec:
   kafka:
     version: 4.0.0
