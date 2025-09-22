@@ -15,7 +15,7 @@ operators:
     values:
       replicas: 2
       watchNamespaces:
-        - strimzi,strimzi-operator
+        - strimzi
 
   # - name: keycloak
   #   namespace: keycloak
