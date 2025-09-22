@@ -96,12 +96,12 @@ spec:
     # rack:
     #   topologyKey: topology.kubernetes.io/zone
     # Metrics configuration
-    metricsConfig:
-      type: jmxPrometheusExporter
-      # valueFrom:
-      #   configMapKeyRef:
-      #     name: my-config-map
-      #     key: my-key
+    # metricsConfig:
+    #   type: jmxPrometheusExporter
+    # valueFrom:
+    #   configMapKeyRef:
+    #     name: my-config-map
+    #     key: my-key
   # Entity Operator
   entityOperator:
     topicOperator:
