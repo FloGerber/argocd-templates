@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: my-keycloak-strimzi-appset
+  name: appset
   namespace: argocd
 spec:
   generators:
     - git:
         repoURL: https://github.com/FloGerber/argocd-templates.git
-        revision: main
+        revision: HEAD
         directories:
-          - path: appsetWay/apps/*
+          - path: appSetWay/apps/*
   template:
     metadata:
       name: "{{ path.basename }}"
@@ -17,7 +17,7 @@ spec:
       project: default
       source:
         repoURL: https://github.com/FloGerber/argocd-templates.git
-        targetRevision: main
+        targetRevision: HEAD
         path: "{{path}}"
       destination:
         server: https://kubernetes.default.svc
@@ -26,3 +26,5 @@ spec:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
