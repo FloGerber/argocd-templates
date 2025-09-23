@@ -30,8 +30,6 @@ applicationsets:
           automated:
             prune: true
             selfHeal: true
-          syncOptions:
-            - CreateNamespace=true
     syncPolicy:
       # Set Application finalizer
       preserveResourcesOnDeletion: false
