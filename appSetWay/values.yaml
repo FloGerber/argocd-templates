@@ -28,6 +28,9 @@ applicationsets:
           automated:
             prune: true
             selfHeal: true
+          syncOptions:
+            - CreateNamespace=true
+            - ServerSideApply=true
     syncPolicy:
       # Set Application finalizer
       preserveResourcesOnDeletion: false
