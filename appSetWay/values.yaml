@@ -1,0 +1,5 @@
+projectName: operator-applicationset
+
+gitRepo: https://github.com/FloGerber/argocd-templates.git
+
+repoPath: appSetWay/apps/*
