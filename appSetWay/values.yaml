@@ -1,8 +1,6 @@
 applicationsets:
   operator-applicationset:
     namespace: argocd
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
     generators:
       - git:
           repoURL: https://github.com/FloGerber/argocd-templates.git
