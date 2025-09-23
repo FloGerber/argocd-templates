@@ -7,6 +7,7 @@ applicationsets:
           revision: HEAD
           directories:
             - path: appSetWay/apps/*
+            - path: appSetWay/operator/*
     ignoreApplicationDifferences:
       - jsonPointers:
           - /spec/syncPolicy
