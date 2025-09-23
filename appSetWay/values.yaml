@@ -12,6 +12,8 @@ applicationsets:
     ignoreApplicationDifferences:
       - jsonPointers:
           - /spec/syncPolicy
+    strategy:
+      type: AllAtOnce # explicit, but this is the default
     template:
       metadata:
         name: "{{ path.basename }}"
