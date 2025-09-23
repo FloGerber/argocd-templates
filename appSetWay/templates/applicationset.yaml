@@ -12,16 +12,16 @@ spec:
                 - path: {{ .Values.repoPath }}
     template:
         metadata:
-            name: "{{ path.basename }}"
+            name: "{{ .path.basename }}"
     spec:
         destination:
-            namespace: '{{ path.basename }}'
+            namespace: '{{ .path.basename }}'
             server: 'https://kubernetes.default.svc'
         project: default
         source:
             repoURL: {{ .Values.gitRepo }}
             targetRevision: HEAD
-            path: "{{path}}"
+            path: "{{.path}}"
         syncPolicy:
             automated:
                 prune: true
