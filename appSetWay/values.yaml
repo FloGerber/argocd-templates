@@ -1,12 +1,17 @@
 applicationsets:
   operator-applicationset:
     namespace: argocd
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
     generators:
       - git:
           repoURL: https://github.com/FloGerber/argocd-templates.git
           revision: HEAD
           directories:
             - path: appSetWay/apps/*
+    ignoreApplicationDifferences:
+      - jsonPointers:
+          - /spec/syncPolicy
     template:
       metadata:
         name: "{{ path.basename }}"
@@ -25,3 +30,6 @@ applicationsets:
             selfHeal: true
           syncOptions:
             - CreateNamespace=true
+    syncPolicy:
+      # Set Application finalizer
+      preserveResourcesOnDeletion: false
