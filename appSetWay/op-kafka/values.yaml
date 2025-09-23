@@ -1,0 +1,30 @@
+# Namespace(s) the operator should watch
+watchNamespaces:
+  - kafka
+
+# Set Replicas for operator
+Replicas: 2
+
+# Enable installation of CRDs (recommended for first-time installs)
+crds:
+  enabled: true
+
+# Logging configuration
+logLevel: INFO
+
+# Feature gates (optional)
+featureGates: []
+
+# Resources (optional tuning)
+resources:
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 384Mi
+# # Image override (optional)
+# image:
+#   registry: quay.io
+#   repository: strimzi/operator
+#   tag: 0.47.0

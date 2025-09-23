@@ -1,0 +1,11 @@
+{{- range .Values.watchNamespaces }}
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: {{ . }}
+    lables:
+        name: {{ . }}
+        managed-by: helm
+        created-by: argocd
+---
+{{- end }}
