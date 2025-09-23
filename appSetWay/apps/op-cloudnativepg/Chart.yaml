@@ -1,0 +1,18 @@
+apiVersion: v2
+name: kdp-cloudnativepg
+description: PostgreSQL operator CloudnativePG.
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.0.1
+appVersion: "0.26.0" # Strimzi Kafka operator version.
+
+# pull in external charts via dependencies:
+# Strimzi Operator helm chart
+dependencies:
+  - name: cloudnative-pg
+    version: 0.26.0
+    repository: https://cloudnative-pg.github.io/charts
