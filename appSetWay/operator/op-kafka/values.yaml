@@ -14,7 +14,7 @@ strimzi:
   logLevel: INFO
 
   # Feature gates (optional)
-  featureGates: []
+  #featureGates: []
 
   # Resources (optional tuning)
   resources:
