@@ -4,7 +4,7 @@ strimzi:
     - kafka
 
   # Set Replicas for operator
-  Replicas: 2
+  replicas: 2
 
   # Enable installation of CRDs (recommended for first-time installs)
   crds:
