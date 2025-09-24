@@ -1,4 +1,4 @@
-{{- range .Values.strimzi-kafka-operator.watchNamespaces }}
+{{- range .Values.'strimzi-kafka-operator'.watchNamespaces }}
 apiVersion: v1
 kind: Namespace
 metadata:
