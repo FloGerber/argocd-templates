@@ -1,0 +1,18 @@
+apiVersion: v2
+name: kdp-strimzi-drain-cleaner
+description: Strimzi drain cleaner, gracefully move Kafka pods from draining node.
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.0.1
+appVersion: "1.4.0" # Strimzi Kafka operator version.
+
+# pull in external charts via dependencies:
+# Strimzi Operator helm chart
+dependencies:
+  - name: strimzi-drain-cleaner
+    version: 1.4.0
+    repository: https://strimzi.io/charts
