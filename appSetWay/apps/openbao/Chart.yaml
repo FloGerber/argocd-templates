@@ -11,8 +11,8 @@ version: 0.0.1
 appVersion: "2.4.1"
 
 # pull in external charts via dependencies:
-# Strimzi Operator helm chart
+
 dependencies:
-  - name: velero
+  - name: openbao
     version: 0.18.1
     repository: https://openbao.github.io/openbao-helm
