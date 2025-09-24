@@ -7,4 +7,6 @@ metadata:
         name: {{ . }}
         managed-by: helm
         created-by: argocd
+    annotations:
+        argocd.argoproj.io/hook: PreSync
 {{- end }}
