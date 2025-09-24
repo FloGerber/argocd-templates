@@ -23,7 +23,7 @@ applicationsets:
           targetRevision: HEAD
           helm:
             valueFiles:
-              - "{{path}}/values.yaml"
+              - "values.yaml"
           path: "{{path}}"
         destination:
           server: https://kubernetes.default.svc
