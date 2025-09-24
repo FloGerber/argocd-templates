@@ -1,4 +1,4 @@
-strimzi-kafka-operator:
+strimzi:
   # Namespace(s) the operator should watch
   watchNamespaces:
     - kafka
