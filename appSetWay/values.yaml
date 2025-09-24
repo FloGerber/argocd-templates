@@ -1,40 +1,41 @@
-applicationsets:
-  operator-applicationset:
-    namespace: argocd
-    generators:
-      - git:
-          repoURL: https://github.com/FloGerber/argocd-templates.git
-          revision: HEAD
-          directories:
-            - path: appSetWay/apps/*
-            - path: appSetWay/operator/*
-    ignoreApplicationDifferences:
-      - jsonPointers:
-          - /spec/syncPolicy
-    strategy:
-      type: AllAtOnce # explicit, but this is the default
-    template:
-      metadata:
-        name: "{{ path.basename }}"
-      spec:
-        project: default
-        source:
-          repoURL: https://github.com/FloGerber/argocd-templates.git
-          targetRevision: HEAD
-          helm:
-            valueFiles:
-              - "values.yaml"
-          path: "{{path}}"
-        destination:
-          server: https://kubernetes.default.svc
-          namespace: "{{path.basename}}"
-        syncPolicy:
-          automated:
-            prune: true
-            selfHeal: true
-          syncOptions:
-            - CreateNamespace=true
-            - ServerSideApply=true
-    syncPolicy:
-      # Set Application finalizer
-      preserveResourcesOnDeletion: false
+argocd-apps:
+  applicationsets:
+    operator-applicationset:
+      namespace: argocd
+      generators:
+        - git:
+            repoURL: https://github.com/FloGerber/argocd-templates.git
+            revision: HEAD
+            directories:
+              - path: appSetWay/apps/*
+              - path: appSetWay/operator/*
+      ignoreApplicationDifferences:
+        - jsonPointers:
+            - /spec/syncPolicy
+      strategy:
+        type: AllAtOnce # explicit, but this is the default
+      template:
+        metadata:
+          name: "{{ path.basename }}"
+        spec:
+          project: default
+          source:
+            repoURL: https://github.com/FloGerber/argocd-templates.git
+            targetRevision: HEAD
+            helm:
+              valueFiles:
+                - "values.yaml"
+            path: "{{path}}"
+          destination:
+            server: https://kubernetes.default.svc
+            namespace: "{{path.basename}}"
+          syncPolicy:
+            automated:
+              prune: true
+              selfHeal: true
+            syncOptions:
+              - CreateNamespace=true
+              - ServerSideApply=true
+      syncPolicy:
+        # Set Application finalizer
+        preserveResourcesOnDeletion: false

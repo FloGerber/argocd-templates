@@ -1,108 +1,109 @@
-# Default values for strimzi-drain-cleaner.
+strimzi-drain-cleaner:
+  # Default values for strimzi-drain-cleaner.
 
-replicaCount: 3
+  replicaCount: 3
 
-nameOverride: ""
-fullnameOverride: ""
+  nameOverride: ""
+  fullnameOverride: ""
 
-image:
-  registry: quay.io
-  repository: strimzi
-  name: drain-cleaner
-  tag: 1.4.0
-  pullPolicy: ""
-  imagePullSecrets: []
+  image:
+    registry: quay.io
+    repository: strimzi
+    name: drain-cleaner
+    tag: 1.4.0
+    pullPolicy: ""
+    imagePullSecrets: []
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
 
-# Whether the Certificate and Issuer custom resources should be created
-certManager:
-  create: true
+  # Whether the Certificate and Issuer custom resources should be created
+  certManager:
+    create: true
 
-secret:
-  create: false
-  tls_crt: "Cg=="
-  tls_key: "Cg=="
-  ca_bundle: "Cg=="
+  secret:
+    create: false
+    tls_crt: "Cg=="
+    tls_key: "Cg=="
+    ca_bundle: "Cg=="
 
-namespace:
-  create: true
-  name: strimzi-drain-cleaner
-  # Extra labels to add to the namespace
-  extraLabels: {}
+  namespace:
+    create: true
+    name: strimzi-drain-cleaner
+    # Extra labels to add to the namespace
+    extraLabels: {}
 
-podDisruptionBudget:
-  # Specifies whether a pod disruption budget should be created
-  create: false
-  minAvailable: 1
+  podDisruptionBudget:
+    # Specifies whether a pod disruption budget should be created
+    create: false
+    minAvailable: 1
 
-args:
-  - /opt/strimzi/bin/drain_cleaner_run.sh
+  args:
+    - /opt/strimzi/bin/drain_cleaner_run.sh
 
-resources:
-  {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 
-securityContext:
-  {}
-  # Specifies optional security context, depending your environment prerequisites.
-  # If you want to specify security contexts add them below and remove curly braces above.
+  securityContext:
+    {}
+    # Specifies optional security context, depending your environment prerequisites.
+    # If you want to specify security contexts add them below and remove curly braces above.
 
-deploymentLabels:
-  {}
-  # Specifies optional custom labels for Deployment.
-  # If you want to add custom labels, add them below and remove curly braces above.
+  deploymentLabels:
+    {}
+    # Specifies optional custom labels for Deployment.
+    # If you want to add custom labels, add them below and remove curly braces above.
 
-podLabels:
-  {}
-  # Specifies optional custom labels for Pod.
-  # If you want to add custom labels, add them below and remove curly braces above.
+  podLabels:
+    {}
+    # Specifies optional custom labels for Pod.
+    # If you want to add custom labels, add them below and remove curly braces above.
 
-podAnnotations: {}
+  podAnnotations: {}
 
-nodeSelector: {}
+  nodeSelector: {}
 
-tolerations: []
+  tolerations: []
 
-topologySpreadConstraints: []
+  topologySpreadConstraints: []
 
-affinity: {}
+  affinity: {}
 
-deploymentStrategy: {}
+  deploymentStrategy: {}
 
-env:
-  - name: STRIMZI_DRAIN_KAFKA
-    value: "true"
-  - name: STRIMZI_DRAIN_ZOOKEEPER
-    value: "true"
-  - name: STRIMZI_DENY_EVICTION
-    value: "true"
-  - name: STRIMZI_CERTIFICATE_WATCH_ENABLED
-    value: "true"
-  - name: STRIMZI_CERTIFICATE_WATCH_NAMESPACE
-    valueFrom:
-      fieldRef:
-        fieldPath: metadata.namespace
-  - name: STRIMZI_CERTIFICATE_WATCH_POD_NAME
-    valueFrom:
-      fieldRef:
-        fieldPath: metadata.name
+  env:
+    - name: STRIMZI_DRAIN_KAFKA
+      value: "true"
+    - name: STRIMZI_DRAIN_ZOOKEEPER
+      value: "true"
+    - name: STRIMZI_DENY_EVICTION
+      value: "true"
+    - name: STRIMZI_CERTIFICATE_WATCH_ENABLED
+      value: "true"
+    - name: STRIMZI_CERTIFICATE_WATCH_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: STRIMZI_CERTIFICATE_WATCH_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
 
-webhook:
-  failurePolicy: Ignore
+  webhook:
+    failurePolicy: Ignore

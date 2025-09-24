@@ -1,8 +1,9 @@
-# Resources (optional tuning)
-resources:
-  limits:
-    cpu: 100m
-    memory: 256Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+cloudnative-pg:
+  # Resources (optional tuning)
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
