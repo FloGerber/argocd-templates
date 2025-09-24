@@ -1,4 +1,6 @@
 cloudnative-pg:
+  # Set Replica to 3
+  replicaCount: 3
   # Resources (optional tuning)
   resources:
     limits:
@@ -7,3 +9,10 @@ cloudnative-pg:
     requests:
       cpu: 100m
       memory: 128Mi
+
+  # Operator Config
+  config:
+    create: true
+    clusterWide: false
+    data:
+      WATCH_NAMESPACE: pg-cluster
