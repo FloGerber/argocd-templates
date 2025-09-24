@@ -1,0 +1,16 @@
+apiVersion: v2
+name: kdp-cert-manager
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.0.1
+appVersion: "1.18.0" # external-dns release
+
+# pull in external charts via dependencies
+dependencies:
+  - name: cert-manager
+    version: 1.18.0
+    repository: https://charts.jetstack.io

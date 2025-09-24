@@ -1,0 +1,14 @@
+velero:
+  resources:
+    requests:
+      cpu: 500m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+
+  serviceAccount:
+    server:
+      create: true
+      name: kdp-addon-velero
+      automountServiceAccountToken: true
