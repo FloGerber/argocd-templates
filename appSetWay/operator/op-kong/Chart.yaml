@@ -16,3 +16,4 @@ dependencies:
   - name: gateway-operator
     version: 0.6.1
     repository: https://charts.konghq.com
+    alias: konggwoperator
