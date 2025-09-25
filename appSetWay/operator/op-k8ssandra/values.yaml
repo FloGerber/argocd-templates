@@ -1,4 +1,13 @@
 k8ssandra-operator:
+  # Set Scope for operator
+  global:
+    clusterScoped: false
+    watchNamespaces:
+      - cassandra-cluster
+
+  # Set Replicas for Operator
+  replicaCount: 3
+
   # Resources (optional tuning)
   resources:
     limits:
@@ -7,7 +16,3 @@ k8ssandra-operator:
     requests:
       cpu: 100m
       memory: 128Mi
-
-  # Annotations (set to second sync wave for argocd)
-  commonAnnotations:
-    argocd.argoproj.io/sync-wave: "2"
