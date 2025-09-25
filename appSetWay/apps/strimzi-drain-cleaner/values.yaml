@@ -16,13 +16,13 @@ strimzi-drain-cleaner:
       cpu: 100m
       memory: 128Mi
 
-  affinity:
-    podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: app
-              operator: In
-              values:
-                - strimzi-drain-cleaner
-        topologyKey: topology.kubernetes.io/zone
+  # affinity:
+  #   podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     - labelSelector:
+  #         matchExpressions:
+  #           - key: app
+  #             operator: In
+  #             values:
+  #               - strimzi-drain-cleaner
+  #       topologyKey: topology.kubernetes.io/zone
