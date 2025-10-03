@@ -82,18 +82,18 @@ kafkaCluster:
       roles: [controller]
       replicas: 3
       kafkaRole: controller
-      jvmOptions:
-        xms: 3g
-        xmx: 3g
-        xx:
-          "MetaspaceSize": "96m"
-          "UseG1GC": "true"
-          "MaxGCPauseMillis": "20"
-          "InitiatingHeapOccupancyPercent": "35"
-          "G1HeapRegionSize": "16M"
-          "MinMetaspaceFreeRatio": "50"
-          "MaxMetaspaceFreeRatio": "80"
-          "ExplicitGCInvokesConcurrent": "true"
+      # jvmOptions:
+      #   xms: 3g
+      #   xmx: 3g
+      #   xx:
+      #     "MetaspaceSize": "96m"
+      #     "UseG1GC": "true"
+      #     "MaxGCPauseMillis": "20"
+      #     "InitiatingHeapOccupancyPercent": "35"
+      #     "G1HeapRegionSize": "16M"
+      #     "MinMetaspaceFreeRatio": "50"
+      #     "MaxMetaspaceFreeRatio": "80"
+      #     "ExplicitGCInvokesConcurrent": "true"
       # template:
       #   pod:
       #     metadata:
@@ -140,18 +140,18 @@ kafkaCluster:
       roles: [broker]
       replicas: 3
       kafkaRole: broker
-      jvmOptions:
-        xms: 6g
-        xmx: 6g
-        xx:
-          "MetaspaceSize": "96m"
-          "UseG1GC": "true"
-          "MaxGCPauseMillis": "20"
-          "InitiatingHeapOccupancyPercent": "35"
-          "G1HeapRegionSize": "16M"
-          "MinMetaspaceFreeRatio": "50"
-          "MaxMetaspaceFreeRatio": "80"
-          "ExplicitGCInvokesConcurrent": "true"
+      # jvmOptions:
+      #   xms: 6g
+      #   xmx: 6g
+      #   xx:
+      #     "MetaspaceSize": "96m"
+      #     "UseG1GC": "true"
+      #     "MaxGCPauseMillis": "20"
+      #     "InitiatingHeapOccupancyPercent": "35"
+      #     "G1HeapRegionSize": "16M"
+      #     "MinMetaspaceFreeRatio": "50"
+      #     "MaxMetaspaceFreeRatio": "80"
+      #     "ExplicitGCInvokesConcurrent": "true"
       # template:
       #   pod:
       #     metadata:
