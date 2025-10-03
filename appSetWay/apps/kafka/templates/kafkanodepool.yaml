@@ -5,7 +5,6 @@ apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaNodePool
 metadata:
   name: {{ .name }}
-  namespace: {{ .Values.kafkaCluster.namespace }}
   labels:
     strimzi.io/cluster: {{ $.Values.kafkaCluster.name }}
 spec:
@@ -22,7 +21,15 @@ spec:
     {{- if .jvmOptions.xmx }}
     "-Xmx": {{ .jvmOptions.xmx | quote }}
     {{- end }}
-    {{- if hasKey .jvmOptions "gcLoggingEnabled" }}gcLoggingEnabled: {{ .jvmOptions.gcLoggingEnabled }}{{- end }}
+    {{- if hasKey .jvmOptions "gcLoggingEnabled" }}
+    gcLoggingEnabled: {{ .jvmOptions.gcLoggingEnabled }}
+    {{- end }}
+    {{- if .jvmOptions.xx }}
+    xx: 
+      {{- range $key, $value := .jvmOptions.xx }}
+      "{{ $key }}": "{{ $value }}"
+      {{- end }}
+    {{- end }}
     {{- if .jvmOptions.javaSystemProperties }}
     javaSystemProperties:
       {{- range .jvmOptions.javaSystemProperties }}

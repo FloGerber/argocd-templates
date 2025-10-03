@@ -4,7 +4,7 @@ apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
   name: {{ .Values.kafkaCluster.name }}
-  namespace: {{ .Values.kafkaCluster.namespace }}
+  namespace: {{ .Values.kafkaCluster.namespace | quote }}
   annotations:
     {{- range $key, $value := .Values.kafkaCluster.annotations }}
     strimzi.io/{{ $key }}: {{ $value | quote }}
