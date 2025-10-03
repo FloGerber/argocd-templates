@@ -133,7 +133,7 @@ kafkaCluster:
         volumes:
           - id: 0
             type: persistent-claim
-            size: 10Gi
+            size: 1Gi
             kraftMetadata: shared
             deleteClaim: false
     - name: kdp-kafka-cluster-broker
@@ -192,5 +192,5 @@ kafkaCluster:
         volumes:
           - id: 0
             type: persistent-claim
-            size: 100Gi
+            size: 1Gi
             deleteClaim: true
