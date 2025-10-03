@@ -15,8 +15,11 @@ spec:
     {{- end }}
   {{- if .jvmOptions }}
   jvmOptions:
-    {{- range $key, $value := .jvmOptions }}
-    {{ $key }}: {{ $value }}
+    {{- if .jvmOptions.xms }}
+    "-Xms": "{{ .jvmOptions.xms }}"
+    {{- end }}
+    {{- if .jvmOptions.xmx }}
+    "-Xmx": "{{ .jvmOptions.xmx }}"
     {{- end }}
     {{- if hasKey .jvmOptions "gcLoggingEnabled" }}gcLoggingEnabled: {{ .jvmOptions.gcLoggingEnabled }}{{- end }}
     {{- if .jvmOptions.javaSystemProperties }}
@@ -41,13 +44,13 @@ spec:
       {{- end }}
       {{- if .template.pod.affinity }}
       affinity:
-{{ toYaml .template.pod.affinity | nindent 8 }}
-      {{- end }}
+        {{ toYaml .template.pod.affinity | nindent 8 }}
+        {{- end }}
       {{- if .template.pod.topologySpreadConstraints }}
       topologySpreadConstraints:
-{{ toYaml .template.pod.topologySpreadConstraints | nindent 8 }}
+        {{ toYaml .template.pod.topologySpreadConstraints | nindent 8 }}
+        {{- end }}
       {{- end }}
-  {{- end }}
   storage:
     type: {{ .storage.type }}
     {{- if eq .storage.type "jbod" }}
@@ -55,9 +58,15 @@ spec:
       {{- range .storage.volumes }}
       - id: {{ .id }}
         type: {{ .type }}
-        {{- if .size }}size: {{ .size }}{{- end }}
-        {{- if .kraftMetadata }}kraftMetadata: {{ .kraftMetadata }}{{- end }}
-        {{- if hasKey . "deleteClaim" }}deleteClaim: {{ .deleteClaim }}{{- end }}
+        {{- if .size }}
+        size: {{ .size }}
+        {{- end }}
+        {{- if .kraftMetadata }}
+        kraftMetadata: {{ .kraftMetadata }}
+        {{- end }}
+        {{- if hasKey . "deleteClaim" }}
+        deleteClaim: {{ .deleteClaim }}
+        {{- end }}
       {{- end }}
     {{- else if eq .storage.type "persistent-claim" }}
     size: {{ .storage.size }}
