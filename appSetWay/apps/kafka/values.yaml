@@ -17,15 +17,15 @@ kafkaCluster:
         port: 9093
         type: internal
         tls: true
-    config:
-      offsets.topic.replication.factor: 3
-      transaction.state.log.replication.factor: 3
-      transaction.state.log.min.isr: 2
-      default.replication.factor: 3
-      min.insync.replicas: 2
-      log.segment.bytes: 1073741824
-      log.retention.hours: 168
-      log.retention.check.interval.ms: 300000
+    # config:
+    #   offsets.topic.replication.factor: 3
+    #   transaction.state.log.replication.factor: 3
+    #   transaction.state.log.min.isr: 2
+    #   default.replication.factor: 3
+    #   min.insync.replicas: 2
+    #   log.segment.bytes: 1073741824
+    #   log.retention.hours: 168
+    #   log.retention.check.interval.ms: 300000
     # resources: {}
     # logging: {}
     # readinessProbe: {}
