@@ -1,5 +1,6 @@
 kafkaCluster:
   name: kdp-kafka-cluster
+  namespace: kafka
   annotations:
     nodePools: enabled
     kraft: enabled

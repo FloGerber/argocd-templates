@@ -5,6 +5,7 @@ apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaNodePool
 metadata:
   name: {{ .name }}
+  namespace: {{ .Values.kafkaCluster.namespace }}
   labels:
     strimzi.io/cluster: {{ $.Values.kafkaCluster.name }}
 spec:
