@@ -1,0 +1,60 @@
+## Kafka NodePools
+
+{{- range .Values.kafkaCluster.nodePools }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+    name: {{ .name }}
+    labels:
+        strimzi.io/cluster: {{ $.Values.kafkaCluster.name }}
+spec:
+    replicas: {{ .replicas }}
+    roles:
+        {{- range .roles }}
+        - {{ . }}
+        {{- end }}
+    {{- if .jvmOptions }}
+    jvmOptions:
+      {{- range $key, $value := .jvmOptions }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+    {{- end }}
+    template:
+      pod:
+        {{- if .template.pod.metadata }}
+        metadata:
+          {{- if .template.pod.metadata.labels }}
+          labels:
+            {{- range $key, $value := .template.pod.metadata.labels }}
+            {{ $key }}: {{ $value }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- if .template.pod.affinity }}
+        affinity:
+          {{- toYaml .template.pod.affinity | nindent 8 }}
+        {{- end }}
+        {{- if .template.pod.topologySpreadConstraints }}
+        topologySpreadConstraints:
+          {{- toYaml .template.pod.topologySpreadConstraints | nindent 8 }}
+        {{- end }}
+    {{- end }}
+    storage:
+      type: {{ .storage.type }}
+      {{- if eq .storage.type "jbod" }}
+      volumes:
+        {{- range .storage.volumes }}
+        - id: {{ .id }}
+          type: {{ .type }}
+          {{- if .size }}size: {{ .size }}{{- end }}
+          {{- if .kraftMetadata }}kraftMetadata: {{ .kraftMetadata }}{{- end }}
+          {{- if .deleteClaim }}deleteClaim: {{ .deleteClaim }}{{- end }}
+        {{- end }}
+      {{- else if eq .storage.type "persistent-claim"}}
+      size: {{ .storage.size }}
+      deleteClaim: {{ .storage.deleteClaim }}
+      {{- else if eq .storage.type "ephemeral" }}
+      # No config needed
+      {{- end }}
+---
+

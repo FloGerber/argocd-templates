@@ -1,0 +1,130 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: kafka-cluster
+  annotations:
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
+    strimzi.io/pause-reconciliation: "true" # set to true if you need to recover a cluster, after that you need to set the old cluster id to the status
+spec:
+  kafka:
+    version: 4.0.0
+    metadataVersion: 4.0-IV3
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config:
+      auto.create.topics.enable: "false"
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+    resources:
+      requests:
+        memory: 4Gi
+        cpu: "2"
+      limits:
+        memory: 64Gi
+        cpu: "12"
+    logging:
+      type: inline
+      loggers:
+        # Kafka 4.0+ uses Log4j2
+        rootLogger.level: INFO
+    # Readiness probe
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    # Liveness probe
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    # JVM options
+    jvmOptions:
+      -Xms: 8192m
+      -Xmx: 8192m
+    # Custom image
+    # image: my-org/my-image:latest
+    # Authorization
+    authorization:
+      type: simple
+    # # Rack awareness
+    # rack:
+    #   topologyKey: topology.kubernetes.io/zone
+    # Metrics configuration
+    # metricsConfig:
+    #   type: jmxPrometheusExporter
+    # valueFrom:
+    #   configMapKeyRef:
+    #     name: my-config-map
+    #     key: my-key
+  # Entity Operator
+  entityOperator:
+    topicOperator:
+      watchedNamespace: kafka-topics
+      reconciliationIntervalMs: 60000
+      # Resources requests and limits
+      resources:
+        requests:
+          memory: 512Mi
+          cpu: "1"
+        limits:
+          memory: 512Mi
+          cpu: "1"
+      # Logging configuration
+      logging: # (23)
+        type: inline
+        loggers:
+          rootLogger.level: INFO
+    userOperator:
+      watchedNamespace: kafka-topics
+      reconciliationIntervalMs: 60000
+      # Resources requests and limits
+      resources:
+        requests:
+          memory: 512Mi
+          cpu: "1"
+        limits:
+          memory: 512Mi
+          cpu: "1"
+      # Logging configuration
+      logging: # (24)
+        type: inline
+        loggers:
+          rootLogger.level: INFO
+  kafkaExporter:
+    topicRegex: ".*"
+    groupRegex: ".*"
+  cruiseControl:
+    autoRebalance:
+      - mode: add-brokers
+        template:
+          name: add-brokers-rebalancing-template
+      - mode: remove-brokers
+        template:
+          name: remove-brokers-rebalancing-template
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaRebalance
+metadata:
+  name: add-brokers-rebalancing-template
+  annotations:
+    strimzi.io/rebalance-template: "true"
+# no goals specified, using the default goals from the Cruise Control configuration
+spec: {}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaRebalance
+metadata:
+  name: remove-brokers-rebalancing-template
+  annotations:
+    strimzi.io/rebalance-template: "true"
+# no goals specified, using the default goals from the Cruise Control configuration
+spec: {}

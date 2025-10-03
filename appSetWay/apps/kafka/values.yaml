@@ -1,0 +1,59 @@
+kafkaCluster:
+  name: kdp-kafka-cluster
+  nodePools:
+    - name: controller
+      roles: [controller]
+      replicas: 3
+      kafkaRole: controller
+      template:
+        pod:
+          metadata:
+            labels:
+              kafkaRole: controller
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: app
+                        operator: In
+                        values: [kafka]
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        kafkaRole: broker
+                    topologyKey: kubernetes.io/hostname
+          topologySpreadConstraints:
+            - labelSelector:
+                matchLabels:
+                  kafkaRole: controller
+              maxSkew: 1
+              topologyKey: topology.kubernetes.io/zone
+              whenUnsatisfiable: ScheduleAnyway
+            - labelSelector:
+                matchLabels:
+                  kafkaRole: controller
+              maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+      storage:
+        type: jbod
+        volumes:
+          - id: 0
+            type: persistent-claim
+            size: 10Gi
+            kraftMetadata: shared
+            deleteClaim: false
+    - name: kdp-kafka-cluster-broker
+      roles: [broker]
+      replicas: 3
+      storage:
+        type: jbod
+        volumes:
+          - id: 0
+            type: persistent-claim
+            size: 100Gi
+            deleteClaim: true
