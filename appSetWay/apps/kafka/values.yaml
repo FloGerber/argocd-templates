@@ -5,6 +5,9 @@ kafkaCluster:
       roles: [controller]
       replicas: 3
       kafkaRole: controller
+      jvmOptions:
+        xms: 512m
+        xmx: 512m
       template:
         pod:
           metadata:

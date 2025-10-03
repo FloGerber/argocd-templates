@@ -48,8 +48,8 @@ spec:
       timeoutSeconds: 5
     # JVM options
     jvmOptions:
-      -Xms: 8192m
-      -Xmx: 8192m
+      "-Xms": "8192m"
+      "-Xmx": "8192m"
     # Custom image
     # image: my-org/my-image:latest
     # Authorization
