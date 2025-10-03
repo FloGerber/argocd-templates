@@ -16,10 +16,10 @@ spec:
   {{- if .jvmOptions }}
   jvmOptions:
     {{- if .jvmOptions.xms }}
-    "-Xms": "{{ .jvmOptions.xms }}"
+    "-Xms": {{ .jvmOptions.xms | quote  }}
     {{- end }}
     {{- if .jvmOptions.xmx }}
-    "-Xmx": "{{ .jvmOptions.xmx }}"
+    "-Xmx": {{ .jvmOptions.xmx | quote }}
     {{- end }}
     {{- if hasKey .jvmOptions "gcLoggingEnabled" }}gcLoggingEnabled: {{ .jvmOptions.gcLoggingEnabled }}{{- end }}
     {{- if .jvmOptions.javaSystemProperties }}

@@ -1,5 +1,35 @@
 kafkaCluster:
   name: kdp-kafka-cluster
+  annotations:
+    nodePools: enabled
+    kraft: enabled
+    pauseReconciliation: "false"
+  kafka:
+    version: 4.0.0
+    metadataVersion: 4.0-IV3
+    listeners: []
+    config: {}
+    resources: {}
+    logging: {}
+    readinessProbe: {}
+    livenessProbe: {}
+    jvmOptions: {}
+    authorization: {}
+  entityOperator:
+    enabled: true
+    topicOperator: {}
+    userOperator: {}
+  kafkaExporter:
+    enabled: true
+    topicRegex: ".*"
+    groupRegex: ".*"
+
+  cruiseControl:
+    enabled: true
+    templates:
+      - name: add-brokers-template
+      - name: remove-brokers-template
+
   nodePools:
     - name: kdp-kafka-cluster-controller
       roles: [controller]

@@ -1,130 +1,100 @@
+## Kafka Cluster Resources
+
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
-  name: kafka-cluster
+  name: {{ .Values.kafkaCluster.name }}
   annotations:
-    strimzi.io/node-pools: enabled
-    strimzi.io/kraft: enabled
-    strimzi.io/pause-reconciliation: "true" # set to true if you need to recover a cluster, after that you need to set the old cluster id to the status
+    {{- range $key, $value := .Values.kafkaCluster.annotations }}
+    strimzi.io/{{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
   kafka:
-    version: 4.0.0
-    metadataVersion: 4.0-IV3
+    version: {{ .Values.kafkaCluster.kafka.version }}
+    metadataVersion: {{ .Values.kafkaCluster.kafka.metadataVersion }}
+    {{- if .Values.kafkaCluster.kafka.listeners }}
     listeners:
-      - name: plain
-        port: 9092
-        type: internal
-        tls: false
-      - name: tls
-        port: 9093
-        type: internal
-        tls: true
+      {{- range .Values.kafkaCluster.kafka.listeners }}
+      - name: {{ .name }}
+        port: {{ .port }}
+        type: {{ .type }}
+        tls: {{ .tls }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.kafka.config }}
     config:
-      auto.create.topics.enable: "false"
-      offsets.topic.replication.factor: 3
-      transaction.state.log.replication.factor: 3
-      transaction.state.log.min.isr: 2
-      default.replication.factor: 3
-      min.insync.replicas: 2
+      {{- range $key, $value := .Values.kafkaCluster.kafka.config }}
+      {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.kafka.resources }}
     resources:
-      requests:
-        memory: 4Gi
-        cpu: "2"
-      limits:
-        memory: 64Gi
-        cpu: "12"
+      {{- toYaml .Values.kafkaCluster.kafka.resources | nindent 6 }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.kafka.logging }}
     logging:
       type: inline
       loggers:
-        # Kafka 4.0+ uses Log4j2
-        rootLogger.level: INFO
-    # Readiness probe
+        {{- range $key, $value := .Values.kafkaCluster.kafka.logging }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.kafka.readinessProbe }}
     readinessProbe:
-      initialDelaySeconds: 15
-      timeoutSeconds: 5
-    # Liveness probe
+      {{- toYaml .Values.kafkaCluster.kafka.readinessProbe | nindent 6 }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.kafka.livenessProbe }}
     livenessProbe:
-      initialDelaySeconds: 15
-      timeoutSeconds: 5
-    # JVM options
+      {{- toYaml .Values.kafkaCluster.kafka.livenessProbe | nindent 6 }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.kafka.jvmOptions }}
     jvmOptions:
-      "-Xms": "8192m"
-      "-Xmx": "8192m"
-    # Custom image
-    # image: my-org/my-image:latest
-    # Authorization
+      {{- range $key, $value := .Values.kafkaCluster.kafka.jvmOptions }}
+      "{{ $key }}": "{{ $value }}"
+      {{- end }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.kafka.authorization }}
     authorization:
-      type: simple
-    # # Rack awareness
-    # rack:
-    #   topologyKey: topology.kubernetes.io/zone
-    # Metrics configuration
-    # metricsConfig:
-    #   type: jmxPrometheusExporter
-    # valueFrom:
-    #   configMapKeyRef:
-    #     name: my-config-map
-    #     key: my-key
-  # Entity Operator
+      {{- toYaml .Values.kafkaCluster.kafka.authorization | nindent 6 }}
+    {{- end }}
+
+  {{- if .Values.kafkaCluster.entityOperator.enabled }}
   entityOperator:
+    {{- if .Values.kafkaCluster.entityOperator.topicOperator }}
     topicOperator:
-      watchedNamespace: kafka-topics
-      reconciliationIntervalMs: 60000
-      # Resources requests and limits
-      resources:
-        requests:
-          memory: 512Mi
-          cpu: "1"
-        limits:
-          memory: 512Mi
-          cpu: "1"
-      # Logging configuration
-      logging: # (23)
-        type: inline
-        loggers:
-          rootLogger.level: INFO
+      {{- toYaml .Values.kafkaCluster.entityOperator.topicOperator | nindent 6 }}
+    {{- end }}
+    {{- if .Values.kafkaCluster.entityOperator.userOperator }}
     userOperator:
-      watchedNamespace: kafka-topics
-      reconciliationIntervalMs: 60000
-      # Resources requests and limits
-      resources:
-        requests:
-          memory: 512Mi
-          cpu: "1"
-        limits:
-          memory: 512Mi
-          cpu: "1"
-      # Logging configuration
-      logging: # (24)
-        type: inline
-        loggers:
-          rootLogger.level: INFO
+      {{- toYaml .Values.kafkaCluster.entityOperator.userOperator | nindent 6 }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.kafkaCluster.kafkaExporter.enabled }}
   kafkaExporter:
-    topicRegex: ".*"
-    groupRegex: ".*"
+    topicRegex: {{ .Values.kafkaCluster.kafkaExporter.topicRegex | quote }}
+    groupRegex: {{ .Values.kafkaCluster.kafkaExporter.groupRegex | quote }}
+  {{- end }}
+
+  {{- if .Values.kafkaCluster.cruiseControl.enabled }}
   cruiseControl:
     autoRebalance:
-      - mode: add-brokers
+      {{- range .Values.kafkaCluster.cruiseControl.templates }}
+      - mode: {{ if hasPrefix .name "add" }}add-brokers{{ else }}remove-brokers{{ end }}
         template:
-          name: add-brokers-rebalancing-template
-      - mode: remove-brokers
-        template:
-          name: remove-brokers-rebalancing-template
+          name: {{ .name }}
+      {{- end }}
+  {{- end }}
 ---
+{{- if .Values.kafkaCluster.cruiseControl.enabled }}
+{{- range .Values.kafkaCluster.cruiseControl.templates }}
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaRebalance
 metadata:
-  name: add-brokers-rebalancing-template
+  name: {{ .name }}
   annotations:
     strimzi.io/rebalance-template: "true"
-# no goals specified, using the default goals from the Cruise Control configuration
 spec: {}
 ---
-apiVersion: kafka.strimzi.io/v1beta2
-kind: KafkaRebalance
-metadata:
-  name: remove-brokers-rebalancing-template
-  annotations:
-    strimzi.io/rebalance-template: "true"
-# no goals specified, using the default goals from the Cruise Control configuration
-spec: {}
+{{- end }}
+{{- end }}
