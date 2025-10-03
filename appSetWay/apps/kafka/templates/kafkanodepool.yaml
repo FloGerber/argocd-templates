@@ -15,8 +15,9 @@ spec:
     {{- end }}
   {{- if .jvmOptions }}
   jvmOptions:
-    {{- if .jvmOptions.-Xms }}-Xms: {{ .jvmOptions.-Xms }}{{- end }}
-    {{- if .jvmOptions.-Xmx }}-Xmx: {{ .jvmOptions.-Xmx }}{{- end }}
+    {{- range $key, $value := .jvmOptions }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
     {{- if hasKey .jvmOptions "gcLoggingEnabled" }}gcLoggingEnabled: {{ .jvmOptions.gcLoggingEnabled }}{{- end }}
     {{- if .jvmOptions.javaSystemProperties }}
     javaSystemProperties:
