@@ -33,7 +33,7 @@ kafkaCluster:
     # jvmOptions: {}
     # authorization: {}
   entityOperator:
-    enabled: true
+    enabled: false
     topicOperator:
       topicOperator:
       watchedNamespace: kafka-topics
@@ -68,12 +68,12 @@ kafkaCluster:
         loggers:
           rootLogger.level: INFO
   kafkaExporter:
-    enabled: true
+    enabled: false
     topicRegex: ".*"
     groupRegex: ".*"
 
   cruiseControl:
-    enabled: true
+    enabled: false
     templates:
       - name: add-brokers-template
       - name: remove-brokers-template
