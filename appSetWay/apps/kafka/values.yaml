@@ -4,7 +4,7 @@ kafkaCluster:
   annotations:
     nodePools: enabled
     kraft: enabled
-    pauseReconciliation: false
+    #pauseReconciliation: "false"
   kafka:
     version: 4.0.0
     metadataVersion: 4.0-IV3
