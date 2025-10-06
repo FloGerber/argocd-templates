@@ -16,16 +16,16 @@ spec:
   {{- if .jvmOptions }}
   jvmOptions:
     {{- if .jvmOptions.xms }}
-    "-Xms": {{ .jvmOptions.xms | quote  }}
+    "-Xms": "{{ .jvmOptions.xms }}"
     {{- end }}
     {{- if .jvmOptions.xmx }}
-    "-Xmx": {{ .jvmOptions.xmx | quote }}
+    "-Xmx": "{{ .jvmOptions.xmx }}"
     {{- end }}
     {{- if hasKey .jvmOptions "gcLoggingEnabled" }}
     gcLoggingEnabled: {{ .jvmOptions.gcLoggingEnabled }}
     {{- end }}
     {{- if .jvmOptions.xx }}
-    xx: 
+    "-xx": 
       {{- range $key, $value := .jvmOptions.xx }}
       "{{ $key }}": "{{ $value }}"
       {{- end }}
