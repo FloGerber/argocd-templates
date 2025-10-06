@@ -25,7 +25,7 @@ spec:
     gcLoggingEnabled: {{ .jvmOptions.gcLoggingEnabled }}
     {{- end }}
     {{- if .jvmOptions.xx }}
-    "-xx": 
+    "-XX": 
       {{- range $key, $value := .jvmOptions.xx }}
       "{{ $key }}": "{{ $value }}"
       {{- end }}
