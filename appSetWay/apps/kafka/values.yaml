@@ -75,7 +75,7 @@ kafkaCluster:
     groupRegex: ".*"
 
   cruiseControl:
-    enabled: false
+    enabled: true
     templates:
       - name: add-brokers-template
       - name: remove-brokers-template
