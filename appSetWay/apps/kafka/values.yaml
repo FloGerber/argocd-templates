@@ -23,9 +23,9 @@ kafkaCluster:
       transaction.state.log.min.isr: 2
       default.replication.factor: 3
       min.insync.replicas: 2
-      log.segment.bytes: 1073741824
-      log.retention.hours: 168
-      log.retention.check.interval.ms: 300000
+      # log.segment.bytes: 1073741824
+      # log.retention.hours: 168
+      # log.retention.check.interval.ms: 300000
     # resources: {}
     # logging: {}
     # readinessProbe: {}
@@ -85,9 +85,9 @@ kafkaCluster:
       roles: [controller]
       replicas: 3
       kafkaRole: controller
-      # jvmOptions:
-      #   xms: 3g
-      #   xmx: 3g
+      jvmOptions:
+        xms: 3g
+        xmx: 3g
       #   xx:
       #     "MetaspaceSize": "96m"
       #     "UseG1GC": "true"
@@ -143,9 +143,9 @@ kafkaCluster:
       roles: [broker]
       replicas: 3
       kafkaRole: broker
-      # jvmOptions:
-      #   xms: 6g
-      #   xmx: 6g
+      jvmOptions:
+        xms: 6g
+        xmx: 6g
       #   xx:
       #     "MetaspaceSize": "96m"
       #     "UseG1GC": "true"
