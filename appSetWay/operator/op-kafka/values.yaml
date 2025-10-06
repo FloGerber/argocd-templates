@@ -2,6 +2,7 @@ strimzi:
   # Namespace(s) the operator should watch, only specify the one's where the cluster is/will be isntalled.
   watchNamespaces:
     - kafka
+    - strimzi
 
   # Set Replicas for operator
   replicas: 3
