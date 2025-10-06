@@ -103,13 +103,13 @@ kafkaCluster:
             labels:
               kafkaRole: controller
           affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: app
-                        operator: In
-                        values: [kafka]
+            # nodeAffinity:
+            #   requiredDuringSchedulingIgnoredDuringExecution:
+            #     nodeSelectorTerms:
+            #       - matchExpressions:
+            #           - key: app
+            #             operator: In
+            #             values: [kafka]
             podAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
                 - weight: 100
@@ -161,14 +161,14 @@ kafkaCluster:
             labels:
               kafkaRole: broker
           affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: app
-                        operator: In
-                        values:
-                          - kafka
+            # nodeAffinity:
+            #   requiredDuringSchedulingIgnoredDuringExecution:
+            #     nodeSelectorTerms:
+            #       - matchExpressions:
+            #           - key: app
+            #             operator: In
+            #             values:
+            #               - kafka
             podAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
                 - weight: 100
