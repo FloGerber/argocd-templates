@@ -118,19 +118,19 @@ kafkaCluster:
                       matchLabels:
                         kafkaRole: broker
                     topologyKey: kubernetes.io/hostname
-          topologySpreadConstraints:
-            - labelSelector:
-                matchLabels:
-                  kafkaRole: controller
-              maxSkew: 1
-              topologyKey: topology.kubernetes.io/zone
-              whenUnsatisfiable: ScheduleAnyway
-            - labelSelector:
-                matchLabels:
-                  kafkaRole: controller
-              maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: ScheduleAnyway
+          # topologySpreadConstraints:
+          #   - labelSelector:
+          #       matchLabels:
+          #         kafkaRole: controller
+          #     maxSkew: 1
+          #     topologyKey: topology.kubernetes.io/zone
+          #     whenUnsatisfiable: ScheduleAnyway
+          #   - labelSelector:
+          #       matchLabels:
+          #         kafkaRole: controller
+          #     maxSkew: 1
+          #     topologyKey: kubernetes.io/hostname
+          #     whenUnsatisfiable: ScheduleAnyway
       storage:
         type: jbod
         volumes:
@@ -177,19 +177,19 @@ kafkaCluster:
                       matchLabels:
                         kafkaRole: controller
                     topologyKey: kubernetes.io/hostname
-          topologySpreadConstraints:
-            - labelSelector:
-                matchLabels:
-                  kafkaRole: broker
-              maxSkew: 1
-              topologyKey: topology.kubernetes.io/zone
-              whenUnsatisfiable: ScheduleAnyway
-            - labelSelector:
-                matchLabels:
-                  kafkaRole: broker
-              maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: ScheduleAnyway
+          # topologySpreadConstraints:
+          #   - labelSelector:
+          #       matchLabels:
+          #         kafkaRole: broker
+          #     maxSkew: 1
+          #     topologyKey: topology.kubernetes.io/zone
+          #     whenUnsatisfiable: ScheduleAnyway
+          #   - labelSelector:
+          #       matchLabels:
+          #         kafkaRole: broker
+          #     maxSkew: 1
+          #     topologyKey: kubernetes.io/hostname
+          #     whenUnsatisfiable: ScheduleAnyway
       storage:
         type: jbod
         volumes:
