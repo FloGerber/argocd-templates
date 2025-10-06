@@ -66,11 +66,11 @@ spec:
       min.insync.replicas: 2
     resources:
       requests:
-        memory: 4Gi
+        memory: 2Gi
         cpu: "2"
       limits:
-        memory: 64Gi
-        cpu: "12"
+        memory: 4Gi
+        cpu: "4"
     logging:
       type: inline
       loggers:
@@ -86,8 +86,8 @@ spec:
       timeoutSeconds: 5
     # JVM options
     jvmOptions:
-      -Xms: 8192m
-      -Xmx: 8192m
+      -Xms: 2000m
+      -Xmx: 2000m
     # Custom image
     # image: my-org/my-image:latest
     # Authorization
