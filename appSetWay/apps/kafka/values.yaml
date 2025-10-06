@@ -102,22 +102,22 @@ kafkaCluster:
           metadata:
             labels:
               kafkaRole: controller
-          affinity:
-            # nodeAffinity:
-            #   requiredDuringSchedulingIgnoredDuringExecution:
-            #     nodeSelectorTerms:
-            #       - matchExpressions:
-            #           - key: app
-            #             operator: In
-            #             values: [kafka]
-            podAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        kafkaRole: broker
-                    topologyKey: kubernetes.io/hostname
+          # affinity:
+          # nodeAffinity:
+          #   requiredDuringSchedulingIgnoredDuringExecution:
+          #     nodeSelectorTerms:
+          #       - matchExpressions:
+          #           - key: app
+          #             operator: In
+          #             values: [kafka]
+          # podAffinity:
+          #   preferredDuringSchedulingIgnoredDuringExecution:
+          #     - weight: 100
+          #       podAffinityTerm:
+          #         labelSelector:
+          #           matchLabels:
+          #             kafkaRole: broker
+          #         topologyKey: kubernetes.io/hostname
           # topologySpreadConstraints:
           #   - labelSelector:
           #       matchLabels:
@@ -160,23 +160,23 @@ kafkaCluster:
           metadata:
             labels:
               kafkaRole: broker
-          affinity:
-            # nodeAffinity:
-            #   requiredDuringSchedulingIgnoredDuringExecution:
-            #     nodeSelectorTerms:
-            #       - matchExpressions:
-            #           - key: app
-            #             operator: In
-            #             values:
-            #               - kafka
-            podAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        kafkaRole: controller
-                    topologyKey: kubernetes.io/hostname
+          # affinity:
+          # nodeAffinity:
+          #   requiredDuringSchedulingIgnoredDuringExecution:
+          #     nodeSelectorTerms:
+          #       - matchExpressions:
+          #           - key: app
+          #             operator: In
+          #             values:
+          #               - kafka
+          # podAffinity:
+          #   preferredDuringSchedulingIgnoredDuringExecution:
+          #     - weight: 100
+          #       podAffinityTerm:
+          #         labelSelector:
+          #           matchLabels:
+          #             kafkaRole: controller
+          #         topologyKey: kubernetes.io/hostname
           # topologySpreadConstraints:
           #   - labelSelector:
           #       matchLabels:
