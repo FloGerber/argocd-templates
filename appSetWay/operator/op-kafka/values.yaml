@@ -7,12 +7,8 @@ strimzi:
   # Set Replicas for operator
   replicas: 3
 
-  # Enable installation of CRDs (recommended for first-time installs)
-  crds:
-    enabled: true
-
   # Logging configuration
-  logLevel: INFO
+  logLevel: DEBUG
 
   # Feature gates (optional)
   #featureGates: []
