@@ -11,52 +11,52 @@ metadata:
     {{- end }}
 spec:
   kafka:
-    version: {{ .Values.kafkaCluster.kafka.version }}
-    metadataVersion: {{ .Values.kafkaCluster.kafka.metadataVersion }}
-    {{- if .Values.kafkaCluster.kafka.listeners }}
+    version: {{ .Values.kafkaCluster.version }}
+    metadataVersion: {{ .Values.kafkaCluster.metadataVersion }}
+    {{- if .Values.kafkaCluster.listeners }}
     listeners:
-      {{- range .Values.kafkaCluster.kafka.listeners }}
+      {{- range .Values.kafkaCluster.listeners }}
       - name: {{ .name }}
         port: {{ .port }}
         type: {{ .type }}
         tls: {{ .tls }}
       {{- end }}
     {{- end }}
-    {{- if .Values.kafkaCluster.kafka.config }}
+    {{- if .Values.kafkaCluster.config }}
     config:
-      {{- range $key, $value := .Values.kafkaCluster.kafka.config }}
+      {{- range $key, $value := .Values.kafkaCluster.config }}
       {{ $key }}: {{ $value | quote }}
       {{- end }}
     {{- end }}
-    {{- if .Values.kafkaCluster.kafka.resources }}
+    {{- if .Values.kafkaCluster.resources }}
     resources:
-      {{- toYaml .Values.kafkaCluster.kafka.resources | nindent 6 }}
+      {{- toYaml .Values.kafkaCluster.resources | nindent 6 }}
     {{- end }}
-    {{- if .Values.kafkaCluster.kafka.logging }}
+    {{- if .Values.kafkaCluster.logging }}
     logging:
       type: inline
       loggers:
-        {{- range $key, $value := .Values.kafkaCluster.kafka.logging }}
+        {{- range $key, $value := .Values.kafkaCluster.logging }}
         {{ $key }}: {{ $value }}
         {{- end }}
     {{- end }}
-    {{- if .Values.kafkaCluster.kafka.readinessProbe }}
+    {{- if .Values.kafkaCluster.readinessProbe }}
     readinessProbe:
-      {{- toYaml .Values.kafkaCluster.kafka.readinessProbe | nindent 6 }}
+      {{- toYaml .Values.kafkaCluster.readinessProbe | nindent 6 }}
     {{- end }}
-    {{- if .Values.kafkaCluster.kafka.livenessProbe }}
+    {{- if .Values.kafkaCluster.livenessProbe }}
     livenessProbe:
-      {{- toYaml .Values.kafkaCluster.kafka.livenessProbe | nindent 6 }}
+      {{- toYaml .Values.kafkaCluster.livenessProbe | nindent 6 }}
     {{- end }}
-    {{- if .Values.kafkaCluster.kafka.jvmOptions }}
+    {{- if .Values.kafkaCluster.jvmOptions }}
     jvmOptions:
-      {{- range $key, $value := .Values.kafkaCluster.kafka.jvmOptions }}
+      {{- range $key, $value := .Values.kafkaCluster.jvmOptions }}
       "{{ $key }}": "{{ $value }}"
       {{- end }}
     {{- end }}
-    {{- if .Values.kafkaCluster.kafka.authorization }}
+    {{- if .Values.kafkaCluster.authorization }}
     authorization:
-      {{- toYaml .Values.kafkaCluster.kafka.authorization | nindent 6 }}
+      {{- toYaml .Values.kafkaCluster.authorization | nindent 6 }}
     {{- end }}
 
   {{- if .Values.kafkaCluster.entityOperator.enabled }}

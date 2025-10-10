@@ -1,4 +1,4 @@
-{{- range .Values.kafkaCluster.topics }}
+{{- range .Values.kafkaTopics }}
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:

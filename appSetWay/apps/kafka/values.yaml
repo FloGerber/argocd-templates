@@ -1,194 +1,113 @@
 kafkaCluster:
   name: kdp-kafka-cluster
-  namespace: "kafka"
+  namespace: kafka
   annotations:
     node-pools: enabled
     kraft: enabled
     # pauseReconciliation: "false"
-  kafka:
-    version: 4.0.0
-    metadataVersion: 4.0-IV3
-    listeners:
-      - name: plain
-        port: 9092
-        type: internal
-        tls: false
-      - name: tls
-        port: 9093
-        type: internal
-        tls: true
-    config:
-      offsets.topic.replication.factor: 3
-      transaction.state.log.replication.factor: 3
-      transaction.state.log.min.isr: 2
-      default.replication.factor: 3
-      min.insync.replicas: 2
-      # log.segment.bytes: 1073741824   # this seems to break in the template
-      # log.retention.hours: 168
-      # log.retention.check.interval.ms: 300000
-    # resources: {}
-    # logging: {}
-    # readinessProbe: {}
-    # livenessProbe: {}
-    jvmOptions:
-      -Xms: 2000m
-      -Xmx: 2000m
-    # authorization: {}
+  version: 4.0.0
+  metadataVersion: 4.0-IV3
+  replicas: 3
+  replicationFactor: 3
+  minIsr: 2
+  storageSize: 100Gi
+  zookeeperStorageSize: 50Gi
+  listeners:
+    - name: tls
+      port: 9093
+      type: internal
+      tls: true
+    - name: plain
+      port: 9092
+      type: internal
+      tls: false
+  config:
+    offsets.topic.replication.factor: 3
+    transaction.state.log.replication.factor: 3
+    transaction.state.log.min.isr: 2
+    default.replication.factor: 3
+    min.insync.replicas: 2
+    # log.segment.bytes: 1073741824   # this seems to break in the template
+    # log.retention.hours: 168
+    # log.retention.check.interval.ms: 300000
   entityOperator:
     enabled: false
     topicOperator:
-      topicOperator:
       watchedNamespace: kafka-topics
       reconciliationIntervalMs: 60000
-      resources:
-        requests:
-          memory: 512Mi
-          cpu: "1"
-        limits:
-          memory: 512Mi
-          cpu: "1"
     userOperator:
       watchedNamespace: kafka-topics
       reconciliationIntervalMs: 60000
-      resources:
-        requests:
-          memory: 512Mi
-          cpu: "1"
-        limits:
-          memory: 512Mi
-          cpu: "1"
-  kafkaExporter:
-    enabled: false
-    topicRegex: ".*"
-    groupRegex: ".*"
-
   cruiseControl:
     enabled: true
     templates:
       - name: add-brokers-template
       - name: remove-brokers-template
 
-  nodePools:
-    - name: kdp-kafka-cluster-controller
-      roles: [controller]
-      replicas: 3
-      kafkaRole: controller
-      jvmOptions:
-        xms: 3g
-        xmx: 3g
-        xx:
-          "MetaspaceSize": "96m"
-          "UseG1GC": "true"
-          "MaxGCPauseMillis": "20"
-          "InitiatingHeapOccupancyPercent": "35"
-          "G1HeapRegionSize": "16M"
-          "MinMetaspaceFreeRatio": "50"
-          "MaxMetaspaceFreeRatio": "80"
-          "ExplicitGCInvokesConcurrent": "true"
-      # template:
-      #   pod:
-      #     metadata:
-      #       labels:
-      #         kafkaRole: controller
-      # affinity:
-      # nodeAffinity:
-      #   requiredDuringSchedulingIgnoredDuringExecution:
-      #     nodeSelectorTerms:
-      #       - matchExpressions:
-      #           - key: app
-      #             operator: In
-      #             values: [kafka]
-      # podAffinity:
-      #   preferredDuringSchedulingIgnoredDuringExecution:
-      #     - weight: 100
-      #       podAffinityTerm:
-      #         labelSelector:
-      #           matchLabels:
-      #             kafkaRole: broker
-      #         topologyKey: kubernetes.io/hostname
-      # topologySpreadConstraints:
-      #   - labelSelector:
-      #       matchLabels:
-      #         kafkaRole: controller
-      #     maxSkew: 1
-      #     topologyKey: topology.kubernetes.io/zone
-      #     whenUnsatisfiable: ScheduleAnyway
-      #   - labelSelector:
-      #       matchLabels:
-      #         kafkaRole: controller
-      #     maxSkew: 1
-      #     topologyKey: kubernetes.io/hostname
-      #     whenUnsatisfiable: ScheduleAnyway
-      storage:
-        type: jbod
-        volumes:
-          - id: 0
-            type: persistent-claim
-            size: 1Gi
-            kraftMetadata: shared
-            deleteClaim: false
-    - name: kdp-kafka-cluster-broker
-      roles: [broker]
-      replicas: 3
-      kafkaRole: broker
-      jvmOptions:
-        xms: 6g
-        xmx: 6g
-        xx:
-          "MetaspaceSize": "96m"
-          "UseG1GC": "true"
-          "MaxGCPauseMillis": "20"
-          "InitiatingHeapOccupancyPercent": "35"
-          "G1HeapRegionSize": "16M"
-          "MinMetaspaceFreeRatio": "50"
-          "MaxMetaspaceFreeRatio": "80"
-          "ExplicitGCInvokesConcurrent": "true"
-      # template:
-      #   pod:
-      #     metadata:
-      #       labels:
-      #         kafkaRole: broker
-      # affinity:
-      # nodeAffinity:
-      #   requiredDuringSchedulingIgnoredDuringExecution:
-      #     nodeSelectorTerms:
-      #       - matchExpressions:
-      #           - key: app
-      #             operator: In
-      #             values:
-      #               - kafka
-      # podAffinity:
-      #   preferredDuringSchedulingIgnoredDuringExecution:
-      #     - weight: 100
-      #       podAffinityTerm:
-      #         labelSelector:
-      #           matchLabels:
-      #             kafkaRole: controller
-      #         topologyKey: kubernetes.io/hostname
-      # topologySpreadConstraints:
-      #   - labelSelector:
-      #       matchLabels:
-      #         kafkaRole: broker
-      #     maxSkew: 1
-      #     topologyKey: topology.kubernetes.io/zone
-      #     whenUnsatisfiable: ScheduleAnyway
-      #   - labelSelector:
-      #       matchLabels:
-      #         kafkaRole: broker
-      #     maxSkew: 1
-      #     topologyKey: kubernetes.io/hostname
-      #     whenUnsatisfiable: ScheduleAnyway
-      storage:
-        type: jbod
-        volumes:
-          - id: 0
-            type: persistent-claim
-            size: 1Gi
-            deleteClaim: false
-          - id: 1
-            type: persistent-claim
-            size: 1Gi
-            kraftMetadata: shared
-            deleteClaim: false
+kafkaTopics:
+  - name: orders
+    partitions: 6
+    replicas: 3
+    config:
+      retention.ms: 7200000
+      segment.bytes: 1073741824
+  - name: payments
+    partitions: 3
+    replicas: 2
+    config:
+      cleanup.policy: compact
 
-  kafka-topics:
+kafkaUsers:
+  - name: orders-user
+    cluster: kdp-kafka-cluster
+    authentication:
+      type: tls
+    template:
+      secret:
+        metadata:
+          labels:
+            team: orders
+          annotations:
+            owner: team-orders
+    authorization:
+      type: simple
+      acls:
+        - resource:
+            type: topic
+            name: orders
+            patternType: literal
+          operations: [Describe, Read, Write]
+          host: "*"
+        - resource:
+            type: group
+            name: orders-group
+            patternType: literal
+          operations: [Read]
+          host: "*"
+    quotas:
+      producerByteRate: 1048576
+      consumerByteRate: 2097152
+      requestPercentage: 55
+      controllerMutationRate: 10
+
+kafkaAccessList:
+  - name: access-orders
+    kafkaClusterName: kdp-kafka-cluster
+    kafkaNamespace: kafka
+    listener: tls
+    userName: orders-user
+    userNamespace: kafka
+
+kafkaRebalancerConfig:
+  - name: rebalance-orders
+    namespace: kafka
+    cluster: kdp-kafka-cluster
+    mode: full
+    goals:
+      - DiskCapacityGoal
+      - NetworkInboundCapacityGoal
+  - name: rebalance-payments
+    namespace: kafka
+    cluster: kdp-kafka-cluster
+    goals:
+      - CpuCapacityGoal
