@@ -1,4 +1,3 @@
-
 {{- range .Values.kafkaUsers }}
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaUser
@@ -15,15 +14,11 @@ spec:
       metadata:
         {{- if .template.secret.metadata.labels }}
         labels:
-          {{- range $key, $value := .template.secret.metadata.labels }}
-          {{ $key }}: {{ $value }}
-          {{- end }}
+{{ toYaml .template.secret.metadata.labels | indent 10 }}
         {{- end }}
         {{- if .template.secret.metadata.annotations }}
         annotations:
-          {{- range $key, $value := .template.secret.metadata.annotations }}
-          {{ $key }}: {{ $value }}
-          {{- end }}
+{{ toYaml .template.secret.metadata.annotations | indent 10 }}
         {{- end }}
   {{- end }}
   {{- if .authorization }}
@@ -39,15 +34,23 @@ spec:
           {{- range .operations }}
           - {{ . }}
           {{- end }}
-        host: "{{ .host }}"
+        host: {{ .host | quote }}
       {{- end }}
   {{- end }}
   {{- if .quotas }}
   quotas:
-    {{- if .quotas.producerByteRate }}producerByteRate: {{ .quotas.producerByteRate }}{{- end }}
-    {{- if .quotas.consumerByteRate }}consumerByteRate: {{ .quotas.consumerByteRate }}{{- end }}
-    {{- if .quotas.requestPercentage }}requestPercentage: {{ .quotas.requestPercentage }}{{- end }}
-    {{- if .quotas.controllerMutationRate }}controllerMutationRate: {{ .quotas.controllerMutationRate }}{{- end }}
+    {{- if .quotas.producerByteRate }}
+    producerByteRate: {{ .quotas.producerByteRate }}
+    {{- end }}
+    {{- if .quotas.consumerByteRate }}
+    consumerByteRate: {{ .quotas.consumerByteRate }}
+    {{- end }}
+    {{- if .quotas.requestPercentage }}
+    requestPercentage: {{ .quotas.requestPercentage }}
+    {{- end }}
+    {{- if .quotas.controllerMutationRate }}
+    controllerMutationRate: {{ .quotas.controllerMutationRate }}
+    {{- end }}
   {{- end }}
 ---
 {{- end }}
