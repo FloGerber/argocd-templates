@@ -92,13 +92,13 @@ kafkaUsers:
       requestPercentage: 55
       controllerMutationRate: 10
 
-kafkaAccessList:
-  - name: access-orders
-    kafkaClusterName: kdp-kafka-cluster
-    kafkaNamespace: kafka
-    listener: tls
-    userName: orders-user
-    userNamespace: kafka
+# kafkaAccessList:
+#   - name: access-orders
+#     kafkaClusterName: kdp-kafka-cluster
+#     kafkaNamespace: kafka
+#     listener: tls
+#     userName: orders-user
+#     userNamespace: kafka
 
 kafkaRebalancerConfig:
   - name: rebalance-orders
