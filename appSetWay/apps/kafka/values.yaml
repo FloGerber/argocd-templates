@@ -43,6 +43,8 @@ kafkaCluster:
     templates:
       - name: add-brokers-template
       - name: remove-brokers-template
+  kafkaExporter:
+    enabled: false
 
 kafkaTopics:
   - name: orders
