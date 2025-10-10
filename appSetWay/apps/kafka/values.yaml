@@ -4,7 +4,7 @@ kafkaCluster:
   annotations:
     node-pools: enabled
     kraft: enabled
-    #pauseReconciliation: "false"
+    # pauseReconciliation: "false"
   kafka:
     version: 4.0.0
     metadataVersion: 4.0-IV3
@@ -40,7 +40,6 @@ kafkaCluster:
       topicOperator:
       watchedNamespace: kafka-topics
       reconciliationIntervalMs: 60000
-      # Resources requests and limits
       resources:
         requests:
           memory: 512Mi
@@ -48,15 +47,9 @@ kafkaCluster:
         limits:
           memory: 512Mi
           cpu: "1"
-      # Logging configuration
-      logging: # (23)
-        type: inline
-        loggers:
-          rootLogger.level: INFO
     userOperator:
       watchedNamespace: kafka-topics
       reconciliationIntervalMs: 60000
-      # Resources requests and limits
       resources:
         requests:
           memory: 512Mi
@@ -64,11 +57,6 @@ kafkaCluster:
         limits:
           memory: 512Mi
           cpu: "1"
-      # Logging configuration
-      logging: # (24)
-        type: inline
-        loggers:
-          rootLogger.level: INFO
   kafkaExporter:
     enabled: false
     topicRegex: ".*"
@@ -196,4 +184,11 @@ kafkaCluster:
           - id: 0
             type: persistent-claim
             size: 1Gi
-            deleteClaim: true
+            deleteClaim: false
+          - id: 1
+            type: persistent-claim
+            size: 1Gi
+            kraftMetadata: shared
+            deleteClaim: false
+
+  kafka-topics:

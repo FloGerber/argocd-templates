@@ -1,0 +1,42 @@
+## Kafka Rebalance
+
+{{- range .Values.kafkaRebalancerConfig }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaRebalance
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+  labels:
+    strimzi.io/cluster: {{ .cluster }}
+spec:
+  {{- if .mode }}
+  mode: {{ .mode }}
+  {{- end }}
+  {{- if .goals }}
+  goals:
+    {{- range .goals }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+  {{- if .brokerSelector }}
+  brokerSelector:
+    {{- if .brokerSelector.matchLabels }}
+    matchLabels:
+      {{- range $key, $value := .brokerSelector.matchLabels }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+    {{- end }}
+    {{- if .brokerSelector.matchExpressions }}
+    matchExpressions:
+      {{- range .brokerSelector.matchExpressions }}
+      - key: {{ .key }}
+        operator: {{ .operator }}
+        values:
+          {{- range .values }}
+          - {{ . }}
+          {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+---
+{{- end }}

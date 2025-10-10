@@ -1,0 +1,53 @@
+
+{{- range .Values.kafkaUsers }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: {{ .name }}
+  labels:
+    strimzi.io/cluster: {{ .cluster }}
+spec:
+  authentication:
+    type: {{ .authentication.type }}
+  {{- if .template }}
+  template:
+    secret:
+      metadata:
+        {{- if .template.secret.metadata.labels }}
+        labels:
+          {{- range $key, $value := .template.secret.metadata.labels }}
+          {{ $key }}: {{ $value }}
+          {{- end }}
+        {{- end }}
+        {{- if .template.secret.metadata.annotations }}
+        annotations:
+          {{- range $key, $value := .template.secret.metadata.annotations }}
+          {{ $key }}: {{ $value }}
+          {{- end }}
+        {{- end }}
+  {{- end }}
+  {{- if .authorization }}
+  authorization:
+    type: {{ .authorization.type }}
+    acls:
+      {{- range .authorization.acls }}
+      - resource:
+          type: {{ .resource.type }}
+          name: {{ .resource.name }}
+          patternType: {{ .resource.patternType }}
+        operations:
+          {{- range .operations }}
+          - {{ . }}
+          {{- end }}
+        host: "{{ .host }}"
+      {{- end }}
+  {{- end }}
+  {{- if .quotas }}
+  quotas:
+    {{- if .quotas.producerByteRate }}producerByteRate: {{ .quotas.producerByteRate }}{{- end }}
+    {{- if .quotas.consumerByteRate }}consumerByteRate: {{ .quotas.consumerByteRate }}{{- end }}
+    {{- if .quotas.requestPercentage }}requestPercentage: {{ .quotas.requestPercentage }}{{- end }}
+    {{- if .quotas.controllerMutationRate }}controllerMutationRate: {{ .quotas.controllerMutationRate }}{{- end }}
+  {{- end }}
+---
+{{- end }}

@@ -87,15 +87,3 @@ spec:
       {{- end }}
   {{- end }}
 ---
-{{- if .Values.kafkaCluster.cruiseControl.enabled }}
-{{- range .Values.kafkaCluster.cruiseControl.templates }}
-apiVersion: kafka.strimzi.io/v1beta2
-kind: KafkaRebalance
-metadata:
-  name: {{ .name }}
-  annotations:
-    strimzi.io/rebalance-template: "true"
-spec: {}
----
-{{- end }}
-{{- end }}
