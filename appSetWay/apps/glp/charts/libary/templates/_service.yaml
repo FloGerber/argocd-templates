@@ -1,0 +1,31 @@
+{{- define "libary.service.tpl" -}}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "<CHARTNAME>.fullname" . }}
+  labels:
+    app: {{ .Values.app }}
+    deployment_commit: {{ .Values.deployment_commit }}
+    deployment_ref: {{ .Values.deployment_ref }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.app }}
+  sessionAffinity: {{ .Values.service.sessionAffinity | default "None" }}
+  internalTrafficPolicy: {{ .Values.service.internalTrafficPolicy | default "Cluster" }}
+  ipFamilies:
+    - {{ .Values.service.ipFamily | default "IPv4" }}
+  ipFamilyPolicy: {{ .Values.service.ipFamilyPolicy | default "SingleStack" }}
+  ports:
+{{- range .Values.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      protocol: {{ .protocol }}
+      targetPort: {{ .targetPort }}
+{{- end }}
+
+
+{{- define "libary.service" -}}
+{{- include "libary.util.merge" (append . "libary.service.tpl") -}}
+{{- end -}}

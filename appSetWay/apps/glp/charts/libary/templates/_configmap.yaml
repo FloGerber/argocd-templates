@@ -1,0 +1,17 @@
+{{- define "libary.configmap.tpl" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Release.Name | printf "%s-%s" .Chart.Name }}
+    namespace: {{ .Release.Namespace}}
+data: {}
+
+binaryData:
+{{- range $key, $value := .Values.binaryData }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end -}}
+
+{{- define "libary.configmap" -}}
+{{- include "libary.util.merge" (append . "libary.configmap.tpl") -}}
+{{- end -}}

@@ -1,0 +1,30 @@
+{{- define "libary.deployment.tpl" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: { { include "txxxx-editor.fullname" . } }
+    labels:
+    app: { { include "txxxx-editor.name" . } }
+spec:
+    replicas: { { .Values.replicaCount } }
+    selector:
+    matchLabels:
+        app: { { include "txxxx-editor.name" . } }
+    template:
+    metadata:
+        labels:
+        app: { { include "txxxx-editor.name" . } }
+    spec:
+        containers:
+        - name: { { include "txxxx-editor.name" . } }
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            ports:
+            - containerPort: 8080
+            env:
+            - name: UI_TOLL_CONTEXT
+                value: { { .Values.config.uiTollContext | quote } }
+            resources: { { - toYaml .Values.resources | nindent 12 } }
+{{- end -}}
+{{- define "libary.deployment" -}}
+{{- include "libary.util.merge" (append . "libary.deployment.tpl") -}}
+{{- end -}}

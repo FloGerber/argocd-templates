@@ -1,0 +1,79 @@
+{{- define "libary.networkpolicy.tpl" -}}
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "<CHARTNAME>.fullname" . }}-network-policy
+  labels:
+    app: {{ .Values.app }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.app }}
+  policyTypes:
+{{- range .Values.networkPolicy.policyTypes }}
+    - {{ . }}
+{{- end }}
+{{- if .Values.networkPolicy.ingress }}
+  ingress:
+{{- range .Values.networkPolicy.ingress }}
+    - from:
+{{- range .from }}
+        {{- if .namespaceSelector }}
+        - namespaceSelector:
+            matchLabels:
+              {{- range $k, $v := .namespaceSelector.matchLabels }}
+              {{ $k }}: {{ $v | quote }}
+              {{- end }}
+        {{- end }}
+        {{- if .podSelector }}
+        - podSelector:
+            matchLabels:
+              {{- range $k, $v := .podSelector.matchLabels }}
+              {{ $k }}: {{ $v | quote }}
+              {{- end }}
+        {{- end }}
+{{- end }}
+      ports:
+{{- range .ports }}
+        - port: {{ .port }}
+          protocol: {{ .protocol }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if .Values.networkPolicy.egress }}
+  egress:
+{{- range .Values.networkPolicy.egress }}
+    - to:
+{{- range .to }}
+        {{- if .namespaceSelector }}
+        - namespaceSelector:
+            matchLabels:
+              {{- range $k, $v := .namespaceSelector.matchLabels }}
+              {{ $k }}: {{ $v | quote }}
+              {{- end }}
+        {{- end }}
+        {{- if .podSelector }}
+        - podSelector:
+            matchLabels:
+              {{- range $k, $v := .podSelector.matchLabels }}
+              {{ $k }}: {{ $v | quote }}
+              {{- end }}
+        {{- end }}
+        {{- if .ipBlock }}
+        - ipBlock:
+            cidr: {{ .ipBlock.cidr | quote }}
+        {{- end }}
+{{- end }}
+      ports:
+{{- range .ports }}
+        - port: {{ .port }}
+          protocol: {{ .protocol }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "libary.networkpolicy" -}}
+{{- include "libary.util.merge" (append . "libary.networkpolicy.tpl") -}}
+{{- end -}}

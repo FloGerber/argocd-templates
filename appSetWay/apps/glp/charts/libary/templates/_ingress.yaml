@@ -1,0 +1,35 @@
+{{- define "libary.ingress.tpl" -}}
+
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "<CHARTNAME>.fullname" . }}
+  labels:
+    app: {{ .Values.app }}
+    deployment_commit: {{ .Values.deployment_commit }}
+    deployment_ref: {{ .Values.deployment_ref }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.ingress.proxyBodySize | default "8m" }}
+    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget | default "/$1" }}
+    nginx.ingress.kubernetes.io/ssl-redirect: {{ .Values.ingress.sslRedirect | default "false" | quote }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.ingress.serviceName }}
+                port:
+                  number: {{ .Values.ingress.servicePort }}
+{{- end }}
+
+
+
+{{- define "libary.ingress" -}}
+{{- include "libary.util.merge" (append . "libary.ingress.tpl") -}}
+{{- end -}}
