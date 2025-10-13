@@ -3,7 +3,7 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "<CHARTNAME>.fullname" . }}
+  name: {{ include "libary.fullname" . }}
   labels:
     app: {{ .Values.app }}
     deployment_commit: {{ .Values.deployment_commit }}
@@ -12,7 +12,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "<CHARTNAME>.fullname" . }}
+    name: {{ include "libary.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   behavior:

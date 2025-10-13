@@ -3,7 +3,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "<CHARTNAME>.fullname" . }}-network-policy
+  name: {{ include "libary.fullname" . }}-network-policy
   labels:
     app: {{ .Values.app }}
 spec:
