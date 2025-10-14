@@ -1,0 +1,266 @@
+app: tileserver
+deployment_commit: 0
+deployment_ref: xx
+
+replicaCount: 1
+image:
+  repository: docker./tileserver/httpcache
+  tag: latest
+
+containerPorts:
+  - name: serviceport
+    port: 8090
+    protocol: TCP
+
+env:
+  - name: SOURCE_URL
+    value: http://locst:8080
+  - name: CACHE_VERSION
+    value: xx--
+  - name: AZ_STORAGE_ACCOUNT
+    value: https://xxxx.net
+  - name: AZ_BLOB_CONTAINER
+    value: xx-tilecache
+  - name: SERVER_LISTEN_ADDRESS
+    value: :8090
+  - name: LRU_ITEMS
+    value: "32000"
+  - name: MAX_CONCURRENT_SOURCE_REQUESTS
+    value: "40"
+  - name: HEALTH_URL_SCRIPT
+    value: math.om(2^z-1),math.random(2^z-1))
+  - name: GOMAXPROCS
+    value: "1"
+  - name: LOG_LEVEL
+    value: ERROR
+  - name: GOGC
+    value: "100"
+  - name: GOMEMLIMIT
+    value: 512MiB
+  - name: FILTER_REGEXP
+    value: /(0|[1-9][0-9]*)/(0|[1-9][0-9]*)/(0|[1-9][0-9]*).png\??$
+
+envFrom:
+  - secretRef:
+      name: tileserver-secret
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 25m
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8090
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 30
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8090
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 30
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /health
+    port: 8090
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 30
+  successThreshold: 1
+  failureThreshold: 13
+
+terminationGracePeriodSeconds: 60
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.windows.net
+      - xxxxx-swindows.net
+      - xxxx.blob..net
+      - xxxx.redis..net
+
+sidecars:
+  - name: tileserver-tileserver-sidecar
+    image: docker./tileserver/tileserver-gl
+    containerPorts:
+      - name: serviceport
+        port: 8080
+        protocol: TCP
+    env:
+      - name: READ2HTTP_FILE_NAME
+        value: /data/tiles.mbtiles
+      - name: READ2HTTP_AZURE_BLOB_MD5
+        value: "yes"
+      - name: MIN_RENDERER_POOLSIZES
+        value: "[2]"
+      - name: MAX_RENDERER_POOLSIZES
+        value: "[2]"
+      - name: TILESERVER_OPTS
+        value: --silent
+    envFrom:
+      - secretRef:
+          name: tileserver-sidecar-secret
+    resources:
+      limits:
+        cpu: 500m
+        memory: 2560Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 500m
+        memory: 2560Mi
+        ephemeral-storage: 1Gi
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8080
+        scheme: HTTP
+      periodSeconds: 20
+      timeoutSeconds: 30
+      successThreshold: 1
+      failureThreshold: 10
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 8080
+        scheme: HTTP
+      periodSeconds: 20
+      timeoutSeconds: 30
+      successThreshold: 1
+      failureThreshold: 5
+    startupProbe:
+      httpGet:
+        path: /health
+        port: 8080
+        scheme: HTTP
+      periodSeconds: 20
+      timeoutSeconds: 30
+      successThreshold: 1
+      failureThreshold: 13
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    securityContext:
+      allowPrivilegeEscalation: false
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8090
+      protocol: TCP
+      targetPort: 8090
+    - name: serviceport-tileserver
+      port: 8050
+      protocol: TCP
+      targetPort: 8080
+
+autoscaling:
+  enabled: true
+  container: tileserver
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUAverageValue: 70m
+  scaleUp:
+    pods: 2
+    periodSeconds: 60
+    selectPolicy: Max
+    stabilizationWindowSeconds: 60
+  scaleDown:
+    pods: 1
+    periodSeconds: 180
+    selectPolicy: Max
+    stabilizationWindowSeconds: 300
+  additionalMetrics:
+    - container: tileserver-tileserver-sidecar
+      name: cpu
+      target:
+        averageValue: 350m
+        type: AverageValue
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+        - podSelector:
+            matchLabels:
+              app: kong
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+      ports:
+        - port: 8090
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+    - ports:
+        - port: 80
+          protocol: TCP
+        - port: 443
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: x.x.x.x/32
+        - ipBlock:
+            cidr: x.x.x.x/32
+        - ipBlock:
+            cidr: x.x.x.x/32
+
+secret:
+  enabled: true
+  data:
+    AZ_BLOB_SAS_TOKEN: xxx
+    AZMON_COLLECT_ENV: xxx=
+
+sidecarSecret:
+  enabled: true
+  name: tileserver-sidecar-secret
+  data:
+    AZMON_COLLECT_ENV: x
+    READ2HTTP_FILE_URL1: x
+    READ2HTTP_FILE_URL2: x
+    TILESERVER_CONFIG_URL: x
