@@ -1,0 +1,257 @@
+app: tripbuilder
+deployment_commit: x
+deployment_ref: x
+
+replicaCount: 1
+image:
+  repository: docker/trip-builder
+  tag: 2.55.4-202508260804
+
+containerPorts:
+  - name: serviceport
+    port: 8818
+    protocol: TCP
+
+env:
+  - name: JAVA_TOOL_OPTIONS
+    value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError
+  - name: LOGGING_LEVEL_KTC
+    value: INFO
+  - name: SERVER_PORT
+    value: "8818"
+  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+    value: info,health,prometheus
+  - name: SPRING_DATASOURCE_URL
+    value: jdbc:postgresql://xxxx.postgres.database.azure.com:5432/kiosk
+  - name: SPRING_FLYWAY_ENABLED
+    value: "false"
+  - name: SPRING_FLYWAY_MIGRATION_ONLY
+    value: "false"
+  - name: SPRING_FLYWAY_USER
+  - name: SPRING_FLYWAY_PASSWORD
+  - name: SPRING_CONFIG_IMPORT
+    value: /config/tripbuilder-toll-context-config.yml
+  - name: FEATURE_FLAGS_LOCATION
+    value: /featureflags/feature-flags.yml
+  - name: SERVER_SERVLET_CONTEXT_PATH
+    value: /
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    value: xxxx.servicebus.windows.net:9093
+  - name: KAFKA_CONSUMER_MATCHEDROUTETOPIC_NAME
+    value: matched-route
+  - name: KAFKA_CONSUMER_MATCHEDROUTETOPIC_CONCURRENCY
+    value: "32"
+  - name: KAFKA_PRODUCER_CHARGEREPORTTOPIC_NAME
+    value: charge-report
+  - name: KAFKA_PRODUCER_PROCESSEDSEGMENTTOPIC_NAME
+    value: processed-segment
+  - name: KAFKA_PRODUCER_DEADLETTERTOPIC_NAME
+    value: matched-route-dlt
+  - name: TRIPBUILDER_TOLLINGENGINE_CONNECTIONPOOLSIZE
+    value: "32"
+
+envFrom:
+  - secretRef:
+      name: tripbuilder-secret
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 700Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 125m
+    memory: 700Mi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /manage/health
+    port: 8818
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /manage/health
+    port: 8818
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /manage/health
+    port: 8818
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 7
+
+terminationGracePeriodSeconds: 60
+
+volumeMounts:
+  - mountPath: /config
+    name: config
+    readOnly: true
+  - mountPath: /featureflags
+    name: featureflags
+    readOnly: true
+
+volumes:
+  - name: config
+    configMap:
+      name: tripbuilder-files
+      defaultMode: 420
+  - name: featureflags
+    configMap:
+      name: kong-featureflags
+      defaultMode: 420
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.blob.core.windows.net
+      - xxxxx-secondary.blob.core.windows.net
+      - xxxx.blob.core.windows.net
+      - xxxx.redis.cache.windows.net
+
+initContainers:
+  - name: tripbuilder-init
+    image: docker./trip-builder:2.55.4
+    imagePullPolicy: Always
+    envFrom:
+      - secretRef:
+          name: tripbuilder-initcontainer-secret
+    env:
+      - name: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=80.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
+      - name: LOGGING_LEVEL_KTC
+        value: INFO
+      - name: SERVER_PORT
+        value: "8818"
+      - name: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://xxxx.postgres.database.azure.com:5432/kiosk
+      - name: SPRING_FLYWAY_ENABLED
+        value: "true"
+      - name: SPRING_FLYWAY_MIGRATION_ONLY
+        value: "true"
+      - name: SPRING_CONFIG_IMPORT
+        value: classpath:toll-context-config.yml
+      - name: FEATURE_FLAGS_LOCATION
+        value: classpath:feature-flags.yml
+      - name: SERVER_SERVLET_CONTEXT_PATH
+        value: /
+      - name: KAFKA_CONSUMER_MATCHEDROUTETOPIC_CONCURRENCY
+        value: "32"
+      - name: TRIPBUILDER_TOLLINGENGINE_CONNECTIONPOOLSIZE
+        value: "32"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 700Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 125m
+        memory: 700Mi
+        ephemeral-storage: 1Gi
+    volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /featureflags
+        name: featureflags
+        readOnly: true
+    securityContext:
+      allowPrivilegeEscalation: false
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8818
+      protocol: TCP
+      targetPort: 8818
+
+autoscaling:
+  enabled: true
+  container: tripbuilder
+  minReplicas: 1
+  maxReplicas: 4
+  targetCPUAverageValue: 300m
+  scaleUp:
+    pods: 2
+    periodSeconds: 60
+    selectPolicy: Max
+    stabilizationWindowSeconds: 60
+  scaleDown:
+    pods: 1
+    periodSeconds: 180
+    selectPolicy: Max
+    stabilizationWindowSeconds: 300
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+      ports:
+        - port: 8818
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+    - ports:
+        - port: 9093
+          protocol: TCP
+        - port: 5432
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+    - ports:
+        - port: 8819
+          protocol: TCP
+      to:
+        - podSelector:
+            matchLabels:
+              app: tcservice
+        - podSelector:
+            matchLabels:
+              app: tcservicxx
