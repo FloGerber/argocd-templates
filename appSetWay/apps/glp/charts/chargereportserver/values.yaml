@@ -1,0 +1,181 @@
+app: chargereportserver
+deployment_commit: 09df525f
+deployment_ref: xx-14530-be--env01
+
+replicaCount: 1
+image:
+  repository: docker.repo.xxxx.com/xxxxx/charge-report-server
+  tag: 1.16.2-202509020742
+
+containerPorts:
+  - name: serviceport
+    port: 8018
+    protocol: TCP
+
+env:
+  - name: SERVER_PORT
+    value: "8018"
+  - name: JAVA_TOOL_OPTIONS
+    value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
+  - name: MANAGEMENT_SERVER_PORT
+    value: "8018"
+  - name: SPRING_CASSANDRA_CONTACT_POINTS
+    value: xxxx.cassandra.cosmos.azure.com
+  - name: SPRING_CASSANDRA_PORT
+    value: "10350"
+  - name: SPRING_CASSANDRA_KEYSPACE_NAME
+    value: glpdatasink
+  - name: SPRING_CASSANDRA_LOCAL_DATACENTER
+    value: xxxx
+  - name: CASSANDRA_CUSTOM_MAX_CONNECTIONS_PER_HOST
+    value: "120"
+  - name: CASSANDRA_CUSTOM_BUCKET_COUNT
+    value: "8"
+  - name: LOGGING_LEVEL_COM_XXX
+    value: INFO
+  - name: SERVER_SERVLET_CONTEXT_PATH
+    value: /chargereportserver
+
+envFrom:
+  - secretRef:
+      name: chargereportserver-secret
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 768Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 100m
+    memory: 768Mi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /chargereportserver/manage/health
+    port: 8018
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /chargereportserver/manage/health
+    port: 8018
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /chargereportserver/manage/health
+    port: 8018
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 6
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.blob.core.windows.net
+      - xxxxx-secondary.blob.core.windows.net
+      - xxxx.blob.core.windows.net
+      - xxxx.redis.cache.windows.net
+
+terminationGracePeriodSeconds: 60
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8018
+      protocol: TCP
+      targetPort: 8018
+
+autoscaling:
+  enabled: true
+  container: chargereportserver
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUAverageValue: 210m
+  scaleUp:
+    pods: 2
+    periodSeconds: 60
+    selectPolicy: Max
+    stabilizationWindowSeconds: 60
+  scaleDown:
+    pods: 1
+    periodSeconds: 180
+    selectPolicy: Max
+    stabilizationWindowSeconds: 300
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+        - podSelector:
+            matchLabels:
+              app: kong
+      ports:
+        - port: 8018
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+      ports:
+        - port: 8018
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+    - ports:
+        - port: 10350
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+
+secret:
+  enabled: true
+  data:
+    AZMON_COLLECT_ENV: xxxx=
+    SPRING_CASSANDRA_PASSWORD: xxxx==
+    SPRING_CASSANDRA_USERNAME: xxx=
