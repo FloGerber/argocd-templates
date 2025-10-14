@@ -1,0 +1,235 @@
+app: tcservice
+deployment_commit: x
+deployment_ref: x
+
+replicaCount: 1
+image:
+  repository: docker.repo.xxx.xxx/tolling-engine-xx
+  tag: 1.1.6
+
+containerPorts:
+  - name: metrics
+    port: 8819
+    protocol: TCP
+
+env:
+  - name: JAVA_TOOL_OPTIONS
+    value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError
+  - name: LOGGING_LEVEL_COM_XXX
+    value: DEBUG
+  - name: SERVER_PORT
+    value: "8819"
+  - name: SERVER_SERVLET_CONTEXT_PATH
+    value: /
+  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+    value: info,health,prometheus
+  - name: TOLLCONTEXTMAPPER_URL
+    value: http://tcmappinglinker:8077
+  - name: RATING_URL
+    value: http://tcmtower:8050
+  - name: SPRING_CLOUD_OPENFEIGN_HTTPCLIENT_MAXCONNECTIONS
+    value: "64"
+  - name: RULE_MAX_CHARGE_OBJECT_DETECTION_AGE
+    value: PT90M
+  - name: RULE_MAX_LENGTH
+    value: "1250"
+
+envFrom:
+  - secretRef:
+      name: tcservice-secret
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 768Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 125m
+    memory: 768Mi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /manage/health
+    port: 8819
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /manage/health
+    port: 8819
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /manage/health
+    port: 8819
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 4
+
+terminationGracePeriodSeconds: 60
+
+volumeMounts:
+  - mountPath: /data
+    name: data
+    readOnly: true
+
+volumes:
+  - name: data
+    emptyDir:
+      sizeLimit: 1Gi
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx..net
+      - xxxxx-se.net
+      - xxxx..net
+      - xxxx..net
+  - ip: 127.0.0.1
+    hostnames:
+      - tcmappinglinker
+      - tcmtower
+
+initContainers:
+  - name: tcservice-init
+    image: docker.repo.xxx.xxx/build-and-test/ansible:2.18.8.0-b02
+    imagePullPolicy: Always
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e; clean_tc_db_file=$(echo "$TOLL_CONTEXT_DATABASE_FILE" | sed 's/[?&].*//') echo "Download TCM Tower database from storage account ..." $clean_tc_db_file; curl -f -L -o /data/tcmtower.db "$TOLL_CONTEXT_DATABASE_FILE"; clean_tcl_db_file=$(echo "$TOLL_CONTEXT_MAPPINGS_DATABASE_FILE" | sed 's/[?&].*//') echo "Download tc_mapping_linker database from storage account ... " $clean_tcl_db_file; curl -f -L -o /data/tcmappinglinker.db "$TOLL_CONTEXT_MAPPINGS_DATABASE_FILE";
+    envFrom:
+      - secretRef:
+          name: tcservice-initcontainer-secret
+    resources:
+      limits:
+        cpu: 500m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 125m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+    volumeMounts:
+      - mountPath: /data
+        name: data
+    securityContext:
+      allowPrivilegeEscalation: false
+
+sidecars:
+  - name: tcservice-tower-sidecar
+    image: docker.repo.xtcm-tower:2.13.1-v
+    containerPorts:
+      - name: serviceport
+        port: 8050
+        protocol: TCP
+      - name: metrics-tower
+        port: 18050
+        protocol: TCP
+    env:
+      - name: SERVER_PORT
+        value: "8050"
+      - name: MANAGEMENT_SERVER_PORT
+        value: "18050"
+      - name: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=80.0 -XX:+ExitOnOutOfMemoryError -XX:+UseG1GC -Dfile.encoding=UTF-8
+      - name: SPRING_DATASOURCE_URL
+        value: jdbc:sqlite:/data/tcmtower.db?open_mode=1
+      - name: SPRING_DATASOURCE_HIKARI_READ_ONLY
+        value: "true"
+      - name: SPRING_FLYWAY_ENABLED
+        value: "true"
+      - name: LOGGING_LEVEL_COM_XXX
+        value: INFO
+      - name: SPRING_PROFILES_ACTIVE
+        value: sqlite
+      - name: API_CORS_ALLOWED_ORIGINS
+        value: https://www-dev-sx.x.x.x,https://www-dev-sx.x.x.x,https://www-dev-sx.x.x.x
+      - name: SERVER_SERVLET_CONTEXT_PATH
+        value: /
+    resources:
+      limits:
+        cpu: 500m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 125m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+    volumeMounts:
+      - mountPath: /data
+        name: data
+        readOnly: true
+    securityContext:
+      allowPrivilegeEscalation: false
+
+  - name: tcservice-linker-sidecar
+    image: docker.repo.xxx.xx/tc-mapping-linker:1.35.0
+    containerPorts:
+      - name: serviceport
+        port: 8077
+        protocol: TCP
+      - name: metrics-linker
+        port: 18077
+        protocol: TCP
+    env:
+      - name: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError --add-opens=java.base/java.lang=ALL-UNNAMED
+      - name: SERVER_PORT
+        value: "8077"
+      - name: SERVER_SERVLET_CONTEXT_PATH
+      - name: LOGGING_LEVEL_COM_XXX
+        value: INFO
+      - name: SPRING_PROFILES_ACTIVE
+        value: sqlite
+      - name: SPRING_DATASOURCE_URL
+        value: jdbc:sqlite:/data/tcmappinglinker.db?open_mode=1
+      - name: SPRING_DATASOURCE_HIKARI_READ_ONLY
+        value: "true"
+      - name: SPRING_FLYWAY_ENABLED
+        value: "true"
+      - name: MANAGEMENT_SERVER_PORT
+        value: "18077"
+      - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+        value: info,health,prometheus
+      - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+        value: "true"
+      - name: SAAS_LAYOUT_MAPPING_VERSIONS
+        value: "21"
+      - name: TCM_CACHE_LOCATION_MAPPING_TABLE_ITEM_SEGMENT_SIZE_MB
+        value: "256"
+      - name: TCM_CACHE_LOCATION_MAPPING_TABLE_ITEM_CHO_SIZE_MB
+        value: "256"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1400Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 125m
+        memory: 1400Mi
+        ephemeral-storage: 1Gi
+    volumeMounts:
+      - mountPath: /data
+        name:
