@@ -1,0 +1,197 @@
+app: tracker
+deployment_commit: x
+deployment_ref: x
+
+replicaCount: 1
+image:
+  repository: docker.repo.xxx.xxx/geolocationplatformgroup/tracker
+  tag: 1.16.0-healthcheck-SNAPSHOT
+
+containerPorts:
+  - name: serviceport
+    port: 8080
+    protocol: TCP
+  - name: healthport
+    port: 8081
+    protocol: TCP
+
+env:
+  - name: JAVA_TOOL_OPTIONS
+    value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication --add-opens=java.base/java.nio=ALL-UNNAMED
+  - name: LOGGING_LEVEL_COM_XXX
+    value: INFO
+  - name: SERVER_SERVLET_CONTEXT_PATH
+    value: /tracker
+  - name: SERVER_PORT
+    value: "8080"
+  - name: MANAGEMENT_SERVER_PORT
+    value: "8081"
+  - name: SPRING_PROFILES_ACTIVE
+  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+    value: info,health,prometheus
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    value: xxxx.servicebus.windows.net:9093
+  - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_NAME
+    value: charging-position
+  - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_CONCURRENCY
+    value: "64"
+  - name: SPRING_DATA_REDIS_HOST
+    value: xxxx.redis.cache.windows.net
+  - name: SPRING_DATA_REDIS_PORT
+    value: "6379"
+  - name: SPRING_DATA_REDIS_SSL
+    value: "false"
+  - name: REDIS_CUSTOM_KEY_PREFIX
+  - name: TRACKER_OFFLINE_DEVICE_INTERVAL
+    value: PT5M
+
+envFrom:
+  - secretRef:
+      name: tracker-secret
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1500Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 166m
+    memory: 1500Mi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /manage/health
+    port: 8081
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /manage/health
+    port: 8081
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /manage/health
+    port: 8081
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 7
+
+terminationGracePeriodSeconds: 60
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.blob.core.windows.net
+      - xxxxx-secondary.blob.core.windows.net
+      - xxxx.blob.core.windows.net
+      - xxxx.redis.cache.windows.net
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: healthport
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+
+autoscaling:
+  enabled: true
+  container: tracker
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUAverageValue: 350m
+  scaleUp:
+    pods: 2
+    periodSeconds: 60
+    selectPolicy: Max
+    stabilizationWindowSeconds: 60
+  scaleDown:
+    pods: 1
+    periodSeconds: 180
+    selectPolicy: Max
+    stabilizationWindowSeconds: 300
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+        - podSelector:
+            matchLabels:
+              app: kong
+      ports:
+        - port: 8080
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+      ports:
+        - port: 8081
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+    - ports:
+        - port: 6379
+          protocol: TCP
+        - port: 9093
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+
+secret:
+  enabled: true
+  data:
+    AZMON_COLLECT_ENV: xxx=
+    KAFKA_PASSWORD: xxx
+    KAFKA_USER: xx=
+    SPRING_DATA_REDIS_PASSWORD: xxx=
