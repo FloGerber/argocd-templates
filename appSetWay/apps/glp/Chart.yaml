@@ -27,12 +27,12 @@ dependencies:
   - name: photon
     version: 0.0.1
     repository: file://charts/photon
+  - name: positianstream
+    version: 0.0.1
+    repository: file://charts/positionstream
   - name: positianui
     version: 0.0.1
     repository: file://charts/positianui
-  - name: positionstream
-    version: 0.0.1
-    repository: file://charts/positionstream
   - name: roadnetworkservice
     version: 0.0.1
     repository: file://charts/roadnetworkservice
