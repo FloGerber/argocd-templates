@@ -1,0 +1,178 @@
+app: tcmsky
+deployment_commit: 09df525f
+deployment_ref: xx-14530-be--env01
+
+replicaCount: 1
+image:
+  repository: docker.repo.xxx.xxx/servicecatalog/tcm-sky
+  tag: 2.0.0-saas-202507100937
+
+containerPorts:
+  - name: serviceport
+    port: 8080
+    protocol: TCP
+
+env:
+  - name: FEATURE_FLAGS_API_URL
+    value: https://api-dev-sx.x.x.x/x/xx/
+  - name: AUTHORIZATION_BASE_URL
+    value: https://api-dev-sx.x.x.x/x/xx/
+  - name: AUTH_CLIENT_ID
+    value: 99fxxxx
+  - name: AUTH_SCOPE
+    value: openid offline_acxxxxx
+  - name: AUTH_REQUIRE_HTTPS
+    value: "true"
+  - name: AUTH_ERROR_PAGE_URL
+    value: https://www-dev-sx.x.x.x/x/xx/userflow_feedback.html
+  - name: AUTH_DISCOVERY_DOCUMENT_URL
+    value: https://xxx.b2clogin.com/xxx/v2.0/.well-known/openid-configuration?p=xxx
+  - name: ENABLE_EIB
+    value: "false"
+  - name: PATH_TOLL_CONTEXTS
+    value: /v1/toll-contexts
+  - name: PATH_TOLL_CONTEXT_INVENTORY
+    value: /v1/toll-context-inventory
+  - name: PATH_TOLL_CONTEXT_LAYOUTS
+    value: /v1/toll-context-layouts
+  - name: PATH_TARIFF_TABLES
+    value: /v1/tariff-tables
+  - name: PATH_SYSTEM_PROVIDERS
+    value: /v1/system-providers
+  - name: PATH_EFC_CONTEXTS
+    value: /v1/efc-contexts
+  - name: APP_BASE_URL
+    value: /x/xx/tcm-sky/
+  - name: TOLL_CONTEXT_CONFIG_LOCATION
+    value: /config/ui-toll-context-config.json
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 64Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 33m
+    memory: 64Mi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 4
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.blob.core.windows.net
+      - xxxxx-secondary.blob.core.windows.net
+      - xxxx.blob.core.windows.net
+      - xxxx.redis.cache.windows.net
+
+terminationGracePeriodSeconds: 60
+
+volumeMounts:
+  - mountPath: /config
+    name: config
+    readOnly: true
+
+volumes:
+  - name: config
+    configMap:
+      name: tcmsky-files
+      defaultMode: 420
+
+configmap:
+  binaryData:
+    ui-toll-context-config.json: WwogIHsKICAgICJmZWF0dXJlRmxhZyI6ICJFTkFCTEVfVENfQkciLAogICAgInRvbGxDb250ZXh0QogIkJFIiwKICAgICJ0b2xsQ2hhcmdlcklkIjogMSwKICAgICJ0Y21Ub3dlckFwaVVybCI6ICJodHRwczovLYtc2FhczAxLmFsZmEudXMua3RjLWludC5uZXQvdGVuYW50LzRiYTg0ODQ1LTAzNzctNGE2NC04NWNhLThkOGQwOWEyNGYyMC90Y3NlcnZpY2ViZS8iCiAgfV0=
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8001
+      protocol: TCP
+      targetPort: 8080
+
+ingress:
+  enabled: true
+  host: www-dev-sx.x.x.x
+  path: /x/xx/tcm-sky(.*)
+  serviceName: tcmsky
+  servicePort: 8001
+  proxyBodySize: 8m
+  rewriteTarget: /$1
+  sslRedirect: "false"
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              nsname: k8sinfra
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+      ports:
+        - port: 8080
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
