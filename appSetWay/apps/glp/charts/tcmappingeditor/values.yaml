@@ -1,0 +1,46 @@
+app: tcmappingeditor
+deployment_commit: x
+deployment_ref: xx
+
+replicaCount: 1
+image:
+  repository: docker.repo.xxx.xxx/geolocationplatformgroup/tc-mapping-editor
+  tag: 1.20.1-saas-202509011301
+
+containerPorts:
+  - name: serviceport
+    port: 8080
+    protocol: TCP
+
+env:
+  - name: HOST
+  - name: APP_BASE_URL
+    value: /x/xx/tc-mapping-editor/
+  - name: FEATURE_FLAGS_API_URL
+    value: https://api-dev-sx.x.x.x/x/xx/
+  - name: NETWORK_API_URL
+    value: https://api-dev-sx.x.x.x/x/xx/roadnetwork/europe/
+  - name: AUTHORIZATION_BASE_URL
+    value: https://api-dev-sx.x.x.x/x/xx/
+  - name: OAUTH2_ENABLED
+    value: "true"
+  - name: OAUTH2_CLIENT_ID
+    value: 6axxxx
+  - name: OAUTH2_SCOPE
+    value: openid offline_access 6axxxxx
+  - name: OAUTH2_TOKEN_FORWARDING
+    value: "true"
+  - name: OAUTH2_ERROR_PAGE_URL
+    value: https://www-dev-sx.x.x.x/x/xx/userflow_feedback.html
+  - name: OAUTH2_DISCOVERY_DOCUMENT_URL
+    value: https://xxx.b2clogin.com/xxx/v2.0/.well-known/openid-configuration?p=xxx
+  - name: TOLL_CONTEXT_CONFIG_LOCATION
+    value: /config/ui-toll-context-config.json
+  - name: MAP_REGION
+    value: europe
+  - name: DETAIL_THRESHOLD_RESOLUTION
+    value: "50"
+  - name: NO_SHOW_THRESHOLD_RESOLUTION
+    value: "45000000"
+  - name: BASE_LAYER1
+    value: Tile server,https://api-dev-sx.x.x.x/x/xx/tiles
