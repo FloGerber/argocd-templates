@@ -1,0 +1,205 @@
+app: roadnetworkservice
+deployment_commit: x
+deployment_ref: x
+
+replicaCount: 1
+image:
+  repository: docker.repo.xxx.xxx/road-network-service
+  tag: 2.68.0
+
+containerPorts:
+  - name: serviceport
+    port: 8090
+    protocol: TCP
+
+env:
+  - name: JAVA_TOOL_OPTIONS
+    value: -XX:MaxRAMPercentage=90.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
+  - name: LOGGING_LEVEL_COM_XXX
+    value: INFO
+  - name: LOGGING_LEVEL_COM_XXX_GLP_CORE_SMOP
+    value: WARN
+  - name: LOGGING_CONFIG
+    value: classpath:logback-json.xml
+  - name: SERVER_PORT
+    value: "8090"
+  - name: SERVER_SERVLET_CONTEXT_PATH
+    value: /roadnetwork/europe
+  - name: MANAGEMENT_SERVER_PORT
+    value: "8090"
+  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+    value: info,health,prometheus
+  - name: MANAGEMENT_METRICS_ENABLE_JVM
+    value: "true"
+  - name: MANAGEMENT_METRICS_ENABLE_SYSTEM
+    value: "true"
+  - name: MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED
+    value: "true"
+  - name: MANAGEMENT_GRAPHITE_METRICS_EXPORT_ENABLED
+    value: "false"
+  - name: ROADNETWORKSERVICE_REGIONLABEL
+    value: xxx
+  - name: ROADNETWORKSERVICE_REGIONVERSIONLABEL
+    value: "250707"
+  - name: ROADNETWORKSERVICE_MAPDATAFORMAT
+    value: compact_folder
+  - name: ROADNETWORKSERVICE_MAPFILEPATH
+    value: /bundle
+  - name: ROADNETWORKSERVICE_MAXPOINTSFORMATCHING
+    value: "5000"
+  - name: ROADNETWORKSERVICE_MAXWAYPOINTSFORROUTING
+    value: "6"
+  - name: ROADNETWORKSERVICE_MAXDISTANCEKMSFORROUTING
+    value: "800"
+  - name: ROADNETWORKSERVICE_ROUTING_EXCEPTIONS_LOCATION_PATTERN
+    value: file:///config/{exceptionsId}.json
+
+resources:
+  limits:
+    cpu: 800m
+    memory: 18Gi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 266m
+    memory: 18Gi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /roadnetwork/europe/manage/health
+    port: 8090
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /roadnetwork/europe/manage/health
+    port: 8090
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /roadnetwork/europe/manage/health
+    port: 8090
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 19
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.blob.core.windows.net
+      - xxxxx-secondary.blob.core.windows.net
+      - xxxx.blob.core.windows.net
+      - xxxx.redis.cache.windows.net
+
+terminationGracePeriodSeconds: 60
+shareProcessNamespace: true
+
+volumeMounts:
+  - mountPath: /config
+    name: config
+    readOnly: true
+
+volumes:
+  - name: config
+    configMap:
+      name: roadnetworkservice-files
+      defaultMode: 420
+
+configmap:
+  binaryData:
+    roadnetworkservice-routing-exceptions-1.json: xxx
+
+sidecars:
+  - name: roadnetworkservice-rnsdata-sidecar
+    image: docker.repo.xxx.xxx/bundle:europe
+    imagePullPolicy: Always
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 40m
+        memory: 64Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 40m
+        memory: 64Mi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsUser: 10000
+      runAsGroup: 10000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8090
+      protocol: TCP
+      targetPort: 8090
+
+autoscaling:
+  enabled: true
+  container: roadnetworkservice
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUAverageValue: 560m
+  scaleUp:
+    pods: 2
+    periodSeconds: 60
+    selectPolicy: Max
+    stabilizationWindowSeconds: 60
+  scaleDown:
+    pods: 1
+    periodSeconds: 180
+    selectPolicy: Max
+    stabilizationWindowSeconds: 300
+  additionalMetrics:
+    - container: roadnetworkservice-rnsdata-sidecar
+      name: cpu
+      target:
+        averageValue: 28m
+        type: AverageValue
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+        - podSelector:
+            matchLabels:
+              app: kong
+        - podSelector:
+            matchLabels:
+              app: positianstream
+        - podSelector: match
