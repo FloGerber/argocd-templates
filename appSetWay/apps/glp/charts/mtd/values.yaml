@@ -1,0 +1,205 @@
+app: mtd
+deployment_commit: 09df525f
+deployment_ref: xx-14530-be--env01
+
+replicaCount: 1
+image:
+  repository: docker.repo.xxx.xxx/servicecatalog/mtd-core
+  tag: 2.23.1-saas-202508270920
+
+containerPorts:
+  - name: serviceport
+    port: 8010
+    protocol: TCP
+
+env:
+  - name: SERVER_PORT
+    value: "8010"
+  - name: MANAGEMENT_SERVER_PORT
+    value: "18052"
+  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+    value: health,prometheus
+  - name: MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED
+    value: "true"
+  - name: SPRING_PROFILES_ACTIVE
+    value: glpn,photon
+  - name: HANDLER_CHARGE_OBJECT_MAPPING_URL
+    value: http://tcservicebg:8077
+  - name: HANDLER_RATE_URL
+    value: http://tcservicebg:8050
+  - name: ROUTE_GLPN_URL
+    value: http://roadnetworkservice:8090/roadnetwork/europe
+  - name: ROUTE_GLPN_MAX_DISTANCE
+    value: "500"
+  - name: GEOCODER_PHOTON_SEARCH_URL
+    value: http://photonbg:2322
+  - name: LOGGING_LEVEL_COM_XXX
+    value: ERROR
+  - name: JAVA_TOOL_OPTIONS
+    value: -XX:MaxRAMPercentage=80.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 768Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 100m
+    memory: 768Mi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /manage/health
+    port: 18052
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /manage/health
+    port: 18052
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /manage/health
+    port: 18052
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 9
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.blob.core.windows.net
+      - xxxxx-secondary.blob.core.windows.net
+      - xxxx.blob.core.windows.net
+      - xxxx.redis.cache.windows.net
+
+terminationGracePeriodSeconds: 60
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8010
+      protocol: TCP
+      targetPort: 8010
+    - name: healthport
+      port: 18052
+      protocol: TCP
+      targetPort: 18052
+
+autoscaling:
+  enabled: true
+  container: mtd
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUAverageValue: 210m
+  scaleUp:
+    pods: 2
+    periodSeconds: 60
+    selectPolicy: Max
+    stabilizationWindowSeconds: 60
+  scaleDown:
+    pods: 1
+    periodSeconds: 180
+    selectPolicy: Max
+    stabilizationWindowSeconds: 300
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+        - podSelector:
+            matchLabels:
+              app: kong
+      ports:
+        - port: 8010
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+      ports:
+        - port: 18052
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+    - ports:
+        - port: 8819
+          protocol: TCP
+        - port: 8050
+          protocol: TCP
+        - port: 8077
+          protocol: TCP
+      to:
+        - podSelector:
+            matchLabels:
+              app: tcservicebg
+    - ports:
+        - port: 8090
+          protocol: TCP
+      to:
+        - podSelector:
+            matchLabels:
+              app: roadnetworkservice
+    - ports:
+        - port: 2322
+          protocol: TCP
+      to:
+        - podSelector:
+            matchLabels:
+              app: photonbg
