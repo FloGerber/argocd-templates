@@ -4,15 +4,17 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "library.fullname" . }}
-  labels:
-    app: {{ .Values.app }}
-    deployment_commit: {{ .Values.deployment_commit }}
-    deployment_ref: {{ .Values.deployment_ref }}
+  labels: {{ include "library.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  sessionAffinity: {{ .Values.service.sessionAffinity | default "None" }}
   selector:
     app: {{ .Values.app }}
-  sessionAffinity: {{ .Values.service.sessionAffinity | default "None" }}
+
   internalTrafficPolicy: {{ .Values.service.internalTrafficPolicy | default "Cluster" }}
   ipFamilies:
     - {{ .Values.service.ipFamily | default "IPv4" }}

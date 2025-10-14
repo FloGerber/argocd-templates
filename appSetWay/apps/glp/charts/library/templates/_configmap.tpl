@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: {{ include "library.fullname" . }}
-    namespace: {{ .Release.Namespace}}
+  name: {{ include "library.fullname" . }}
+  namespace: {{ .Release.Namespace}}
 data: {}
 
 binaryData:
