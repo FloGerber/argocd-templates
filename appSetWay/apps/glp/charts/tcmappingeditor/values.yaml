@@ -1,6 +1,6 @@
 app: tcmappingeditor
-deployment_commit: x
-deployment_ref: xx
+deployment_commit: 09df525f
+deployment_ref: xx-14530-be--env01
 
 replicaCount: 1
 image:
@@ -43,4 +43,138 @@ env:
   - name: NO_SHOW_THRESHOLD_RESOLUTION
     value: "45000000"
   - name: BASE_LAYER1
-    value: Tile server,https://api-dev-sx.x.x.x/x/xx/tiles
+    value: Tile server,https://api-dev-sx.x.x.x/x/xx/tiles/english/{z}/{x}/{y}.png?apikey=xxxx,,no-token
+  - name: BASE_LAYER2
+  - name: BASE_LAYER3
+  - name: BASE_LAYER4
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 64Mi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 33m
+    memory: 64Mi
+    ephemeral-storage: 1Gi
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep", "20"]
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 3
+  periodSeconds: 20
+  timeoutSeconds: 20
+  successThreshold: 1
+  failureThreshold: 4
+
+hostAliases:
+  - ip: x.x.x.x
+    hostnames:
+      - xxxxx.blob.core.windows.net
+      - xxxxx-secondary.blob.core.windows.net
+      - xxxx.blob.core.windows.net
+      - xxxx.redis.cache.windows.net
+
+terminationGracePeriodSeconds: 60
+
+volumeMounts:
+  - mountPath: /config
+    name: config
+    readOnly: true
+
+volumes:
+  - name: config
+    configMap:
+      name: tcmappingeditor-files
+      defaultMode: 420
+
+configmap:
+  binaryData:
+    ui-toll-context-config.json: xxxx=
+
+service:
+  sessionAffinity: None
+  internalTrafficPolicy: Cluster
+  ipFamily: IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: serviceport
+      port: 8091
+      protocol: TCP
+      targetPort: 8080
+
+ingress:
+  enabled: true
+  host: www-dev-sx.x.x.x
+  path: /x/xx/tc-mapping-editor(.*)
+  serviceName: tcmappingeditor
+  servicePort: 8091
+  proxyBodySize: 8m
+  rewriteTarget: /$1
+  sslRedirect: "false"
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              nsname: k8sinfra
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+      ports:
+        - port: 8080
+          protocol: TCP
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
