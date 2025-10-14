@@ -1,0 +1,38 @@
+photonbg:
+  replicaCount: 1
+
+positianstream:
+  autoscaling:
+    maxReplicas: 4
+
+positianui:
+  ingress:
+    enabled: true
+
+roadnetworkservice:
+  sidecars:
+    enabled: true
+
+tcmappingeditor:
+  ingress:
+    enabled: true
+
+tcmsky:
+  ingress:
+    enabled: true
+
+tcservicebg:
+  autoscaling:
+    maxReplicas: 4
+
+tileserver:
+  autoscaling:
+    maxReplicas: 5
+
+tracker:
+  autoscaling:
+    maxReplicas: 1
+
+tripbuilder:
+  autoscaling:
+    maxReplicas: 4

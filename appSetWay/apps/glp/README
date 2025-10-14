@@ -1,0 +1,46 @@
+# 🚀 Helm Charts for Tolling Platform Services
+
+This repository contains Helm charts for deploying a suite of microservices that power the tolling platform. Each chart leverages a shared library for consistent configuration, resource management, and Kubernetes best practices.
+
+## 📦 Included Charts
+
+| Service Name       | Description                                      | Sidecars | Init Containers | Autoscaling | Ingress |
+|--------------------|--------------------------------------------------|----------|------------------|-------------|---------|
+| `photonbg`         | Search backend for photon-based geolocation      | ❌       | ❌               | ✅ 1→1      | ❌      |
+| `positianstream`   | Real-time position ingestion and processing      | ❌       | ❌               | ✅ 1→4      | ❌      |
+| `positianui`       | Web UI for position visualization                | ❌       | ❌               | ❌          | ✅      |
+| `roadnetworkservice` | Routing and matching engine for road networks | ✅       | ❌               | ✅ 1→5      | ❌      |
+| `tcmappingeditor`  | UI for editing toll context mappings             | ❌       | ❌               | ❌          | ✅      |
+| `tcmsky`           | Toll context management interface                | ❌       | ❌               | ❌          | ✅      |
+| `tcservicebg`      | Tolling engine with tower and linker sidecars    | ✅       | ✅               | ✅ 1→4      | ❌      |
+| `tileserver`       | Tile caching and rendering service               | ✅       | ❌               | ✅ 1→5      | ❌      |
+| `tracker`          | Device tracking and Kafka ingestion              | ❌       | ❌               | ✅ 1→1      | ❌      |
+| `tripbuilder`      | Trip construction and segment processing         | ❌       | ✅               | ✅ 1→4      | ❌      |
+
+## 🧩 Shared Features
+
+All charts use a common Helm library for:
+
+- 🔐 Secrets and ConfigMaps
+- 📈 HorizontalPodAutoscaler
+- 🔒 NetworkPolicy
+- 🧪 Probes (liveness, readiness, startup)
+- 🧹 Lifecycle hooks
+- 🧭 Affinity rules
+- 📦 Resource limits and requests
+
+## 📁 Repository Structure
+
+```bash
+charts/
+├── photonbg/
+├── positianstream/
+├── positianui/
+├── roadnetworkservice/
+├── tcmappingeditor/
+├── tcmsky/
+├── tcservicebg/
+├── tileserver/
+├── tracker/
+├── tripbuilder/
+└── library/         # Shared templates and helpers
