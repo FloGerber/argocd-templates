@@ -1,9 +1,9 @@
-{{- define "libary.hpa.tpl" -}}
+{{- define "library.hpa.tpl" -}}
 {{- if .Values.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "libary.fullname" . }}
+  name: {{ include "library.fullname" . }}
   labels:
     app: {{ .Values.app }}
     deployment_commit: {{ .Values.deployment_commit }}
@@ -12,7 +12,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "libary.fullname" . }}
+    name: {{ include "library.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   behavior:
@@ -40,6 +40,6 @@ spec:
           averageValue: {{ .Values.autoscaling.targetCPUAverageValue }}
 {{- end }}
 
-{{- define "libary.hpa" -}}
-{{- include "libary.util.merge" (append . "libary.hpa.tpl") -}}
+{{- define "library.hpa" -}}
+{{- include "library.util.merge" (append . "library.hpa.tpl") -}}
 {{- end -}}

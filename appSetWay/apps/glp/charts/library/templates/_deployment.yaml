@@ -1,15 +1,15 @@
-{{- define "libary.deployment.tpl" -}}
+{{- define "library.deployment.tpl" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "libary.fullname" . }}
+  name: {{ include "library.fullname" . }}
   labels:
-    {{- include "libary.labels" . | nindent 4 }}
+    {{- include "library.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "libary.selectorLabels" . | nindent 6 }}
+      {{- include "library.selectorLabels" . | nindent 6 }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "libary.selectorLabels" . | nindent 8 }}
+        {{- include "library.selectorLabels" . | nindent 8 }}
       annotations:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
     spec:
@@ -69,6 +69,6 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 60 }}
 {{- end -}}
 
-{{- define "libary.deployment" -}}
-{{- include "libary.util.merge" (append . "libary.deployment.tpl") -}}
+{{- define "library.deployment" -}}
+{{- include "library.util.merge" (append . "library.deployment.tpl") -}}
 {{- end -}}

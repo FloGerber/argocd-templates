@@ -1,9 +1,9 @@
-{{- define "libary.service.tpl" -}}
+{{- define "library.service.tpl" -}}
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "libary.fullname" . }}
+  name: {{ include "library.fullname" . }}
   labels:
     app: {{ .Values.app }}
     deployment_commit: {{ .Values.deployment_commit }}
@@ -26,6 +26,6 @@ spec:
 {{- end }}
 
 
-{{- define "libary.service" -}}
-{{- include "libary.util.merge" (append . "libary.service.tpl") -}}
+{{- define "library.service" -}}
+{{- include "library.util.merge" (append . "library.service.tpl") -}}
 {{- end -}}

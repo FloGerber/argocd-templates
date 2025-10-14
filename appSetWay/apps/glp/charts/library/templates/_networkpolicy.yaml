@@ -1,9 +1,9 @@
-{{- define "libary.networkpolicy.tpl" -}}
+{{- define "library.networkpolicy.tpl" -}}
 {{- if .Values.networkPolicy.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "libary.fullname" . }}-network-policy
+  name: {{ include "library.fullname" . }}-network-policy
   labels:
     app: {{ .Values.app }}
 spec:
@@ -74,6 +74,6 @@ spec:
 {{- end }}
 {{- end }}
 
-{{- define "libary.networkpolicy" -}}
-{{- include "libary.util.merge" (append . "libary.networkpolicy.tpl") -}}
+{{- define "library.networkpolicy" -}}
+{{- include "library.util.merge" (append . "library.networkpolicy.tpl") -}}
 {{- end -}}

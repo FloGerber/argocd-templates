@@ -1,15 +1,15 @@
 {{/* Generate full name for resources */}}
-{{- define "libary.fullname" -}}
+{{- define "library.fullname" -}}
 {{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/* Generate chart name */}}
-{{- define "libary.name" -}}
+{{- define "library.name" -}}
 {{ .Chart.Name }}
 {{- end -}}
 
 {{/* Common labels */}}
-{{- define "libary.labels" -}}
+{{- define "library.labels" -}}
 app: {{ .Values.app }}
 chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 release: {{ .Release.Name }}
@@ -19,6 +19,6 @@ deployment_ref: {{ .Values.deployment_ref }}
 {{- end -}}
 
 {{/* Selector labels */}}
-{{- define "libary.selectorLabels" -}}
+{{- define "library.selectorLabels" -}}
 app: {{ .Values.app }}
 {{- end -}}
