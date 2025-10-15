@@ -1,158 +1,134 @@
-# General metadata
-app: example-app
-deployment_commit: abcdef123456
-deployment_ref: example-branch
+# 🌍 Global defaults
+global:
+  namespace: default
+  imagePullPolicy: Always
+  ingressClass: nginx
 
-# Replica count for Deployment
-replicaCount: 1
+# 🛠 Deployment settings
+deployment:
+  enabled: true
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  annotations: {}
+  podAnnotations: {}
+  affinity: {}
+  hostAliases: []
+  terminationGracePeriodSeconds: 60
+  serviceAccount:
+    name: default
+    automount: false
 
-# Image configuration
-image:
-  repository: example.registry.com/example-app
-  tag: latest
+# 🚀 Containers (main + sidecars)
+containers:
+  - name: app
+    image: nginx:latest
+    imagePullPolicy: Always
+    ports:
+      - name: http
+        containerPort: 80
+    env: []
+    envFrom: []
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    volumeMounts: []
+    lifecycle: {}
+    probes:
+      liveness:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      readiness:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      startup: {}
 
-# Container ports
-containerPorts:
-  - name: serviceport
-    port: 8080
-    protocol: TCP
-
-# Environment variables
-env:
-  - name: SERVER_PORT
-    value: "8080"
-
-envFrom:
-  - secretRef:
-      name: example-app-secret
-
-# Resources
-resources:
-  limits:
-    cpu: 300m
-    memory: 512Mi
-  requests:
-    cpu: 100m
-    memory: 256Mi
-
-# Lifecycle hooks
-lifecycle:
-  preStop:
-    exec:
-      command: ["sleep", "20"]
-
-# Probes
-livenessProbe:
-  httpGet:
-    path: /manage/health
-    port: 8080
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 10
-
-readinessProbe:
-  httpGet:
-    path: /manage/health
-    port: 8080
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 5
-
-startupProbe:
-  httpGet:
-    path: /manage/health
-    port: 8080
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 6
-
-# Security context
-securityContext:
-  allowPrivilegeEscalation: false
-
-# Host aliases
-hostAliases:
-  - ip: 127.0.0.1
-    hostnames:
-      - example.local
-
-# Volumes and mounts
-volumes: []
-volumeMounts: []
-
-# Init containers
+# ⚙️ Init containers
 initContainers: []
 
-# Affinity rules
-affinity: {}
+# 🧱 Volumes
+volumes: []
 
-# Termination grace period
-terminationGracePeriodSeconds: 60
-
-# Pod annotations
-podAnnotations: {}
-
-# Service configuration
+# 📡 Service
 service:
+  enabled: true
+  type: ClusterIP
   sessionAffinity: None
-  internalTrafficPolicy: Cluster
-  ipFamily: IPv4
-  ipFamilyPolicy: SingleStack
+  clusterIP: null
+  externalTrafficPolicy: null
+  annotations: {}
   ports:
-    - name: serviceport
-      port: 8080
+    - name: http
+      port: 80
+      targetPort: 80
       protocol: TCP
-      targetPort: 8080
+  selectorLabels: {}
 
-# Ingress configuration
+# 🌐 Ingress
 ingress:
   enabled: false
-  host: example.com
-  path: /example(.*)
-  serviceName: example-app
-  servicePort: 8080
-  proxyBodySize: 8m
-  rewriteTarget: /$1
-  sslRedirect: "false"
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          servicePort: 80
+  tls: []
 
-# Autoscaling configuration
-autoscaling:
+# 📈 HorizontalPodAutoscaler
+hpa:
   enabled: false
-  container: example-app
   minReplicas: 1
   maxReplicas: 3
-  targetCPUAverageValue: 210m
-  scaleUp:
-    pods: 2
-    periodSeconds: 60
-    selectPolicy: Max
-    stabilizationWindowSeconds: 60
-  scaleDown:
-    pods: 1
-    periodSeconds: 180
-    selectPolicy: Max
-    stabilizationWindowSeconds: 300
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+  behavior: {}
 
-# NetworkPolicy configuration
+# 🔒 NetworkPolicy
 networkPolicy:
   enabled: false
-  policyTypes: []
+  policyTypes:
+    - Ingress
+    - Egress
   ingress: []
   egress: []
 
-# ConfigMap binary data
-binaryData: {}
-
-# Secret configuration
-secret:
+# 🧪 ConfigMap
+configmap:
   enabled: false
+  annotations: {}
   data: {}
+  binaryData: {}
+
+# 🔐 Secrets
+secrets:
+  enabled: false
+  type: Opaque
+  annotations: {}
+  stringData: {}
+  data: {}
+
+# 🏷 Overrides
+fullnameOverride: ""
+nameOverride: ""
