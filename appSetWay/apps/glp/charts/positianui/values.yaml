@@ -1,131 +1,163 @@
-app: positianui
-deployment_commit: 09df525f
-deployment_ref: xx-14530-be--env01
+fullnameOverride: positianui
 
-replicaCount: 1
-image:
-  repository: docker.repo.xxx.xxx/servicecatalog/positian-ui
-  tag: 3.30.4-saas-202509010623
+deployment:
+  enabled: true
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    field.cattle.io/publicEndpoints: '[{"addresses":["x.x.x.x"],"port":80,"protocol":"HTTP","serviceName":"xx-xx-development--env03:positianui","ingressName":"xx-xx-development--env03:positianui","hostname":"www-dev-sx.x.x.x","path":"/x/xx/glpview(.*)","allNodes":false}]'
+  podAnnotations:
+    redeploytrigger: xxx
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 10
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - positianui
+            topologyKey: topology.kubernetes.io/zone
+        - weight: 5
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - positianui
+            topologyKey: kubernetes.io/hostname
+  hostAliases:
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx-secondary.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.redis.cache.windows.net
+  terminationGracePeriodSeconds: 60
+  serviceAccount:
+    automount: false
 
-containerPorts:
-  - name: serviceport
-    port: 8080
-    protocol: TCP
-
-env:
-  - name: HOST
-  - name: BASE_URL
-    value: /x/xx/glpview/
-  - name: FEATURE_FLAGS_API_URL
-    value: https://api-dev-sx.x.x.x/x/xx/
-  - name: SINK_API_URL
-    value: https://api-dev-sx.x.x.x/x/xx/glpdatasink/
-  - name: NETWORK_API_URL
-    value: https://api-dev-sx.x.x.x/x/xx/roadnetwork/europe/
-  - name: AUTHORIZATION_BASE_URL
-    value: https://api-dev-sx.x.x.x/x/xx/
-  - name: TRACKER_API_URL
-    value: https://api-dev-sx.x.x.x/x/xx/tracker/
-  - name: INITIAL_MAP_ZOOMLEVEL
-    value: "8"
-  - name: INITIAL_MAP_CENTER_LAT
-    value: "42.664261"
-  - name: INITIAL_MAP_CENTER_LON
-    value: "25.249328"
-  - name: OAUTH2_CLIENT_ID
-    value: f5027abd-face-4655-94af-ce83cee63f62
-  - name: OAUTH2_SCOPE
-    value: openid offline_access f5027abd-face-4655-94af-ce83cee63f62
-  - name: OAUTH2_TOKEN_FORWARDING
-    value: "true"
-  - name: OAUTH2_ERROR_PAGE_URL
-    value: https://www-dev-sx.x.x.x/x/xx/userflow_feedback.html
-  - name: OAUTH2_DISCOVERY_DOCUMENT_URL
-    value: https://xxx.b2clogin.com/xxx/v2.0/.well-known/openid-configuration?p=xxx
-  - name: DETECTION_CONFIDENCE_THRESHOLD
-    value: "0.79"
-  - name: CHARGE_OBJECTS_LAYER_VISIBILITY_THRESHOLD
-    value: "10000"
-  - name: BASE_LAYER1
-    value: Tile server,https://api-dev-sx.x.x.x/x/xx/tiles/english/{z}/{x}/{y}.png?apikey=xPVLlZNxxxx3bC,,no-token
-  - name: BASE_LAYER2
-  - name: BASE_LAYER3
-  - name: BASE_LAYER4
-  - name: DEVICES_POLLING_INTERVAL_SECONDS
-    value: "5"
-  - name: OFFLINE_DEVICE_INTERVAL_MINUTES
-    value: "5"
-  - name: MAX_RESULTS_POSITIONS
-    value: "12000"
-  - name: MAX_RESULTS_SEGMENTS
-    value: "8000"
-  - name: MAX_RESULTS_CHARGE_OBJECTS
-    value: "6400"
-  - name: TOLL_CONTEXT_CONFIG_LOCATION
-    value: /config/ui-toll-context-config.json
-
-resources:
-  limits:
-    cpu: 100m
-    memory: 64Mi
-    ephemeral-storage: 1Gi
-  requests:
-    cpu: 33m
-    memory: 64Mi
-    ephemeral-storage: 1Gi
-
-lifecycle:
-  preStop:
-    exec:
-      command: ["sleep", "20"]
-
-livenessProbe:
-  httpGet:
-    path: /healthz
-    port: 8080
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 10
-
-readinessProbe:
-  httpGet:
-    path: /healthz
-    port: 8080
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 5
-
-startupProbe:
-  httpGet:
-    path: /healthz
-    port: 8080
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 4
-
-hostAliases:
-  - ip: x.x.x.x
-    hostnames:
-      - xxxxx.blob.core.windows.net
-      - xxxxx-secondary.blob.core.windows.net
-      - xxxx.blob.core.windows.net
-      - xxxx.redis.cache.windows.net
-
-terminationGracePeriodSeconds: 60
-
-volumeMounts:
-  - mountPath: /config
-    name: config
-    readOnly: true
+containers:
+  - name: positianui
+    image: docker.repo.xxx.xxx/servicecatalog/positian-ui:3.30.4-saas-202509010623
+    imagePullPolicy: Always
+    ports:
+      - name: serviceport
+        containerPort: 8080
+        protocol: TCP
+    env:
+      - name: HOST
+      - name: BASE_URL
+        value: /x/xx/glpview/
+      - name: FEATURE_FLAGS_API_URL
+        value: https://api-dev-sx.x.x.x/x/xx/
+      - name: SINK_API_URL
+        value: https://api-dev-sx.x.x.x/x/xx/glpdatasink/
+      - name: NETWORK_API_URL
+        value: https://api-dev-sx.x.x.x/x/xx/roadnetwork/europe/
+      - name: AUTHORIZATION_BASE_URL
+        value: https://api-dev-sx.x.x.x/x/xx/
+      - name: TRACKER_API_URL
+        value: https://api-dev-sx.x.x.x/x/xx/tracker/
+      - name: INITIAL_MAP_ZOOMLEVEL
+        value: "8"
+      - name: INITIAL_MAP_CENTER_LAT
+        value: "42.664261"
+      - name: INITIAL_MAP_CENTER_LON
+        value: "25.249328"
+      - name: OAUTH2_CLIENT_ID
+        value: f5027abd-face-4655-94af-ce83cee63f62
+      - name: OAUTH2_SCOPE
+        value: openid offline_access f5027abd-face-4655-94af-ce83cee63f62
+      - name: OAUTH2_TOKEN_FORWARDING
+        value: "true"
+      - name: OAUTH2_ERROR_PAGE_URL
+        value: https://www-dev-sx.x.x.x/x/xx/userflow_feedback.html
+      - name: OAUTH2_DISCOVERY_DOCUMENT_URL
+        value: https://xxx.b2clogin.com/xxx/v2.0/.well-known/openid-configuration?p=xxx
+      - name: DETECTION_CONFIDENCE_THRESHOLD
+        value: "0.79"
+      - name: CHARGE_OBJECTS_LAYER_VISIBILITY_THRESHOLD
+        value: "10000"
+      - name: BASE_LAYER1
+        value: Tile server,https://api-dev-sx.x.x.x/x/xx/tiles/english/{z}/{x}/{y}.png?apikey=xPVLlZNxxxx3bC,,no-token
+      - name: BASE_LAYER2
+      - name: BASE_LAYER3
+      - name: BASE_LAYER4
+      - name: DEVICES_POLLING_INTERVAL_SECONDS
+        value: "5"
+      - name: OFFLINE_DEVICE_INTERVAL_MINUTES
+        value: "5"
+      - name: MAX_RESULTS_POSITIONS
+        value: "12000"
+      - name: MAX_RESULTS_SEGMENTS
+        value: "8000"
+      - name: MAX_RESULTS_CHARGE_OBJECTS
+        value: "6400"
+      - name: TOLL_CONTEXT_CONFIG_LOCATION
+        value: /config/ui-toll-context-config.json
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 33m
+        memory: 64Mi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+    probes:
+      liveness:
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 4
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        readOnly: true
 
 volumes:
   - name: config
@@ -133,36 +165,44 @@ volumes:
       name: positianui-files
       defaultMode: 420
 
-configmap:
-  binaryData:
-    ui-toll-context-config.json: xxx=
-
 service:
-  sessionAffinity: None
-  internalTrafficPolicy: Cluster
-  ipFamily: IPv4
-  ipFamilyPolicy: SingleStack
+  enabled: true
+  type: ClusterIP
+  clusterIP: x.x.x.x
   ports:
     - name: serviceport
       port: 8001
-      protocol: TCP
       targetPort: 8080
+      protocol: TCP
+  sessionAffinity: None
 
 ingress:
   enabled: true
-  host: www-dev-sx.x.x.x
-  path: /x/xx/glpview(.*)
-  serviceName: positianui
-  servicePort: 8001
-  proxyBodySize: 8m
-  rewriteTarget: /$1
-  sslRedirect: "false"
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 8m
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: www-dev-sx.x.x.x
+      paths:
+        - path: /x/xx/glpview(.*)
+          pathType: Prefix
+          servicePort: 8001
+
+configmap:
+  enabled: true
+  binaryData:
+    ui-toll-context-config.json: xxx=
 
 networkPolicy:
   enabled: true
   policyTypes:
     - Ingress
     - Egress
+  podSelector:
+    matchLabels:
+      app: positianui
   ingress:
     - from:
         - namespaceSelector:
@@ -184,13 +224,13 @@ networkPolicy:
         - port: 8080
           protocol: TCP
   egress:
-    - ports:
-        - port: 53
-          protocol: UDP
-      to:
+    - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/cluster-service: "true"
           podSelector:
             matchLabels:
               k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
