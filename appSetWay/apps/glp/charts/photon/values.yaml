@@ -1,112 +1,158 @@
-app: photon
-deployment_commit: 09df525f
-deployment_ref: xx-14530-be--env01
+fullnameOverride: photonbg
 
-replicaCount: 1
-image:
-  repository: docker.repo.xxx.xxx/servicecatalog/nominatim/photon
-  tag: 0.7.3-xxxx-240101-patch-20250707-202508290626
+deployment:
+  enabled: true
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  podAnnotations:
+    redeploytrigger: d7545e7f67e98c1da39db04716005e4bd9fb4943
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 10
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - photonbg
+            topologyKey: topology.kubernetes.io/zone
+        - weight: 5
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - photonbg
+            topologyKey: kubernetes.io/hostname
+  hostAliases:
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx-secondary.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.redis.cache.windows.net
+  terminationGracePeriodSeconds: 60
+  serviceAccount:
+    automount: false
 
-containerPorts:
-  - name: serviceport
-    port: 2322
-    protocol: TCP
-
-env:
-  - name: JAVA_OPTS
-    value: -XX:MaxRAMPercentage=90.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication -Dfile.encoding=UTF-8
-
-resources:
-  limits:
-    cpu: 300m
-    memory: 768Mi
-    ephemeral-storage: 1Gi
-  requests:
-    cpu: 100m
-    memory: 768Mi
-    ephemeral-storage: 1Gi
-
-lifecycle:
-  preStop:
-    exec:
-      command: ["sleep", "20"]
-
-livenessProbe:
-  httpGet:
-    path: /api/?q=sof
-    port: 2322
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 10
-
-readinessProbe:
-  httpGet:
-    path: /api/?q=sof
-    port: 2322
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 5
-
-startupProbe:
-  httpGet:
-    path: /api/?q=sof
-    port: 2322
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 7
-
-hostAliases:
-  - ip: x.x.x.x
-    hostnames:
-      - xxxxx.blob.core.windows.net
-      - xxxxx-secondary.blob.core.windows.net
-      - xxxx.blob.core.windows.net
-      - xxxx.redis.cache.windows.net
-
-terminationGracePeriodSeconds: 60
+containers:
+  - name: photonbg
+    image: docker.repo.xxx.xxx/servicecatalog/nominatim/photon:0.7.3-xxxx-240101-patch-20250707-202508290626
+    imagePullPolicy: Always
+    ports:
+      - name: serviceport
+        containerPort: 2322
+        protocol: TCP
+    env:
+      - name: JAVA_OPTS
+        value: -XX:MaxRAMPercentage=90.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication -Dfile.encoding=UTF-8
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 300m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 100m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+    probes:
+      liveness:
+        httpGet:
+          path: /api/?q=sof
+          port: 2322
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /api/?q=sof
+          port: 2322
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /api/?q=sof
+          port: 2322
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 7
 
 service:
-  sessionAffinity: None
-  internalTrafficPolicy: Cluster
-  ipFamily: IPv4
-  ipFamilyPolicy: SingleStack
+  enabled: true
+  type: ClusterIP
+  clusterIP: x.x.x.x
   ports:
     - name: serviceport
       port: 2322
-      protocol: TCP
       targetPort: 2322
+      protocol: TCP
+  sessionAffinity: None
 
-autoscaling:
+hpa:
   enabled: true
-  container: photonbg
   minReplicas: 1
   maxReplicas: 1
-  targetCPUAverageValue: 210m
-  scaleUp:
-    pods: 2
-    periodSeconds: 60
-    selectPolicy: Max
-    stabilizationWindowSeconds: 60
-  scaleDown:
-    pods: 1
-    periodSeconds: 180
-    selectPolicy: Max
-    stabilizationWindowSeconds: 300
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        container: photonbg
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 210m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 180
 
 networkPolicy:
   enabled: true
   policyTypes:
     - Ingress
     - Egress
+  podSelector:
+    matchLabels:
+      app: photonbg
   ingress:
     - from:
         - podSelector:
@@ -119,13 +165,13 @@ networkPolicy:
         - port: 2322
           protocol: TCP
   egress:
-    - ports:
-        - port: 53
-          protocol: UDP
-      to:
+    - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/cluster-service: "true"
           podSelector:
             matchLabels:
               k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
