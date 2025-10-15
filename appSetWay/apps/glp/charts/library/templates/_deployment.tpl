@@ -1,74 +1,44 @@
-{{- define "library.deployment.tpl" -}}
+{{- define "library.deployment" }}
+{{- if .Values.deployment.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "library.fullname" . }}
-  labels:
-    {{- include "library.labels" . | nindent 4 }}
+  labels: {{ include "library.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.deployment.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
 spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      {{- include "library.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.deployment.replicas | default 1 }}
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit | default 10 }}
   strategy:
-    type: RollingUpdate
+    type: {{ .Values.deployment.strategy.type | default "RollingUpdate" }}
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 25%
+      maxSurge: {{ .Values.deployment.strategy.rollingUpdate.maxSurge | default 1 }}
+      maxUnavailable: {{ .Values.deployment.strategy.rollingUpdate.maxUnavailable | default "25%" }}
+  selector:
+    matchLabels: {{ include "library.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      labels:
-        {{- include "library.selectorLabels" . | nindent 8 }}
+      labels: {{ include "library.selectorLabels" . | nindent 8 }}
       annotations:
-        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- with .Values.podAnnotations }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
     spec:
-      automountServiceAccountToken: false
-      containers:
-        - name: {{ .Values.app }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: Always
-          ports:
-            {{- range .Values.containerPorts }}
-            - containerPort: {{ .port }}
-              name: {{ .name }}
-              protocol: {{ .protocol | default "TCP" }}
-            {{- end }}
-          env:
-            {{- range .Values.env }}
-            - name: {{ .name }}
-              value: {{ .value | quote }}
-            {{- end }}
-          envFrom:
-            {{- range .Values.envFrom }}
-            - secretRef:
-                name: {{ .secretRef.name }}
-            {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          lifecycle:
-            {{- toYaml .Values.lifecycle | nindent 12 }}
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
-          startupProbe:
-            {{- toYaml .Values.startupProbe | nindent 12 }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          volumeMounts:
-            {{- toYaml .Values.volumeMounts | nindent 12 }}
-      initContainers:
-        {{- toYaml .Values.initContainers | nindent 8 }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default "default" }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount | default false }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 60 }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
       hostAliases:
         {{- toYaml .Values.hostAliases | nindent 8 }}
       volumes:
-        {{- toYaml .Values.volumes | nindent 8 }}
-      affinity:
-        {{- toYaml .Values.affinity | nindent 8 }}
-      restartPolicy: Always
-      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 60 }}
-{{- end -}}
-
-{{- define "library.deployment" -}}
-{{- include "library.util.merge" (append . "library.deployment.tpl") -}}
-{{- end -}}
+        {{- include "library.volumes" . | nindent 8 }}
+      initContainers:
+        {{- include "library.initContainers" . | nindent 8 }}
+      containers:
+        {{- include "library.containers" . | nindent 8 }}
+{{- end }}
+{{- end }}

@@ -1,5 +1,5 @@
-{{- define "library.service.tpl" -}}
-
+{{- define "library.service" }}
+{{- if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,27 +7,29 @@ metadata:
   labels: {{ include "library.labels" . | nindent 4 }}
   {{- with .Values.service.annotations }}
   annotations:
-{{ toYaml . | indent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   type: {{ .Values.service.type | default "ClusterIP" }}
   sessionAffinity: {{ .Values.service.sessionAffinity | default "None" }}
-  selector:
-    app: {{ .Values.app }}
-
-  internalTrafficPolicy: {{ .Values.service.internalTrafficPolicy | default "Cluster" }}
-  ipFamilies:
-    - {{ .Values.service.ipFamily | default "IPv4" }}
-  ipFamilyPolicy: {{ .Values.service.ipFamilyPolicy | default "SingleStack" }}
+  {{- if .Values.service.clusterIP }}
+  clusterIP: {{ .Values.service.clusterIP }}
+  {{- end }}
+  {{- if .Values.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
+  {{- end }}
   ports:
-{{- range .Values.service.ports }}
+    {{- range .Values.service.ports }}
     - name: {{ .name }}
       port: {{ .port }}
-      protocol: {{ .protocol }}
-      targetPort: {{ .targetPort }}
+      targetPort: {{ .targetPort | default .port }}
+      protocol: {{ .protocol | default "TCP" }}
+    {{- end }}
+  selector:
+    {{- if .Values.service.selectorLabels }}
+    {{- toYaml .Values.service.selectorLabels | nindent 4 }}
+    {{- else }}
+    {{ include "library.selectorLabels" . | nindent 4 }}
+    {{- end }}
 {{- end }}
-
-
-{{- define "library.service" -}}
-{{- include "library.util.merge" (append . "library.service.tpl") -}}
-{{- end -}}
+{{- end }}

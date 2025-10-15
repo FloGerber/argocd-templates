@@ -1,79 +1,24 @@
-{{- define "library.networkpolicy.tpl" -}}
+{{- define "library.networkPolicy" }}
 {{- if .Values.networkPolicy.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ include "library.fullname" . }}-network-policy
-  labels:
-    app: {{ .Values.app }}
+  labels: {{ include "library.labels" . | nindent 4 }}
 spec:
   podSelector:
-    matchLabels:
-      app: {{ .Values.app }}
+    matchLabels: {{ include "library.selectorLabels" . | nindent 4 }}
   policyTypes:
-{{- range .Values.networkPolicy.policyTypes }}
+    {{- range .Values.networkPolicy.policyTypes }}
     - {{ . }}
-{{- end }}
-{{- if .Values.networkPolicy.ingress }}
+    {{- end }}
+  {{- if .Values.networkPolicy.ingress }}
   ingress:
-{{- range .Values.networkPolicy.ingress }}
-    - from:
-{{- range .from }}
-        {{- if .namespaceSelector }}
-        - namespaceSelector:
-            matchLabels:
-              {{- range $k, $v := .namespaceSelector.matchLabels }}
-              {{ $k }}: {{ $v | quote }}
-              {{- end }}
-        {{- end }}
-        {{- if .podSelector }}
-        - podSelector:
-            matchLabels:
-              {{- range $k, $v := .podSelector.matchLabels }}
-              {{ $k }}: {{ $v | quote }}
-              {{- end }}
-        {{- end }}
-{{- end }}
-      ports:
-{{- range .ports }}
-        - port: {{ .port }}
-          protocol: {{ .protocol }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- if .Values.networkPolicy.egress }}
+    {{- toYaml .Values.networkPolicy.ingress | nindent 4 }}
+  {{- end }}
+  {{- if .Values.networkPolicy.egress }}
   egress:
-{{- range .Values.networkPolicy.egress }}
-    - to:
-{{- range .to }}
-        {{- if .namespaceSelector }}
-        - namespaceSelector:
-            matchLabels:
-              {{- range $k, $v := .namespaceSelector.matchLabels }}
-              {{ $k }}: {{ $v | quote }}
-              {{- end }}
-        {{- end }}
-        {{- if .podSelector }}
-        - podSelector:
-            matchLabels:
-              {{- range $k, $v := .podSelector.matchLabels }}
-              {{ $k }}: {{ $v | quote }}
-              {{- end }}
-        {{- end }}
-        {{- if .ipBlock }}
-        - ipBlock:
-            cidr: {{ .ipBlock.cidr | quote }}
-        {{- end }}
-{{- end }}
-      ports:
-{{- range .ports }}
-        - port: {{ .port }}
-          protocol: {{ .protocol }}
+    {{- toYaml .Values.networkPolicy.egress | nindent 4 }}
+  {{- end }}
 {{- end }}
 {{- end }}
-{{- end }}
-{{- end }}
-
-{{- define "library.networkpolicy" -}}
-{{- include "library.util.merge" (append . "library.networkpolicy.tpl") -}}
-{{- end -}}

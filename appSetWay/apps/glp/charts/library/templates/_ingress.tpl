@@ -1,35 +1,36 @@
-{{- define "library.ingress.tpl" -}}
-
+{{- define "library.ingress" }}
 {{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "library.fullname" . }}
-  labels:
-    app: {{ .Values.app }}
-    deployment_commit: {{ .Values.deployment_commit }}
-    deployment_ref: {{ .Values.deployment_ref }}
+  labels: {{ include "library.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.ingress.proxyBodySize | default "8m" }}
-    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget | default "/$1" }}
-    nginx.ingress.kubernetes.io/ssl-redirect: {{ .Values.ingress.sslRedirect | default "false" | quote }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
   rules:
-    - host: {{ .Values.ingress.host }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
       http:
         paths:
-          - path: {{ .Values.ingress.path }}
-            pathType: Prefix
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType | default "Prefix" }}
             backend:
               service:
-                name: {{ .Values.ingress.serviceName }}
+                name: {{ .serviceName | default (include "library.fullname" $) }}
                 port:
-                  number: {{ .Values.ingress.servicePort }}
+                  number: {{ .servicePort }}
+          {{- end }}
+    {{- end }}
 {{- end }}
-
-
-
-{{- define "library.ingress" -}}
-{{- include "library.util.merge" (append . "library.ingress.tpl") -}}
-{{- end -}}
+{{- end }}
