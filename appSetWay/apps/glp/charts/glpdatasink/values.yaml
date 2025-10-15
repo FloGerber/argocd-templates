@@ -1,111 +1,67 @@
-app: glpdatasink
-deployment_commit: 09df525f
-deployment_ref: xx-14530-be--env01
+fullnameOverride: glpdatasink
 
-replicaCount: 1
-image:
-  repository: docker.repo.xxx.xxx/geolocationplatformgroup/glp-data-sink
-  tag: 4.23.6
+deployment:
+  enabled: true
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  podAnnotations:
+    prometheus.io/path: /manage/prometheus
+    prometheus.io/port: "8081"
+    prometheus.io/scrape: "true"
+    redeploytrigger: xxxx
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 10
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - glpdatasink
+            topologyKey: topology.kubernetes.io/zone
+        - weight: 5
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - glpdatasink
+            topologyKey: kubernetes.io/hostname
+  hostAliases:
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx-secondary.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.redis.cache.windows.net
+  terminationGracePeriodSeconds: 60
+  serviceAccount:
+    automount: false
 
-containerPorts:
-  - name: serviceport
-    port: 8080
-    protocol: TCP
-
-env:
-  - name: SERVER_PORT
-    value: "8080"
-  - name: JAVA_TOOL_OPTIONS
-    value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
-  - name: MANAGEMENT_SERVER_PORT
-    value: "8081"
-  - name: KAFKA_CONSUMER_CHARGEREPORTTOPIC_NAME
-    value: charge-report
-  - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_NAME
-    value: charging-position
-  - name: KAFKA_CONSUMER_MATCHEDROUTETOPIC_NAME
-    value: matched-route
-  - name: KAFKA_CONSUMER_CONCURRENCY
-    value: "128"
-  - name: KAFKA_BOOTSTRAP_SERVERS
-    value: xxxx.servicebus.windows.net:9093
-  - name: SPRING_CASSANDRA_CONTACT_POINTS
-    value: xxxx.cassandra.cosmos.azure.com
-  - name: SPRING_CASSANDRA_PORT
-    value: "10350"
-  - name: SPRING_CASSANDRA_KEYSPACE_NAME
-    value: glpdatasink
-  - name: SPRING_CASSANDRA_LOCAL_DATACENTER
-    value: xxx
-  - name: SERVER_SERVLET_CONTEXT_PATH
-    value: /glpdatasink
-
-envFrom:
-  - secretRef:
-      name: glpdatasink-secret
-
-resources:
-  limits:
-    cpu: 500m
-    memory: 1280Mi
-    ephemeral-storage: 1Gi
-  requests:
-    cpu: 166m
-    memory: 1280Mi
-    ephemeral-storage: 1Gi
-
-lifecycle:
-  preStop:
-    exec:
-      command: ["sleep", "20"]
-
-livenessProbe:
-  httpGet:
-    path: /manage/health
-    port: 8081
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 10
-
-readinessProbe:
-  httpGet:
-    path: /manage/health
-    port: 8081
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 5
-
-startupProbe:
-  httpGet:
-    path: /manage/health
-    port: 8081
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 13
-
-hostAliases:
-  - ip: x.x.x.x
-    hostnames:
-      - xxxxx.blob.core.windows.net
-      - xxxxx-secondary.blob.core.windows.net
-      - xxxx.blob.core.windows.net
-      - xxxx.redis.cache.windows.net
-
-terminationGracePeriodSeconds: 60
-
-initContainers:
-  - name: glpdatasink-init
-    image: docker.repo.xxx.xxx/geolocationplatformgroup/glp-data-sink:4.23.6
+containers:
+  - name: glpdatasink
+    image: docker.repo.xxx.xxx/geolocationplatformgroup/glp-data-sink:4.23.6-saas-202509020949
     imagePullPolicy: Always
+    ports:
+      - name: serviceport
+        containerPort: 8080
+        protocol: TCP
     env:
       - name: SERVER_PORT
         value: "8080"
@@ -113,8 +69,8 @@ initContainers:
         value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
       - name: MANAGEMENT_SERVER_PORT
         value: "8081"
-      - name: KAFKA_USER
-      - name: KAFKA_PASSWORD
+      - name: SERVER_SERVLET_CONTEXT_PATH
+        value: /glpdatasink
       - name: KAFKA_CONSUMER_CHARGEREPORTTOPIC_NAME
         value: charge-report
       - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_NAME
@@ -135,8 +91,134 @@ initContainers:
         value: glpdatasink
       - name: SPRING_CASSANDRA_LOCAL_DATACENTER
         value: xxx
+      - name: CASSANDRA_CUSTOM_DEVICE_REFRESH_INTERVAL
+        value: "5000"
+      - name: CASSANDRA_CUSTOM_MAX_CONNECTIONS_PER_HOST
+        value: "120"
+      - name: CASSANDRA_CUSTOM_AUTOSCALE_MAX_THROUGHPUT
+        value: "5000"
+      - name: CASSANDRA_CUSTOM_BUCKET_COUNT
+        value: "8"
+      - name: CASSANDRA_CUSTOM_MIGRATION_ENABLED
+        value: "false"
+      - name: CASSANDRA_CUSTOM_MIGRATION_ONLY
+        value: "false"
+      - name: CASSANDRA_CUSTOM_TTL_CHARGING_POSITION
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_MATCHED_SEGMENT
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_CHARGE_REPORT
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_AGGREGATED_KPI
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_MATCHED_POSITION
+        value: P45D
+      - name: LOGGING_LEVEL_COM_XXX
+        value: INFO
+    envFrom:
+      - secretRef:
+          name: glpdatasink-secret
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1280Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 166m
+        memory: 1280Mi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+    probes:
+      liveness:
+        httpGet:
+          path: /manage/health
+          port: 8081
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /manage/health
+          port: 8081
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /manage/health
+          port: 8081
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 13
+
+initContainers:
+  - name: glpdatasink-init
+    image: docker.repo.xxx.xxx/geolocationplatformgroup/glp-data-sink:4.23.6-saas-202509020949
+    imagePullPolicy: Always
+    env:
+      - name: SERVER_PORT
+        value: "8080"
+      - name: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
+      - name: MANAGEMENT_SERVER_PORT
+        value: "8081"
       - name: SERVER_SERVLET_CONTEXT_PATH
         value: /glpdatasink
+      - name: KAFKA_CONSUMER_CHARGEREPORTTOPIC_NAME
+        value: charge-report
+      - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_NAME
+        value: charging-position
+      - name: KAFKA_CONSUMER_MATCHEDPOSITIONTOPIC_NAME
+        value: matched-position
+      - name: KAFKA_CONSUMER_MATCHEDROUTETOPIC_NAME
+        value: matched-route
+      - name: KAFKA_CONSUMER_CONCURRENCY
+        value: "128"
+      - name: KAFKA_BOOTSTRAP_SERVERS
+        value: xxxx.servicebus.windows.net:9093
+      - name: SPRING_CASSANDRA_CONTACT_POINTS
+        value: xxxx.cassandra.cosmos.azure.com
+      - name: SPRING_CASSANDRA_PORT
+        value: "10350"
+      - name: SPRING_CASSANDRA_KEYSPACE_NAME
+        value: glpdatasink
+      - name: SPRING_CASSANDRA_LOCAL_DATACENTER
+        value: xxx
+      - name: CASSANDRA_CUSTOM_MIGRATION_ENABLED
+        value: "true"
+      - name: CASSANDRA_CUSTOM_MIGRATION_ONLY
+        value: "true"
+      - name: CASSANDRA_CUSTOM_DEVICE_REFRESH_INTERVAL
+        value: "5000"
+      - name: CASSANDRA_CUSTOM_MAX_CONNECTIONS_PER_HOST
+        value: "120"
+      - name: CASSANDRA_CUSTOM_AUTOSCALE_MAX_THROUGHPUT
+        value: "5000"
+      - name: CASSANDRA_CUSTOM_BUCKET_COUNT
+        value: "8"
+      - name: CASSANDRA_CUSTOM_TTL_CHARGING_POSITION
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_MATCHED_SEGMENT
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_CHARGE_REPORT
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_AGGREGATED_KPI
+        value: P45D
+      - name: CASSANDRA_CUSTOM_TTL_MATCHED_POSITION
+        value: P45D
+      - name: LOGGING_LEVEL_COM_XXX
+        value: INFO
     envFrom:
       - secretRef:
           name: glpdatasink-initcontainer-secret
@@ -151,108 +233,3 @@ initContainers:
         ephemeral-storage: 1Gi
     securityContext:
       allowPrivilegeEscalation: false
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-
-service:
-  sessionAffinity: None
-  internalTrafficPolicy: Cluster
-  ipFamily: IPv4
-  ipFamilyPolicy: SingleStack
-  ports:
-    - name: serviceport
-      port: 8080
-      protocol: TCP
-      targetPort: 8080
-    - name: healthport
-      port: 8081
-      protocol: TCP
-      targetPort: 8081
-
-autoscaling:
-  enabled: true
-  container: glpdatasink
-  minReplicas: 1
-  maxReplicas: 4
-  targetCPUAverageValue: 350m
-  scaleUp:
-    pods: 2
-    periodSeconds: 60
-    selectPolicy: Max
-    stabilizationWindowSeconds: 60
-  scaleDown:
-    pods: 1
-    periodSeconds: 180
-    selectPolicy: Max
-    stabilizationWindowSeconds: 300
-
-networkPolicy:
-  enabled: true
-  policyTypes:
-    - Ingress
-    - Egress
-  ingress:
-    - from:
-        - podSelector:
-            matchLabels:
-              app: k8s-ansible-helper
-        - podSelector:
-            matchLabels:
-              app: kong
-      ports:
-        - port: 8080
-          protocol: TCP
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/cluster-service: "true"
-          podSelector:
-            matchLabels:
-              kubernetes.azure.com/managedby: aks
-        - podSelector:
-            matchLabels:
-              app: k8s-ansible-helper
-      ports:
-        - port: 8081
-          protocol: TCP
-  egress:
-    - ports:
-        - port: 53
-          protocol: UDP
-      to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/cluster-service: "true"
-          podSelector:
-            matchLabels:
-              k8s-app: kube-dns
-    - ports:
-        - port: 10350
-          protocol: TCP
-      to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-    - ports:
-        - port: 9093
-          protocol: TCP
-      to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-
-secret:
-  enabled: true
-  data:
-    AZMON_COLLECT_ENV: xxx=
-    KAFKA_PASSWORD: xxxx
-    KAFKA_USER: xxx=
-    SPRING_CASSANDRA_PASSWORD: xxx==
-    SPRING_CASSANDRA_USERNAME: xxx=
-
-# Optional second secret for init container
-initContainerSecret:
-  enabled: true
-  name: glpdatasink-initcontainer-secret
-  data:
-    AZMON_COLLECT_ENV: xxxx=
-    SPRING_CASSANDRA_PASSWORD: xxxx==
-    SPRING_CASSANDRA_USERNAME: xx=
