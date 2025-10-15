@@ -1,136 +1,165 @@
-app: roadnetworkservice
-deployment_commit: x
-deployment_ref: x
+fullnameOverride: roadnetworkservice
 
-replicaCount: 1
-image:
-  repository: docker.repo.xxx.xxx/road-network-service
-  tag: 2.68.0
+deployment:
+  enabled: true
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  podAnnotations:
+    prometheus.io/path: /roadnetwork/europe/manage/prometheus
+    prometheus.io/port: "8090"
+    prometheus.io/scrape: "true"
+    redeploytrigger: xxx
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 10
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - roadnetworkservice
+            topologyKey: topology.kubernetes.io/zone
+        - weight: 5
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - roadnetworkservice
+            topologyKey: kubernetes.io/hostname
+  hostAliases:
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx.blob..net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx-secondary.blob..net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.blob..net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.redis.cache.net
+  terminationGracePeriodSeconds: 60
+  serviceAccount:
+    automount: false
+  shareProcessNamespace: true
 
-containerPorts:
-  - name: serviceport
-    port: 8090
-    protocol: TCP
+containers:
+  - name: roadnetworkservice
+    image: docker.x/road-network-service:2.68.0-202509040819
+    imagePullPolicy: Always
+    command:
+      - sh
+      - -c
+      - while ! pidof sleep; do sleep 1; done; ROADNETWORKSERVICE_MAPFILEPATH="file:///proc/$(pidof sleep)/root${ROADNETWORKSERVICE_MAPFILEPATH}" exec sh /entrypoint.sh
+    ports:
+      - name: serviceport
+        containerPort: 8090
+        protocol: TCP
+    env:
+      - name: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=90.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
+      - name: LOGGING_LEVEL_COM_XXX
+        value: INFO
+      - name: LOGGING_LEVEL_COM_XXX_GLP_CORE_SMOP
+        value: WARN
+      - name: LOGGING_CONFIG
+        value: classpath:logback-json.xml
+      - name: SERVER_PORT
+        value: "8090"
+      - name: SERVER_SERVLET_CONTEXT_PATH
+        value: /roadnetwork/europe
+      - name: MANAGEMENT_SERVER_PORT
+        value: "8090"
+      - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+        value: info,health,prometheus
+      - name: MANAGEMENT_METRICS_ENABLE_JVM
+        value: "true"
+      - name: MANAGEMENT_METRICS_ENABLE_SYSTEM
+        value: "true"
+      - name: MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED
+        value: "true"
+      - name: MANAGEMENT_GRAPHITE_METRICS_EXPORT_ENABLED
+        value: "false"
+      - name: ROADNETWORKSERVICE_REGIONLABEL
+        value: xxx
+      - name: ROADNETWORKSERVICE_REGIONVERSIONLABEL
+        value: "250707"
+      - name: ROADNETWORKSERVICE_MAPDATAFORMAT
+        value: compact_folder
+      - name: ROADNETWORKSERVICE_MAPFILEPATH
+        value: /bundle
+      - name: ROADNETWORKSERVICE_MAXPOINTSFORMATCHING
+        value: "5000"
+      - name: ROADNETWORKSERVICE_MAXWAYPOINTSFORROUTING
+        value: "6"
+      - name: ROADNETWORKSERVICE_MAXDISTANCEKMSFORROUTING
+        value: "800"
+      - name: ROADNETWORKSERVICE_ROUTING_EXCEPTIONS_LOCATION_PATTERN
+        value: file:///config/{exceptionsId}.json
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 800m
+        memory: 18Gi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 266m
+        memory: 18Gi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsUser: 10000
+      runAsGroup: 10000
+    probes:
+      liveness:
+        httpGet:
+          path: /roadnetwork/europe/manage/health
+          port: 8090
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /roadnetwork/europe/manage/health
+          port: 8090
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /roadnetwork/europe/manage/health
+          port: 8090
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 19
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        readOnly: true
 
-env:
-  - name: JAVA_TOOL_OPTIONS
-    value: -XX:MaxRAMPercentage=90.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication
-  - name: LOGGING_LEVEL_COM_XXX
-    value: INFO
-  - name: LOGGING_LEVEL_COM_XXX_GLP_CORE_SMOP
-    value: WARN
-  - name: LOGGING_CONFIG
-    value: classpath:logback-json.xml
-  - name: SERVER_PORT
-    value: "8090"
-  - name: SERVER_SERVLET_CONTEXT_PATH
-    value: /roadnetwork/europe
-  - name: MANAGEMENT_SERVER_PORT
-    value: "8090"
-  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
-    value: info,health,prometheus
-  - name: MANAGEMENT_METRICS_ENABLE_JVM
-    value: "true"
-  - name: MANAGEMENT_METRICS_ENABLE_SYSTEM
-    value: "true"
-  - name: MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED
-    value: "true"
-  - name: MANAGEMENT_GRAPHITE_METRICS_EXPORT_ENABLED
-    value: "false"
-  - name: ROADNETWORKSERVICE_REGIONLABEL
-    value: xxx
-  - name: ROADNETWORKSERVICE_REGIONVERSIONLABEL
-    value: "250707"
-  - name: ROADNETWORKSERVICE_MAPDATAFORMAT
-    value: compact_folder
-  - name: ROADNETWORKSERVICE_MAPFILEPATH
-    value: /bundle
-  - name: ROADNETWORKSERVICE_MAXPOINTSFORMATCHING
-    value: "5000"
-  - name: ROADNETWORKSERVICE_MAXWAYPOINTSFORROUTING
-    value: "6"
-  - name: ROADNETWORKSERVICE_MAXDISTANCEKMSFORROUTING
-    value: "800"
-  - name: ROADNETWORKSERVICE_ROUTING_EXCEPTIONS_LOCATION_PATTERN
-    value: file:///config/{exceptionsId}.json
-
-resources:
-  limits:
-    cpu: 800m
-    memory: 18Gi
-    ephemeral-storage: 1Gi
-  requests:
-    cpu: 266m
-    memory: 18Gi
-    ephemeral-storage: 1Gi
-
-lifecycle:
-  preStop:
-    exec:
-      command: ["sleep", "20"]
-
-livenessProbe:
-  httpGet:
-    path: /roadnetwork/europe/manage/health
-    port: 8090
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 10
-
-readinessProbe:
-  httpGet:
-    path: /roadnetwork/europe/manage/health
-    port: 8090
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 5
-
-startupProbe:
-  httpGet:
-    path: /roadnetwork/europe/manage/health
-    port: 8090
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 19
-
-hostAliases:
-  - ip: x.x.x.x
-    hostnames:
-      - xxxxx.blob.core.windows.net
-      - xxxxx-secondary.blob.core.windows.net
-      - xxxx.blob.core.windows.net
-      - xxxx.redis.cache.windows.net
-
-terminationGracePeriodSeconds: 60
-shareProcessNamespace: true
-
-volumeMounts:
-  - mountPath: /config
-    name: config
-    readOnly: true
-
-volumes:
-  - name: config
-    configMap:
-      name: roadnetworkservice-files
-      defaultMode: 420
-
-configmap:
-  binaryData:
-    roadnetworkservice-routing-exceptions-1.json: xxx
-
-sidecars:
   - name: roadnetworkservice-rnsdata-sidecar
-    image: docker.repo.xxx.xxx/bundle:europe
+    image: docker.x/bundle:europe-250707-202507091453
     imagePullPolicy: Always
     lifecycle:
       preStop:
@@ -149,48 +178,72 @@ sidecars:
       allowPrivilegeEscalation: false
       runAsUser: 10000
       runAsGroup: 10000
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
+
+volumes:
+  - name: config
+    configMap:
+      name: roadnetworkservice-files
+      defaultMode: 420
+
+configmap:
+  enabled: true
+  binaryData:
+    roadnetworkservice-routing-exceptions-1.json: xxx
 
 service:
-  sessionAffinity: None
-  internalTrafficPolicy: Cluster
-  ipFamily: IPv4
-  ipFamilyPolicy: SingleStack
+  enabled: true
+  type: ClusterIP
+  clusterIP: x.x.x.x
   ports:
     - name: serviceport
       port: 8090
-      protocol: TCP
       targetPort: 8090
+      protocol: TCP
+  sessionAffinity: None
 
-autoscaling:
+hpa:
   enabled: true
-  container: roadnetworkservice
   minReplicas: 1
   maxReplicas: 5
-  targetCPUAverageValue: 560m
-  scaleUp:
-    pods: 2
-    periodSeconds: 60
-    selectPolicy: Max
-    stabilizationWindowSeconds: 60
-  scaleDown:
-    pods: 1
-    periodSeconds: 180
-    selectPolicy: Max
-    stabilizationWindowSeconds: 300
-  additionalMetrics:
-    - container: roadnetworkservice-rnsdata-sidecar
-      name: cpu
-      target:
-        averageValue: 28m
-        type: AverageValue
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        container: roadnetworkservice
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 560m
+    - type: ContainerResource
+      containerResource:
+        container: roadnetworkservice-rnsdata-sidecar
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 28m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 180
 
 networkPolicy:
   enabled: true
   policyTypes:
     - Ingress
     - Egress
+  podSelector:
+    matchLabels:
+      app: roadnetworkservice
   ingress:
     - from:
         - podSelector:
@@ -202,4 +255,33 @@ networkPolicy:
         - podSelector:
             matchLabels:
               app: positianstream
-        - podSelector: match
+        - podSelector:
+            matchLabels:
+              app: mtd
+      ports:
+        - port: 8090
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+      ports:
+        - port: 8090
+          protocol: TCP
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
