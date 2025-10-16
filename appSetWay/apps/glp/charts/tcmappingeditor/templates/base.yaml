@@ -1,0 +1,7 @@
+{{ include "library.configmap" . }}
+{{ include "library.secrets" . }}
+{{ include "library.deployment" . }}
+{{ include "library.service" . }}
+{{ include "library.ingress" . }}
+{{ include "library.hpa" . }}
+{{ include "library.networkPolicy" . }}
