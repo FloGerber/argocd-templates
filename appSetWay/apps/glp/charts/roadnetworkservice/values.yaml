@@ -57,7 +57,9 @@ deployment:
 
 containers:
   - name: roadnetworkservice
-    image: docker.x/road-network-service:2.68.0-202509040819
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     command:
       - sh
@@ -159,7 +161,9 @@ containers:
         readOnly: true
 
   - name: roadnetworkservice-rnsdata-sidecar
-    image: docker.x/bundle:europe-250707-202507091453
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     lifecycle:
       preStop:

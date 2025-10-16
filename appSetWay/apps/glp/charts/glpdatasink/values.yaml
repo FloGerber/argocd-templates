@@ -56,7 +56,9 @@ deployment:
 
 containers:
   - name: glpdatasink
-    image: docker.repo.xxx.xxx/geolocationplatformgroup/glp-data-sink:4.23.6-saas-202509020949
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport
@@ -164,7 +166,9 @@ containers:
 
 initContainers:
   - name: glpdatasink-init
-    image: docker.repo.xxx.xxx/geolocationplatformgroup/glp-data-sink:4.23.6-saas-202509020949
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     env:
       - name: SERVER_PORT

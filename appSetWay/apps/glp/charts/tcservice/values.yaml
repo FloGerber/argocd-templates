@@ -60,7 +60,9 @@ deployment:
 
 initContainers:
   - name: tcservice-init
-    image: docker.repo.xxx.xxx/build-and-test/ansible:2.18.8.0-b02
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     command:
       - /bin/bash
@@ -98,7 +100,9 @@ volumes:
 
 containers:
   - name: tcservice
-    image: docker/tolling-engine-xx
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - containerPort: 8819
@@ -177,7 +181,9 @@ containers:
         readOnly: true
 
   - name: tcservice-tower-sidecar
-    image: docker:2.13.1-
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - containerPort: 8050
@@ -253,7 +259,9 @@ containers:
         readOnly: true
 
   - name: tcservice-linker-sidecar
-    image: docker/tc-mapping-linker:1.35.0-saas-202508270901
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - containerPort: 8077

@@ -54,7 +54,9 @@ deployment:
 
 containers:
   - name: positianui
-    image: docker.repo.xxx.xxx/servicecatalog/positian-ui:3.30.4-saas-202509010623
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport

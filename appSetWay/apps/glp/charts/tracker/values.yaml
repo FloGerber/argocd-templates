@@ -56,7 +56,9 @@ deployment:
 
 containers:
   - name: tracker
-    image: docker.repo.xxx.xxx/geolocationplatformgroup/tracker:1.16.0-healthcheck-SNAPSHOT
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - containerPort: 8080

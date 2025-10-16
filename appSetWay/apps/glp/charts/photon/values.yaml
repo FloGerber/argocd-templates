@@ -53,7 +53,9 @@ deployment:
 
 containers:
   - name: photonbg
-    image: docker.repo.xxx.xxx/servicecatalog/nominatim/photon:0.7.3-xxxx-240101-patch-20250707-202508290626
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport

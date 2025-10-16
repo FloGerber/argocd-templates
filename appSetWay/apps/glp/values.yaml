@@ -1,38 +1,83 @@
+global:
+  imageRegistry: docker.repo.xxx.xxx
+  imagePullPolicy: Always
+
+images:
+  photonbg: "photonbg:1.2.3"
+  positianstream: "positian-stream:4.5.6"
+  positianui: "positian-ui:3.30.4-saas-202509010623"
+  roadnetworkservice: "road-network-service:2.68.0-202509040819"
+  tcmappingeditor: "tc-mapping-editor:1.20.1-saas-202509011301"
+  tcmsky: "tcm-sky:2.0.0-saas-202507100937"
+  tcservicebg: "tolling-engine-xx:1.0.0"
+  tcservicebgTower: "tower:2.13.1"
+  tcservicebgLinker: "tc-mapping-linker:1.35.0-saas-202508270901"
+  tileserver: "httpcache:latest"
+  tileserverSidecar: "tileserver-gl:latest"
+  tracker: "tracker:1.16.0-healthcheck-SNAPSHOT"
+  tripbuilder: "trip-builder:2.55.4-202508260804"
+
+# Example of how each subchart consumes the global image
 photonbg:
-  replicaCount: 1
+  image:
+    repository: {{ .Values.global.imageRegistry }}/servicecatalog
+    tag: {{ .Values.images.photonbg }}
 
 positianstream:
-  autoscaling:
-    maxReplicas: 4
+  image:
+    repository: {{ .Values.global.imageRegistry }}/servicecatalog
+    tag: {{ .Values.images.positianstream }}
 
 positianui:
-  ingress:
-    enabled: true
+  image:
+    repository: {{ .Values.global.imageRegistry }}/servicecatalog
+    tag: {{ .Values.images.positianui }}
 
 roadnetworkservice:
-  sidecars:
-    enabled: true
+  image:
+    repository: {{ .Values.global.imageRegistry }}
+    tag: {{ .Values.images.roadnetworkservice }}
 
 tcmappingeditor:
-  ingress:
-    enabled: true
+  image:
+    repository: {{ .Values.global.imageRegistry }}/geolocationplatformgroup
+    tag: {{ .Values.images.tcmappingeditor }}
 
 tcmsky:
-  ingress:
-    enabled: true
+  image:
+    repository: {{ .Values.global.imageRegistry }}/servicecatalog
+    tag: {{ .Values.images.tcmsky }}
 
 tcservicebg:
-  autoscaling:
-    maxReplicas: 4
+  main:
+    image:
+      repository: {{ .Values.global.imageRegistry }}
+      tag: {{ .Values.images.tcservicebg }}
+  tower:
+    image:
+      repository: {{ .Values.global.imageRegistry }}
+      tag: {{ .Values.images.tcservicebgTower }}
+  linker:
+    image:
+      repository: {{ .Values.global.imageRegistry }}
+      tag: {{ .Values.images.tcservicebgLinker }}
 
 tileserver:
-  autoscaling:
-    maxReplicas: 5
+  main:
+    image:
+      repository: {{ .Values.global.imageRegistry }}
+      tag: {{ .Values.images.tileserver }}
+  sidecar:
+    image:
+      repository: {{ .Values.global.imageRegistry }}
+      tag: {{ .Values.images.tileserverSidecar }}
 
 tracker:
-  autoscaling:
-    maxReplicas: 1
+  image:
+    repository: {{ .Values.global.imageRegistry }}/geolocationplatformgroup
+    tag: {{ .Values.images.tracker }}
 
 tripbuilder:
-  autoscaling:
-    maxReplicas: 4
+  image:
+    repository: {{ .Values.global.imageRegistry }}/servicecatalog
+    tag: {{ .Values.images.tripbuilder }}

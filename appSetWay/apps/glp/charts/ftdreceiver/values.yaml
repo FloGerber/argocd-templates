@@ -56,7 +56,9 @@ deployment:
 
 containers:
   - name: ftdreceiver
-    image: docker.repo.xxx.xxx/servicecatalog/ftd-receiver:1.31.7-saas-202509041300
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport

@@ -56,7 +56,9 @@ deployment:
 
 containers:
   - name: tileserver
-    image: docker.x/httpcache
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - containerPort: 8090
@@ -137,7 +139,9 @@ containers:
         failureThreshold: 13
 
   - name: tileserver-tileserver-sidecar
-    image: docker.x/tileserver-gl
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - containerPort: 8080

@@ -56,7 +56,9 @@ deployment:
 
 containers:
   - name: mtd
-    image: docker.repo.xxx.xxx/servicecatalog/mtd-core:2.23.1-saas-202508270920
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport

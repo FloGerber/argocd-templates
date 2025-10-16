@@ -54,7 +54,9 @@ deployment:
 
 containers:
   - name: tcmappingeditor
-    image: docker.repo.xxx.xxx/geolocationplatformgroup/tc-mapping-editor:1.20.1-saas-202509011301
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport

@@ -56,7 +56,9 @@ deployment:
 
 containers:
   - name: chargereportserver
-    image: docker.repo.xxxx.com/xxxxx/charge-report-server:1.16.2-202509020742
+    image:
+      repository: xxx
+      tag: xxx
     imagePullPolicy: Always
     ports:
       - name: serviceport

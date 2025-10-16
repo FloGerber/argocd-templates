@@ -56,7 +56,9 @@ deployment:
 
 containers:
   - name: positianstream
-    image: docker.repo.xxx.xxx/positian-stream:2.38.2-202508251041
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport

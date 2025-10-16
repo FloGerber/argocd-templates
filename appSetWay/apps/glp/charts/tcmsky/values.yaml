@@ -54,7 +54,9 @@ deployment:
 
 containers:
   - name: tcmsky
-    image: docker.repo.xxx.xxx/servicecatalog/tcm-sky:2.0.0-saas-202507100937
+    image:
+      repository: xx
+      tag: xx
     imagePullPolicy: Always
     ports:
       - name: serviceport
