@@ -2,8 +2,8 @@
 {{- if .Values.initContainers }}
 {{- range .Values.initContainers }}
 - name: {{ .name }}
-  image: {{ .image }}
-  imagePullPolicy: {{ .imagePullPolicy | default .Values.global.imagePullPolicy | default "Always" }}
+  image: {{ .image.repository }}:{{ .image.tag }}
+  imagePullPolicy: {{ .image.pullPolicy | default .Values.global.imagePullPolicy | default "Always" }}
   {{- if .command }}
   command: {{ toYaml .command | nindent 2 }}
   {{- end }}
