@@ -1,138 +1,92 @@
-global:
-  imageRegistry: docker.repo.xxx.xxx
-  imagePullPolicy: Always
-
-images:
-  photonbg:
-    repository: servicecatalog/photonbg
-    tag: "1.2.3"
-  positianstream:
-    repository: servicecatalog/positian-stream
-    tag: "4.5.6"
-  positianui:
-    repository: servicecatalog/positian-ui
-    tag: "3.30.4-saas-202509010623"
-  roadnetworkservice:
-    repository: road-network-service
-    tag: "2.68.0-202509040819"
-  tcmappingeditor:
-    repository: geolocationplatformgroup/tc-mapping-editor
-    tag: "1.20.1-saas-202509011301"
-  tcmsky:
-    repository: servicecatalog/tcm-sky
-    tag: "2.0.0-saas-202507100937"
-  tcservicebg:
-    repository: tolling-engine-xx
-    tag: "1.0.0"
-  tcservicebgTower:
-    repository: tower
-    tag: "2.13.1"
-  tcservicebgLinker:
-    repository: tc-mapping-linker
-    tag: "1.35.0-saas-202508270901"
-  tileserver:
-    repository: httpcache
-    tag: "latest"
-  tileserverSidecar:
-    repository: tileserver-gl
-    tag: "latest"
-  tracker:
-    repository: geolocationplatformgroup/tracker
-    tag: "1.16.0-healthcheck-SNAPSHOT"
-  tripbuilder:
-    repository: servicecatalog/trip-builder
-    tag: "2.55.4-202508260804"
-
 # Service overrides
 photonbg:
   containers:
     - name: photonbg
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.photonbg.repository }}
-        tag: {{ .Values.images.photonbg.tag }}
-        pullPolicy: {{ .Values.global.imagePullPolicy }}
+        repository: docker.repo.xxx.xxx/servicecatalog/photonbg
+        tag: "latest"
 
 positianstream:
   containers:
     - name: positianstream
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.positianstream.repository }}
-        tag: {{ .Values.images.positianstream.tag }}
+        repository: docker.repo.xxx.xxx/servicecatalog/positian-stream
+        tag: "latest"
 
 positianui:
   containers:
     - name: positianui
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.positianui.repository }}
-        tag: {{ .Values.images.positianui.tag }}
+        repository: docker.repo.xxx.xxx/servicecatalog/positian-ui
+        tag: "latest"
 
 roadnetworkservice:
   containers:
     - name: roadnetworkservice
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.roadnetworkservice.repository }}
-        tag: {{ .Values.images.roadnetworkservice.tag }}
+        repository: docker.repo.xxx.xxx/road-network-service
+        tag: "latest"
 
 tcmappingeditor:
   containers:
     - name: tcmappingeditor
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcmappingeditor.repository }}
-        tag: {{ .Values.images.tcmappingeditor.tag }}
+        repository: docker.repo.xxx.xxx/geolocationplatformgroup/tc-mapping-editor
+        tag: "latest"
 
 tcmsky:
   containers:
     - name: tcmsky
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcmsky.repository }}
-        tag: {{ .Values.images.tcmsky.tag }}
+        repository: docker.repo.xxx.xxx/servicecatalog/tcm-sky
+        tag: "latest"
 
-tcservicebg:
+tcservice:
   containers:
-    - name: tcservicebg
+    - name: tcservice
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebg.repository }}
-        tag: {{ .Values.images.tcservicebg.tag }}
-    - name: tcservicebg-tower
+        repository: docker.repo.xxx.xxx/tolling-engine-xx
+        tag: "latest"
+    - name: tcservice-tower
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebgTower.repository }}
-        tag: {{ .Values.images.tcservicebgTower.tag }}
-    - name: tcservicebg-linker
+        repository: docker.repo.xxx.xxx/tower
+        tag: "latest"
+    - name: tcservice-linker
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebgLinker.repository }}
-        tag: {{ .Values.images.tcservicebgLinker.tag }}
+        repository: docker.repo.xxx.xxx/tc-mapping-linker
+        tag: "latest"
   initContainers:
-    - name: tcservicebg-init
+    - name: tcservice-init
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebg.repository }}
-        tag: {{ .Values.images.tcservicebg.tag }}
+        repository: docker.repo.xxx.xxx/tower
+        tag: ""latest"
 
 tileserver:
   containers:
     - name: tileserver
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tileserver.repository }}
-        tag: {{ .Values.images.tileserver.tag }}
+        repository: docker.repo.xxx.xxx/httpcache
+        tag: "latest"
     - name: tileserver-sidecar
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tileserverSidecar.repository }}
-        tag: {{ .Values.images.tileserverSidecar.tag }}
+        repository: docker.repo.xxx.xxx/tileserver-gl
+        tag: "latest"
 
 tracker:
   containers:
     - name: tracker
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tracker.repository }}
-        tag: {{ .Values.images.tracker.tag }}
+        repository: docker.repo.xxx.xxx/geolocationplatformgroup/tracker
+        tag: "latest"
 
 tripbuilder:
   containers:
     - name: tripbuilder
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tripbuilder.repository }}
-        tag: {{ .Values.images.tripbuilder.tag }}
+        repository: docker.repo.xxx.xxx/ervicecatalog/trip-builder
+        tag: "latest"
   initContainers:
     - name: tripbuilder-init
       image:
-        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tripbuilder.repository }}
-        tag: {{ .Values.images.tripbuilder.tag }}
+        repository: docker.repo.xxx.xxx/
+        tag: "latest"
