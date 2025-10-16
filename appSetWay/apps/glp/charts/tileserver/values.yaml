@@ -1,113 +1,147 @@
-app: tileserver
-deployment_commit: 0
-deployment_ref: xx
+fullnameOverride: tileserver
 
-replicaCount: 1
-image:
-  repository: docker./tileserver/httpcache
-  tag: latest
+deployment:
+  enabled: true
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  podAnnotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8090"
+    prometheus.io/scrape: "true"
+    redeploytrigger: xxx
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 10
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - tileserver
+            topologyKey: topology.kubernetes.io/zone
+        - weight: 5
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - tileserver
+            topologyKey: kubernetes.io/hostname
+  hostAliases:
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx.blob.
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx-secondary.blob.
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.blob.
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.redis.cache
+  terminationGracePeriodSeconds: 60
+  serviceAccount:
+    automount: false
 
-containerPorts:
-  - name: serviceport
-    port: 8090
-    protocol: TCP
+containers:
+  - name: tileserver
+    image: docker.x/httpcache
+    imagePullPolicy: Always
+    ports:
+      - containerPort: 8090
+        name: serviceport
+        protocol: TCP
+    env:
+      - name: SOURCE_URL
+        value: http://localhost:8080
+      - name: CACHE_VERSION
+        value: xxxxrverglVersion
+      - name: AZ_STORAGE_ACCOUNT
+        value: https://xxxx.blob.
+      - name: AZ_BLOB_CONTAINER
+        value: xx-tilecache
+      - name: SERVER_LISTEN_ADDRESS
+        value: :8090
+      - name: LRU_ITEMS
+        value: "32000"
+      - name: MAX_CONCURRENT_SOURCE_REQUESTS
+        value: "40"
+      - name: HEALTH_URL_SCRIPT
+        value: math.randomseed(os.time());math.random();math.random();math.random();z=math.random(16,18);return string.format("http://localhost:8090/styles/english/12/2230/1423.png,http://localhost:8090/styles/english/%d/%d/%d.png",z,math.random(2^z-1),math.random(2^z-1))
+      - name: GOMAXPROCS
+        value: "1"
+      - name: LOG_LEVEL
+        value: ERROR
+      - name: GOGC
+        value: "100"
+      - name: GOMEMLIMIT
+        value: 512MiB
+      - name: FILTER_REGEXP
+        value: /(0|[1-9][0-9]*)/(0|[1-9][0-9]*)/(0|[1-9][0-9]*).png\??$
+    envFrom:
+      - secretRef:
+          name: tileserver-secret
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1Gi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 25m
+        memory: 1Gi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+    probes:
+      liveness:
+        httpGet:
+          path: /health
+          port: 8090
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /health
+          port: 8090
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /health
+          port: 8090
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 13
 
-env:
-  - name: SOURCE_URL
-    value: http://locst:8080
-  - name: CACHE_VERSION
-    value: xx--
-  - name: AZ_STORAGE_ACCOUNT
-    value: https://xxxx.net
-  - name: AZ_BLOB_CONTAINER
-    value: xx-tilecache
-  - name: SERVER_LISTEN_ADDRESS
-    value: :8090
-  - name: LRU_ITEMS
-    value: "32000"
-  - name: MAX_CONCURRENT_SOURCE_REQUESTS
-    value: "40"
-  - name: HEALTH_URL_SCRIPT
-    value: math.om(2^z-1),math.random(2^z-1))
-  - name: GOMAXPROCS
-    value: "1"
-  - name: LOG_LEVEL
-    value: ERROR
-  - name: GOGC
-    value: "100"
-  - name: GOMEMLIMIT
-    value: 512MiB
-  - name: FILTER_REGEXP
-    value: /(0|[1-9][0-9]*)/(0|[1-9][0-9]*)/(0|[1-9][0-9]*).png\??$
-
-envFrom:
-  - secretRef:
-      name: tileserver-secret
-
-resources:
-  limits:
-    cpu: 100m
-    memory: 1Gi
-    ephemeral-storage: 1Gi
-  requests:
-    cpu: 25m
-    memory: 1Gi
-    ephemeral-storage: 1Gi
-
-lifecycle:
-  preStop:
-    exec:
-      command: ["sleep", "20"]
-
-livenessProbe:
-  httpGet:
-    path: /health
-    port: 8090
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 30
-  successThreshold: 1
-  failureThreshold: 10
-
-readinessProbe:
-  httpGet:
-    path: /health
-    port: 8090
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 30
-  successThreshold: 1
-  failureThreshold: 5
-
-startupProbe:
-  httpGet:
-    path: /health
-    port: 8090
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 30
-  successThreshold: 1
-  failureThreshold: 13
-
-terminationGracePeriodSeconds: 60
-
-hostAliases:
-  - ip: x.x.x.x
-    hostnames:
-      - xxxxx.windows.net
-      - xxxxx-swindows.net
-      - xxxx.blob..net
-      - xxxx.redis..net
-
-sidecars:
   - name: tileserver-tileserver-sidecar
-    image: docker./tileserver/tileserver-gl
-    containerPorts:
-      - name: serviceport
-        port: 8080
+    image: docker.x/tileserver-gl
+    imagePullPolicy: Always
+    ports:
+      - containerPort: 8080
+        name: serviceport
         protocol: TCP
     env:
       - name: READ2HTTP_FILE_NAME
@@ -123,6 +157,10 @@ sidecars:
     envFrom:
       - secretRef:
           name: tileserver-sidecar-secret
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
     resources:
       limits:
         cpu: 500m
@@ -132,83 +170,92 @@ sidecars:
         cpu: 500m
         memory: 2560Mi
         ephemeral-storage: 1Gi
-    livenessProbe:
-      httpGet:
-        path: /health
-        port: 8080
-        scheme: HTTP
-      periodSeconds: 20
-      timeoutSeconds: 30
-      successThreshold: 1
-      failureThreshold: 10
-    readinessProbe:
-      httpGet:
-        path: /health
-        port: 8080
-        scheme: HTTP
-      periodSeconds: 20
-      timeoutSeconds: 30
-      successThreshold: 1
-      failureThreshold: 5
-    startupProbe:
-      httpGet:
-        path: /health
-        port: 8080
-        scheme: HTTP
-      periodSeconds: 20
-      timeoutSeconds: 30
-      successThreshold: 1
-      failureThreshold: 13
-    lifecycle:
-      preStop:
-        exec:
-          command: ["sleep", "20"]
     securityContext:
       allowPrivilegeEscalation: false
+    probes:
+      liveness:
+        httpGet:
+          path: /health
+          port: 8080
+        periodSeconds: 20
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /health
+          port: 8080
+        periodSeconds: 20
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /health
+          port: 8080
+        periodSeconds: 20
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 13
 
 service:
-  sessionAffinity: None
-  internalTrafficPolicy: Cluster
-  ipFamily: IPv4
-  ipFamilyPolicy: SingleStack
+  enabled: true
+  type: ClusterIP
+  clusterIP: x.x.x.x
   ports:
     - name: serviceport
       port: 8090
-      protocol: TCP
       targetPort: 8090
+      protocol: TCP
     - name: serviceport-tileserver
       port: 8050
-      protocol: TCP
       targetPort: 8080
+      protocol: TCP
+  sessionAffinity: None
 
-autoscaling:
+hpa:
   enabled: true
-  container: tileserver
   minReplicas: 1
   maxReplicas: 5
-  targetCPUAverageValue: 70m
-  scaleUp:
-    pods: 2
-    periodSeconds: 60
-    selectPolicy: Max
-    stabilizationWindowSeconds: 60
-  scaleDown:
-    pods: 1
-    periodSeconds: 180
-    selectPolicy: Max
-    stabilizationWindowSeconds: 300
-  additionalMetrics:
-    - container: tileserver-tileserver-sidecar
-      name: cpu
-      target:
-        averageValue: 350m
-        type: AverageValue
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        container: tileserver
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 70m
+    - type: ContainerResource
+      containerResource:
+        container: tileserver-tileserver-sidecar
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 350m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 180
 
 networkPolicy:
   enabled: true
   policyTypes:
     - Ingress
     - Egress
+  podSelector:
+    matchLabels:
+      app: tileserver
   ingress:
     - from:
         - podSelector:
@@ -227,40 +274,31 @@ networkPolicy:
         - port: 8090
           protocol: TCP
   egress:
-    - ports:
-        - port: 53
-          protocol: UDP
-      to:
+    - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/cluster-service: "true"
           podSelector:
             matchLabels:
               k8s-app: kube-dns
-    - ports:
+      ports:
+        - port: 53
+          protocol: UDP
+    - to:
+        - ipBlock:
+            cidr: x.x.x.x/32
+        - ipBlock:
+            cidr: x.x.x.x/32
+        - ipBlock:
+            cidr: x.x.x.x/32
+      ports:
         - port: 80
           protocol: TCP
         - port: 443
           protocol: TCP
-      to:
-        - ipBlock:
-            cidr: x.x.x.x/32
-        - ipBlock:
-            cidr: x.x.x.x/32
-        - ipBlock:
-            cidr: x.x.x.x/32
 
-secret:
-  enabled: true
-  data:
-    AZ_BLOB_SAS_TOKEN: xxx
-    AZMON_COLLECT_ENV: xxx=
-
-sidecarSecret:
-  enabled: true
-  name: tileserver-sidecar-secret
-  data:
-    AZMON_COLLECT_ENV: x
-    READ2HTTP_FILE_URL1: x
-    READ2HTTP_FILE_URL2: x
-    TILESERVER_CONFIG_URL: x
+secrets:
+  tileserver:
+    enabled: true
+    type: Opaque
+    data: AZ_BLOB_SAS
