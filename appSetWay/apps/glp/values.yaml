@@ -3,81 +3,136 @@ global:
   imagePullPolicy: Always
 
 images:
-  photonbg: "photonbg:1.2.3"
-  positianstream: "positian-stream:4.5.6"
-  positianui: "positian-ui:3.30.4-saas-202509010623"
-  roadnetworkservice: "road-network-service:2.68.0-202509040819"
-  tcmappingeditor: "tc-mapping-editor:1.20.1-saas-202509011301"
-  tcmsky: "tcm-sky:2.0.0-saas-202507100937"
-  tcservicebg: "tolling-engine-xx:1.0.0"
-  tcservicebgTower: "tower:2.13.1"
-  tcservicebgLinker: "tc-mapping-linker:1.35.0-saas-202508270901"
-  tileserver: "httpcache:latest"
-  tileserverSidecar: "tileserver-gl:latest"
-  tracker: "tracker:1.16.0-healthcheck-SNAPSHOT"
-  tripbuilder: "trip-builder:2.55.4-202508260804"
+  photonbg:
+    repository: servicecatalog/photonbg
+    tag: "1.2.3"
+  positianstream:
+    repository: servicecatalog/positian-stream
+    tag: "4.5.6"
+  positianui:
+    repository: servicecatalog/positian-ui
+    tag: "3.30.4-saas-202509010623"
+  roadnetworkservice:
+    repository: road-network-service
+    tag: "2.68.0-202509040819"
+  tcmappingeditor:
+    repository: geolocationplatformgroup/tc-mapping-editor
+    tag: "1.20.1-saas-202509011301"
+  tcmsky:
+    repository: servicecatalog/tcm-sky
+    tag: "2.0.0-saas-202507100937"
+  tcservicebg:
+    repository: tolling-engine-xx
+    tag: "1.0.0"
+  tcservicebgTower:
+    repository: tower
+    tag: "2.13.1"
+  tcservicebgLinker:
+    repository: tc-mapping-linker
+    tag: "1.35.0-saas-202508270901"
+  tileserver:
+    repository: httpcache
+    tag: "latest"
+  tileserverSidecar:
+    repository: tileserver-gl
+    tag: "latest"
+  tracker:
+    repository: geolocationplatformgroup/tracker
+    tag: "1.16.0-healthcheck-SNAPSHOT"
+  tripbuilder:
+    repository: servicecatalog/trip-builder
+    tag: "2.55.4-202508260804"
 
-# Example of how each subchart consumes the global image
+# Service overrides
 photonbg:
-  image:
-    repository: {{ .Values.global.imageRegistry }}/servicecatalog
-    tag: {{ .Values.images.photonbg }}
+  containers:
+    - name: photonbg
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.photonbg.repository }}
+        tag: {{ .Values.images.photonbg.tag }}
+        pullPolicy: {{ .Values.global.imagePullPolicy }}
 
 positianstream:
-  image:
-    repository: {{ .Values.global.imageRegistry }}/servicecatalog
-    tag: {{ .Values.images.positianstream }}
+  containers:
+    - name: positianstream
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.positianstream.repository }}
+        tag: {{ .Values.images.positianstream.tag }}
 
 positianui:
-  image:
-    repository: {{ .Values.global.imageRegistry }}/servicecatalog
-    tag: {{ .Values.images.positianui }}
+  containers:
+    - name: positianui
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.positianui.repository }}
+        tag: {{ .Values.images.positianui.tag }}
 
 roadnetworkservice:
-  image:
-    repository: {{ .Values.global.imageRegistry }}
-    tag: {{ .Values.images.roadnetworkservice }}
+  containers:
+    - name: roadnetworkservice
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.roadnetworkservice.repository }}
+        tag: {{ .Values.images.roadnetworkservice.tag }}
 
 tcmappingeditor:
-  image:
-    repository: {{ .Values.global.imageRegistry }}/geolocationplatformgroup
-    tag: {{ .Values.images.tcmappingeditor }}
+  containers:
+    - name: tcmappingeditor
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcmappingeditor.repository }}
+        tag: {{ .Values.images.tcmappingeditor.tag }}
 
 tcmsky:
-  image:
-    repository: {{ .Values.global.imageRegistry }}/servicecatalog
-    tag: {{ .Values.images.tcmsky }}
+  containers:
+    - name: tcmsky
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcmsky.repository }}
+        tag: {{ .Values.images.tcmsky.tag }}
 
 tcservicebg:
-  main:
-    image:
-      repository: {{ .Values.global.imageRegistry }}
-      tag: {{ .Values.images.tcservicebg }}
-  tower:
-    image:
-      repository: {{ .Values.global.imageRegistry }}
-      tag: {{ .Values.images.tcservicebgTower }}
-  linker:
-    image:
-      repository: {{ .Values.global.imageRegistry }}
-      tag: {{ .Values.images.tcservicebgLinker }}
+  containers:
+    - name: tcservicebg
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebg.repository }}
+        tag: {{ .Values.images.tcservicebg.tag }}
+    - name: tcservicebg-tower
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebgTower.repository }}
+        tag: {{ .Values.images.tcservicebgTower.tag }}
+    - name: tcservicebg-linker
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebgLinker.repository }}
+        tag: {{ .Values.images.tcservicebgLinker.tag }}
+  initContainers:
+    - name: tcservicebg-init
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tcservicebg.repository }}
+        tag: {{ .Values.images.tcservicebg.tag }}
 
 tileserver:
-  main:
-    image:
-      repository: {{ .Values.global.imageRegistry }}
-      tag: {{ .Values.images.tileserver }}
-  sidecar:
-    image:
-      repository: {{ .Values.global.imageRegistry }}
-      tag: {{ .Values.images.tileserverSidecar }}
+  containers:
+    - name: tileserver
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tileserver.repository }}
+        tag: {{ .Values.images.tileserver.tag }}
+    - name: tileserver-sidecar
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tileserverSidecar.repository }}
+        tag: {{ .Values.images.tileserverSidecar.tag }}
 
 tracker:
-  image:
-    repository: {{ .Values.global.imageRegistry }}/geolocationplatformgroup
-    tag: {{ .Values.images.tracker }}
+  containers:
+    - name: tracker
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tracker.repository }}
+        tag: {{ .Values.images.tracker.tag }}
 
 tripbuilder:
-  image:
-    repository: {{ .Values.global.imageRegistry }}/servicecatalog
-    tag: {{ .Values.images.tripbuilder }}
+  containers:
+    - name: tripbuilder
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tripbuilder.repository }}
+        tag: {{ .Values.images.tripbuilder.tag }}
+  initContainers:
+    - name: tripbuilder-init
+      image:
+        repository: {{ .Values.global.imageRegistry }}/{{ .Values.images.tripbuilder.repository }}
+        tag: {{ .Values.images.tripbuilder.tag }}
