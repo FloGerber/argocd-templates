@@ -52,5 +52,5 @@ dependencies:
     version: 0.0.2
     repository: file://charts/tracker
   - name: tripbuilder
-    version: 0.0.2
+    version: 0.0.4
     repository: file://charts/tripbuilder

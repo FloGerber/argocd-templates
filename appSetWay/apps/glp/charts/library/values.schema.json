@@ -4,22 +4,6 @@
   "description": "Validate values for the Library Helm-Chart. Ensure that Containers, InitContainer, images and Deployements defind properly.",
   "type": "object",
   "properties": {
-    "global": {
-      "type": "object",
-      "description": "Global settings for all services.",
-      "properties": {
-        "imageRegistry": {
-          "type": "string",
-          "description": "Base URL for all container Images (example: docker.hub.io)."
-        },
-        "imagePullPolicy": {
-          "type": "string",
-          "enum": ["Always", "IfNotPresent", "Never"],
-          "description": "default image Pull-Policy for container images."
-        }
-      },
-      "required": ["imageRegistry"]
-    },
     "containers": {
       "type": "array",
       "description": "list of all container for the service.",
@@ -142,5 +126,5 @@
       "required": ["enabled"]
     }
   },
-  "required": ["global", "deployment"]
+  "required": ["deployment"]
 }

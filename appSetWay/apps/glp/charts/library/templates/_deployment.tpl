@@ -11,7 +11,7 @@ This template delegates most of the heavy lifting to smaller helpers:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "library.fullname" . }}
+  name: {{ include "library.fullname" . | trim }}
   labels: {{ include "library.labels" . | nindent 4 }}
   {{- with .Values.deployment.annotations }}
   annotations: {{ toYaml . | nindent 4 }}

@@ -3,7 +3,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "library.fullname" . }}-network-policy
+  name: {{ include "library.fullname" . | trim }}-network-policy
   labels: {{ include "library.labels" . | nindent 4 }}
 spec:
   podSelector:

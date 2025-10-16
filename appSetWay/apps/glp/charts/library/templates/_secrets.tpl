@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "library.fullname" . }}-secret
+  name: {{ include "library.fullname" . | trim }}-secret
   labels: {{ include "library.labels" . | nindent 4 }}
   {{- with .Values.secrets.annotations }}
   annotations:

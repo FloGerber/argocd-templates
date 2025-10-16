@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "library.fullname" . }}
+  name: {{ include "library.fullname" . | trim }}
   labels: {{ include "library.labels" . | nindent 4 }}
   {{- with .Values.service.annotations }}
   annotations:

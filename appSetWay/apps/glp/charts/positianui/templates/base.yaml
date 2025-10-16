@@ -1,7 +1,13 @@
-{{ include "library.configmap" . }}
-{{ include "library.secrets" . }}
-{{ include "library.deployment" . }}
-{{ include "library.service" . }}
-{{ include "library.ingress" . }}
-{{ include "library.hpa" . }}
-{{ include "library.networkPolicy" . }}
+{{ include "library.configmap" . | nindent 0 }}
+---
+{{ include "library.secrets" . | nindent 0 }}
+---
+{{ include "library.deployment" . | nindent 0 }}
+---
+{{ include "library.service" . | nindent 0 }}
+---
+{{ include "library.ingress" . | nindent 0 }}
+---
+{{ include "library.hpa" . | nindent 0 }}
+---
+{{ include "library.networkPolicy" . | nindent 0 }}

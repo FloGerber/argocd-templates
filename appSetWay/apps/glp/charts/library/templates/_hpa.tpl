@@ -3,13 +3,13 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "library.fullname" . }}
+  name: {{ include "library.fullname" . | trim }}
   labels: {{ include "library.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "library.fullname" . }}
+    name: {{ include "library.fullname" . | trim }}
   minReplicas: {{ .Values.hpa.minReplicas | default 1 }}
   maxReplicas: {{ .Values.hpa.maxReplicas | default 3 }}
   metrics:

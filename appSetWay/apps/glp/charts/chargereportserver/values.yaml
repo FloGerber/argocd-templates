@@ -1,5 +1,9 @@
 fullnameOverride: chargereportserver
 
+# ─────────────────────────────────────────────────────────────
+# Deployment Configuration
+# ─────────────────────────────────────────────────────────────
+
 deployment:
   enabled: true
   replicas: 1
@@ -53,6 +57,10 @@ deployment:
   terminationGracePeriodSeconds: 60
   serviceAccount:
     automount: false
+
+# ─────────────────────────────────────────────────────────────
+# Container Configuration
+# ─────────────────────────────────────────────────────────────
 
 containers:
   - name: chargereportserver
