@@ -1,40 +1,51 @@
-{{- define "library.containers" }}
-{{- range .Values.containers }}
-- name: {{ .name }}
-  image: {{ .image.repository }}:{{ .image.tag }}
+{{/* 
+Render a single container spec.
+Expects:
+- .name (string)
+- .image.repository (string)
+- .image.tag (string)
+- .image.pullPolicy (string, optional)
+*/}}
+{{- define "library.container" -}}
+- name: {{ required "container.name is required" .name }}
+  image: {{ required "container.image.repository is required" .image.repository }}:{{ required "container.image.tag is required" .image.tag }}
   imagePullPolicy: {{ .image.pullPolicy | default .Values.global.imagePullPolicy | default "Always" }}
-  {{- if .command }}
-  command: {{ toYaml .command | nindent 2 }}
+  {{- with .command }}
+  command: {{ toYaml . | nindent 2 }}
   {{- end }}
-  {{- if .args }}
-  args: {{ toYaml .args | nindent 2 }}
+  {{- with .args }}
+  args: {{ toYaml . | nindent 2 }}
   {{- end }}
-  {{- if .ports }}
-  ports:
-    {{- toYaml .ports | nindent 4 }}
+  {{- with .ports }}
+  ports: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .env }}
-  env:
-    {{- toYaml .env | nindent 4 }}
+  {{- with .env }}
+  env: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .envFrom }}
-  envFrom:
-    {{- toYaml .envFrom | nindent 4 }}
+  {{- with .envFrom }}
+  envFrom: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .resources }}
-  resources:
-    {{- toYaml .resources | nindent 4 }}
+  {{- with .resources }}
+  resources: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .volumeMounts }}
-  volumeMounts:
-    {{- toYaml .volumeMounts | nindent 4 }}
+  {{- with .volumeMounts }}
+  volumeMounts: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .lifecycle }}
-  lifecycle:
-    {{- toYaml .lifecycle | nindent 4 }}
+  {{- with .lifecycle }}
+  lifecycle: {{ toYaml . | nindent 4 }}
   {{- end }}
   {{- include "library.probes" . | indent 2 }}
   securityContext:
     allowPrivilegeEscalation: {{ .securityContext.allowPrivilegeEscalation | default false }}
+{{- end }}
+
+{{/* Render all containers */}}
+{{- define "library.containers" -}}
+{{- if .Values.containers }}
+{{- range .Values.containers }}
+{{ include "library.container" . | nindent 0 }}
+{{- end }}
+{{- else }}
+# no containers defined
 {{- end }}
 {{- end }}

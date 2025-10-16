@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Library Helm Chart Values Schema",
+  "description": "Validate values for the Library Helm-Chart. Ensure that Containers, InitContainer, images and Deployements defind properly.",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "description": "Global settings for all services.",
+      "properties": {
+        "imageRegistry": {
+          "type": "string",
+          "description": "Base URL for all container Images (example: docker.hub.io)."
+        },
+        "imagePullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "description": "default image Pull-Policy for container images."
+        }
+      },
+      "required": ["imageRegistry"]
+    },
+    "containers": {
+      "type": "array",
+      "description": "list of all container for the service.",
+      "items": {
+        "type": "object",
+        "required": ["name", "image"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "name of the container."
+          },
+          "image": {
+            "type": "object",
+            "required": ["repository", "tag"],
+            "properties": {
+              "repository": {
+                "type": "string",
+                "description": "Image name inluding path on registry site."
+              },
+              "tag": {
+                "type": "string",
+                "description": "Image tag (example: latest)."
+              },
+              "pullPolicy": {
+                "type": "string",
+                "enum": ["Always", "IfNotPresent", "Never"],
+                "description": "Pull-Policy for this container."
+              }
+            }
+          },
+          "resources": {
+            "type": "object",
+            "description": "resource limit for the container.",
+            "properties": {
+              "limits": {
+                "type": "object",
+                "properties": {
+                  "cpu": { "type": "string" },
+                  "memory": { "type": "string" }
+                }
+              },
+              "requests": {
+                "type": "object",
+                "properties": {
+                  "cpu": { "type": "string" },
+                  "memory": { "type": "string" }
+                }
+              }
+            }
+          },
+          "probes": {
+            "type": "object",
+            "description": "Liveness-, Readiness- and Startup-Probes.",
+            "properties": {
+              "liveness": { "type": "object" },
+              "readiness": { "type": "object" },
+              "startup": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "initContainers": {
+      "type": "array",
+      "description": "list of initContainers.",
+      "items": {
+        "type": "object",
+        "required": ["name", "image"],
+        "properties": {
+          "name": { "type": "string" },
+          "image": {
+            "type": "object",
+            "required": ["repository", "tag"],
+            "properties": {
+              "repository": { "type": "string" },
+              "tag": { "type": "string" },
+              "pullPolicy": {
+                "type": "string",
+                "enum": ["Always", "IfNotPresent", "Never"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "description": "deployment specific settings.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "enables the creation of a deployment."
+        },
+        "replicas": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "number of minimum replicas."
+        },
+        "strategy": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["RollingUpdate", "Recreate"]
+            },
+            "rollingUpdate": {
+              "type": "object",
+              "properties": {
+                "maxSurge": {
+                  "type": ["string", "integer"]
+                },
+                "maxUnavailable": {
+                  "type": ["string", "integer"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": ["enabled"]
+    }
+  },
+  "required": ["global", "deployment"]
+}

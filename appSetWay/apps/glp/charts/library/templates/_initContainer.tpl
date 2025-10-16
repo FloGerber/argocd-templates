@@ -1,38 +1,39 @@
-{{- define "library.initContainers" }}
-{{- if .Values.initContainers }}
-{{- range .Values.initContainers }}
-- name: {{ .name }}
-  image: {{ .image.repository }}:{{ .image.tag }}
+{{- define "library.initContainer" -}}
+- name: {{ required "initContainer.name is required" .name }}
+  image: {{ required "initContainer.image.repository is required" .image.repository }}:{{ required "initContainer.image.tag is required" .image.tag }}
   imagePullPolicy: {{ .image.pullPolicy | default .Values.global.imagePullPolicy | default "Always" }}
-  {{- if .command }}
-  command: {{ toYaml .command | nindent 2 }}
+  {{- with .command }}
+  command: {{ toYaml . | nindent 2 }}
   {{- end }}
-  {{- if .args }}
-  args: {{ toYaml .args | nindent 2 }}
+  {{- with .args }}
+  args: {{ toYaml . | nindent 2 }}
   {{- end }}
-  {{- if .env }}
-  env:
-    {{- toYaml .env | nindent 4 }}
+  {{- with .env }}
+  env: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .envFrom }}
-  envFrom:
-    {{- toYaml .envFrom | nindent 4 }}
+  {{- with .envFrom }}
+  envFrom: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .resources }}
-  resources:
-    {{- toYaml .resources | nindent 4 }}
+  {{- with .resources }}
+  resources: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .volumeMounts }}
-  volumeMounts:
-    {{- toYaml .volumeMounts | nindent 4 }}
+  {{- with .volumeMounts }}
+  volumeMounts: {{ toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .securityContext }}
-  securityContext:
-    {{- toYaml .securityContext | nindent 4 }}
+  {{- with .securityContext }}
+  securityContext: {{ toYaml . | nindent 4 }}
   {{- else }}
   securityContext:
     allowPrivilegeEscalation: false
   {{- end }}
 {{- end }}
+
+{{- define "library.initContainers" -}}
+{{- if .Values.initContainers }}
+{{- range .Values.initContainers }}
+{{ include "library.initContainer" . | nindent 0 }}
+{{- end }}
+{{- else }}
+# no initContainers defined
 {{- end }}
 {{- end }}

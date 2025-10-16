@@ -1,136 +1,116 @@
-# 🌍 Global defaults
+# Global settings
 global:
-  namespace: default
-  imagePullPolicy: Always
-  ingressClass: nginx
+  imageRegistry: docker.repo.xxx.xxx # Base URL for all container images
+  imagePullPolicy: Always # Default pull policy: Always, IfNotPresent, Never
 
-# 🛠 Deployment settings
+# Deployment configuration
 deployment:
-  enabled: true
-  replicas: 1
-  revisionHistoryLimit: 10
+  enabled: true # Enable Deployment resource
+  replicas: 1 # Number of pod replicas
+  revisionHistoryLimit: 10 # Number of old ReplicaSets to retain
   strategy:
-    type: RollingUpdate
+    type: RollingUpdate # Deployment strategy: RollingUpdate or Recreate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 25%
-  annotations: {}
-  podAnnotations: {}
-  affinity: {}
-  hostAliases: []
-  terminationGracePeriodSeconds: 60
-  serviceAccount:
-    name: default
-    automount: false
+      maxSurge: 1 # Max additional pods during update
+      maxUnavailable: "25%" # Max unavailable pods during update
+  annotations: {} # Optional deployment annotations
 
-# 🚀 Containers (main + sidecars)
-containers:
-  - name: app
-    image:
-      repository: xx
-      tag: xx
-    imagePullPolicy: Always
-    ports:
-      - name: http
-        containerPort: 80
-    env: []
-    envFrom: []
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-    volumeMounts: []
-    lifecycle: {}
-    probes:
-      liveness:
-        httpGet:
-          path: /
-          port: 80
-        initialDelaySeconds: 5
-        periodSeconds: 10
-      readiness:
-        httpGet:
-          path: /
-          port: 80
-        initialDelaySeconds: 5
-        periodSeconds: 10
-      startup: {}
+# Pod-level configuration
+terminationGracePeriodSeconds: 60 # Time to gracefully shut down pods
+podAnnotations: {} # Optional annotations for pod template
+affinity: {} # Pod affinity rules
+hostAliases: [] # Optional host aliases
 
-# ⚙️ Init containers
-initContainers: []
+# ServiceAccount configuration
+serviceAccount:
+  name: default # Name of the service account
+  automount: false # Whether to auto-mount the service account token
 
-# 🧱 Volumes
-volumes: []
+# Container configuration
+containers: [] # List of main containers
+# Example:
+# - name: app
+#   image:
+#     repository: servicecatalog/app
+#     tag: "1.0.0"
+#     pullPolicy: Always
+#   command: []
+#   args: []
+#   ports: []
+#   env: []
+#   envFrom: []
+#   resources:
+#     limits:
+#       cpu: "500m"
+#       memory: "256Mi"
+#     requests:
+#       cpu: "250m"
+#       memory: "128Mi"
+#   volumeMounts: []
+#   lifecycle: {}
+#   probes:
+#     liveness: {}
+#     readiness: {}
+#     startup: {}
+#   securityContext:
+#     allowPrivilegeEscalation: false
 
-# 📡 Service
+# Init container configuration
+initContainers: [] # List of init containers (same structure as containers)
+
+# Volume configuration
+volumes: [] # List of volumes
+# Example:
+# - name: config-volume
+#   configMap:
+#     name: my-config
+
+# ConfigMap configuration
+configmap:
+  enabled: false # Enable ConfigMap resource
+  annotations: {} # Optional annotations
+  data: {} # Key-value data entries
+  binaryData: {} # Binary data entries
+
+# Service configuration
 service:
-  enabled: true
-  type: ClusterIP
-  sessionAffinity: None
-  clusterIP: null
-  externalTrafficPolicy: null
-  annotations: {}
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
-      protocol: TCP
-  selectorLabels: {}
+  enabled: true # Enable Service resource
+  type: ClusterIP # ClusterIP, NodePort, LoadBalancer
+  sessionAffinity: None # None or ClientIP
+  clusterIP: "" # Optional static cluster IP
+  externalTrafficPolicy: "" # Optional: Local or Cluster
+  annotations: {} # Optional annotations
+  ports: [] # List of service ports
+  selectorLabels: {} # Optional custom selector labels
 
-# 🌐 Ingress
+# Ingress configuration
 ingress:
-  enabled: false
-  className: nginx
-  annotations: {}
-  hosts:
-    - host: example.com
-      paths:
-        - path: /
-          pathType: Prefix
-          servicePort: 80
-  tls: []
+  enabled: false # Enable Ingress resource
+  className: "" # Optional ingress class name
+  annotations: {} # Optional annotations
+  tls: [] # TLS configuration
+  hosts: [] # List of ingress hosts
+# Example:
+# - host: example.com
+#   paths:
+#     - path: /
+#       pathType: Prefix
+#       serviceName: my-service
+#       servicePort: 80
 
-# 📈 HorizontalPodAutoscaler
+# Horizontal Pod Autoscaler (HPA) configuration
 hpa:
-  enabled: false
+  enabled: false # Enable HPA resource
   minReplicas: 1
   maxReplicas: 3
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 60
-  behavior: {}
+  metrics: [] # List of HPA metrics
+  behavior: {} # Optional HPA behavior rules
 
-# 🔒 NetworkPolicy
+# NetworkPolicy configuration
 networkPolicy:
-  enabled: false
+  enabled: false # Enable NetworkPolicy resource
   policyTypes:
     - Ingress
     - Egress
-  ingress: []
-  egress: []
-
-# 🧪 ConfigMap
-configmap:
-  enabled: false
-  annotations: {}
-  data: {}
-  binaryData: {}
-
-# 🔐 Secrets
-secrets:
-  enabled: false
-  type: Opaque
-  annotations: {}
-  stringData: {}
-  data: {}
-
-# 🏷 Overrides
-fullnameOverride: ""
-nameOverride: ""
+  ingress: [] # List of ingress rules
+  egress: [] # List of egress rules
