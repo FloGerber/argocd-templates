@@ -1,5 +1,5 @@
 {{- define "library.ingress" }}
-{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.enabled | default false }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

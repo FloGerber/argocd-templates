@@ -1,7 +1,7 @@
 {{- define "library.initContainer" -}}
 - name: {{ required "initContainer.name is required" .name }}
   image: {{ required "initContainer.image.repository is required" .image.repository }}:{{ required "initContainer.image.tag is required" .image.tag }}
-  imagePullPolicy: {{ .image.pullPolicy | default .Values.global.imagePullPolicy | default "Always" }}
+  imagePullPolicy: {{ .image.pullPolicy | default "Always" }}
   {{- with .command }}
   command: {{ toYaml . | nindent 2 }}
   {{- end }}
@@ -23,8 +23,12 @@
   {{- with .securityContext }}
   securityContext: {{ toYaml . | nindent 4 }}
   {{- else }}
+  {{- with .securityContext }}
+  securityContext: {{ toYaml . | nindent 4 }}
+  {{- else }}
   securityContext:
     allowPrivilegeEscalation: false
+  {{- end }}
   {{- end }}
 {{- end }}
 

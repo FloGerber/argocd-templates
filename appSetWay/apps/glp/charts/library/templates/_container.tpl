@@ -9,7 +9,7 @@ Expects:
 {{- define "library.container" -}}
 - name: {{ required "container.name is required" .name }}
   image: {{ required "container.image.repository is required" .image.repository }}:{{ required "container.image.tag is required" .image.tag }}
-  imagePullPolicy: {{ .image.pullPolicy | default .Values.global.imagePullPolicy | default "Always" }}
+  imagePullPolicy: {{ .image.pullPolicy | default "Always" }}
   {{- with .command }}
   command: {{ toYaml . | nindent 2 }}
   {{- end }}
@@ -35,8 +35,12 @@ Expects:
   lifecycle: {{ toYaml . | nindent 4 }}
   {{- end }}
   {{- include "library.probes" . | indent 2 }}
+  {{- with .securityContext }}
+  securityContext: {{ toYaml . | nindent 4 }}
+  {{- else }}
   securityContext:
-    allowPrivilegeEscalation: {{ .securityContext.allowPrivilegeEscalation | default false }}
+    allowPrivilegeEscalation: false
+  {{- end }}
 {{- end }}
 
 {{/* Render all containers */}}

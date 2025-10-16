@@ -1,3 +1,7 @@
+global:
+  imageRegistry: docker.repo.xxx.xxx # Base URL for all container images
+  imagePullPolicy: Always # Default pull policy: Always, IfNotPresent, Never
+
 # Service overrides
 photonbg:
   containers:
@@ -59,7 +63,7 @@ tcservice:
     - name: tcservice-init
       image:
         repository: docker.repo.xxx.xxx/tower
-        tag: ""latest"
+        tag: "latest"
 
 tileserver:
   containers:

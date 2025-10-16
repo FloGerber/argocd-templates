@@ -33,8 +33,13 @@ spec:
       annotations: {{ toYaml . | nindent 8 }}
       {{- end }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccount.name | default "default" }}
-      automountServiceAccountToken: {{ .Values.serviceAccount.automount | default false }}
+      {{- with .Values.serviceAccount }}
+      serviceAccountName: {{ .name | default "default" }}
+      automountServiceAccountToken: {{ .automount | default false }}
+      {{- else }}
+      serviceAccountName: default
+      automountServiceAccountToken: false
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 60 }}
 
       {{- with .Values.affinity }}

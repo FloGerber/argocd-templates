@@ -1,8 +1,3 @@
-# Global settings
-global:
-  imageRegistry: docker.repo.xxx.xxx # Base URL for all container images
-  imagePullPolicy: Always # Default pull policy: Always, IfNotPresent, Never
-
 # Deployment configuration
 deployment:
   enabled: true # Enable Deployment resource
@@ -22,9 +17,11 @@ affinity: {} # Pod affinity rules
 hostAliases: [] # Optional host aliases
 
 # ServiceAccount configuration
-serviceAccount:
-  name: default # Name of the service account
-  automount: false # Whether to auto-mount the service account token
+serviceAccount: {}
+
+# serviceAccount:
+#   name: "default" # Name of the service account
+#   automount: false # Whether to auto-mount the service account token
 
 # Container configuration
 containers: [] # List of main containers
