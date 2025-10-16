@@ -1,149 +1,194 @@
-app: tracker
-deployment_commit: x
-deployment_ref: x
+fullnameOverride: tracker
 
-replicaCount: 1
-image:
-  repository: docker.repo.xxx.xxx/geolocationplatformgroup/tracker
-  tag: 1.16.0-healthcheck-SNAPSHOT
+deployment:
+  enabled: true
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+  podAnnotations:
+    prometheus.io/path: /manage/prometheus
+    prometheus.io/port: "8081"
+    prometheus.io/scrape: "true"
+    redeploytrigger: xxx
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 10
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - tracker
+            topologyKey: topology.kubernetes.io/zone
+        - weight: 5
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - tracker
+            topologyKey: kubernetes.io/hostname
+  hostAliases:
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxxx-secondary.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.blob.core.windows.net
+    - ip: x.x.x.x
+      hostnames:
+        - xxxx.redis.cache.windows.net
+  terminationGracePeriodSeconds: 60
+  serviceAccount:
+    automount: false
 
-containerPorts:
-  - name: serviceport
-    port: 8080
-    protocol: TCP
-  - name: healthport
-    port: 8081
-    protocol: TCP
-
-env:
-  - name: JAVA_TOOL_OPTIONS
-    value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication --add-opens=java.base/java.nio=ALL-UNNAMED
-  - name: LOGGING_LEVEL_COM_XXX
-    value: INFO
-  - name: SERVER_SERVLET_CONTEXT_PATH
-    value: /tracker
-  - name: SERVER_PORT
-    value: "8080"
-  - name: MANAGEMENT_SERVER_PORT
-    value: "8081"
-  - name: SPRING_PROFILES_ACTIVE
-  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
-    value: info,health,prometheus
-  - name: KAFKA_BOOTSTRAP_SERVERS
-    value: xxxx.servicebus.windows.net:9093
-  - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_NAME
-    value: charging-position
-  - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_CONCURRENCY
-    value: "64"
-  - name: SPRING_DATA_REDIS_HOST
-    value: xxxx.redis.cache.windows.net
-  - name: SPRING_DATA_REDIS_PORT
-    value: "6379"
-  - name: SPRING_DATA_REDIS_SSL
-    value: "false"
-  - name: REDIS_CUSTOM_KEY_PREFIX
-  - name: TRACKER_OFFLINE_DEVICE_INTERVAL
-    value: PT5M
-
-envFrom:
-  - secretRef:
-      name: tracker-secret
-
-resources:
-  limits:
-    cpu: 500m
-    memory: 1500Mi
-    ephemeral-storage: 1Gi
-  requests:
-    cpu: 166m
-    memory: 1500Mi
-    ephemeral-storage: 1Gi
-
-lifecycle:
-  preStop:
-    exec:
-      command: ["sleep", "20"]
-
-livenessProbe:
-  httpGet:
-    path: /manage/health
-    port: 8081
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 10
-
-readinessProbe:
-  httpGet:
-    path: /manage/health
-    port: 8081
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 5
-
-startupProbe:
-  httpGet:
-    path: /manage/health
-    port: 8081
-    scheme: HTTP
-  initialDelaySeconds: 3
-  periodSeconds: 20
-  timeoutSeconds: 20
-  successThreshold: 1
-  failureThreshold: 7
-
-terminationGracePeriodSeconds: 60
-
-hostAliases:
-  - ip: x.x.x.x
-    hostnames:
-      - xxxxx.blob.core.windows.net
-      - xxxxx-secondary.blob.core.windows.net
-      - xxxx.blob.core.windows.net
-      - xxxx.redis.cache.windows.net
+containers:
+  - name: tracker
+    image: docker.repo.xxx.xxx/geolocationplatformgroup/tracker:1.16.0-healthcheck-SNAPSHOT
+    imagePullPolicy: Always
+    ports:
+      - containerPort: 8080
+        name: serviceport
+        protocol: TCP
+    env:
+      - name: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -XX:+UseStringDeduplication --add-opens=java.base/java.nio=ALL-UNNAMED
+      - name: LOGGING_LEVEL_COM_XXX
+        value: INFO
+      - name: SERVER_SERVLET_CONTEXT_PATH
+        value: /tracker
+      - name: SERVER_PORT
+        value: "8080"
+      - name: MANAGEMENT_SERVER_PORT
+        value: "8081"
+      - name: SPRING_PROFILES_ACTIVE
+      - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+        value: info,health,prometheus
+      - name: KAFKA_BOOTSTRAP_SERVERS
+        value: xxxx.servicebus.windows.net:9093
+      - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_NAME
+        value: charging-position
+      - name: KAFKA_CONSUMER_CHARGINGPOSITIONTOPIC_CONCURRENCY
+        value: "64"
+      - name: SPRING_DATA_REDIS_HOST
+        value: xxxx.redis.cache.windows.net
+      - name: SPRING_DATA_REDIS_PORT
+        value: "6379"
+      - name: SPRING_DATA_REDIS_SSL
+        value: "false"
+      - name: REDIS_CUSTOM_KEY_PREFIX
+      - name: TRACKER_OFFLINE_DEVICE_INTERVAL
+        value: PT5M
+    envFrom:
+      - secretRef:
+          name: tracker-secret
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1500Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 166m
+        memory: 1500Mi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+    probes:
+      liveness:
+        httpGet:
+          path: /manage/health
+          port: 8081
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /manage/health
+          port: 8081
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /manage/health
+          port: 8081
+        initialDelaySeconds: 3
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 7
 
 service:
-  sessionAffinity: None
-  internalTrafficPolicy: Cluster
-  ipFamily: IPv4
-  ipFamilyPolicy: SingleStack
+  enabled: true
+  type: ClusterIP
+  clusterIP: x.x.x.x
   ports:
     - name: serviceport
       port: 8080
-      protocol: TCP
       targetPort: 8080
+      protocol: TCP
     - name: healthport
       port: 8081
-      protocol: TCP
       targetPort: 8081
+      protocol: TCP
+  sessionAffinity: None
 
-autoscaling:
+hpa:
   enabled: true
-  container: tracker
   minReplicas: 1
   maxReplicas: 1
-  targetCPUAverageValue: 350m
-  scaleUp:
-    pods: 2
-    periodSeconds: 60
-    selectPolicy: Max
-    stabilizationWindowSeconds: 60
-  scaleDown:
-    pods: 1
-    periodSeconds: 180
-    selectPolicy: Max
-    stabilizationWindowSeconds: 300
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        container: tracker
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 350m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 180
 
 networkPolicy:
   enabled: true
   policyTypes:
     - Ingress
     - Egress
+  podSelector:
+    matchLabels:
+      app: tracker
   ingress:
     - from:
         - podSelector:
@@ -169,29 +214,31 @@ networkPolicy:
         - port: 8081
           protocol: TCP
   egress:
-    - ports:
-        - port: 53
-          protocol: UDP
-      to:
+    - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/cluster-service: "true"
           podSelector:
             matchLabels:
               k8s-app: kube-dns
-    - ports:
+      ports:
+        - port: 53
+          protocol: UDP
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
         - port: 6379
           protocol: TCP
         - port: 9093
           protocol: TCP
-      to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
 
-secret:
-  enabled: true
-  data:
-    AZMON_COLLECT_ENV: xxx=
-    KAFKA_PASSWORD: xxx
-    KAFKA_USER: xx=
-    SPRING_DATA_REDIS_PASSWORD: xxx=
+secrets:
+  tracker:
+    enabled: true
+    type: Opaque
+    data:
+      AZMON_COLLECT_ENV: xxx=
+      KAFKA_PASSWORD: xxx
+      KAFKA_USER: xx=
+      SPRING_DATA_REDIS_PASSWORD: xxx=
