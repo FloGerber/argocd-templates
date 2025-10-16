@@ -7,11 +7,6 @@ kafkaCluster:
     # pauseReconciliation: "false"
   version: 4.0.0
   metadataVersion: 4.0-IV3
-  replicas: 3
-  replicationFactor: 3
-  minIsr: 2
-  storageSize: 100Gi
-  zookeeperStorageSize: 50Gi
   listeners:
     - name: tls
       port: 9093
