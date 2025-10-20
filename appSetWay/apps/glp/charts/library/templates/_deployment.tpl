@@ -41,25 +41,20 @@ spec:
       automountServiceAccountToken: false
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | default 60 }}
-
       {{- with .Values.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-
       {{- with .Values.hostAliases }}
       hostAliases: {{ toYaml . | nindent 8 }}
       {{- end }}
-
       {{- if .Values.volumes }}
       volumes:
         {{- include "library.volumes" . | nindent 8 }}
       {{- end }}
-
       {{- if .Values.initContainers }}
       initContainers:
         {{- include "library.initContainers" . | nindent 8 }}
       {{- end }}
-
       {{- if .Values.containers }}
       containers:
         {{- include "library.containers" . | nindent 8 }}

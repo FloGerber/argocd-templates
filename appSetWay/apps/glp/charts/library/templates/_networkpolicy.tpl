@@ -1,5 +1,5 @@
 {{- define "library.networkPolicy" }}
-{{- if .Values.networkPolicy.enabled }}
+{{- if ((.Values.networkPolicy).enabled) }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -7,7 +7,7 @@ metadata:
   labels: {{ include "library.labels" . | nindent 4 }}
 spec:
   podSelector:
-    matchLabels: {{ include "library.selectorLabels" . | nindent 4 }}
+    matchLabels: {{ include "library.selectorLabels" . | nindent 6 }}
   policyTypes:
     {{- range .Values.networkPolicy.policyTypes }}
     - {{ . }}

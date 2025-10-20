@@ -7,50 +7,50 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.0.6
+version: 0.0.13
 appVersion: "0.0.1" #  version.
 
 # pull in external charts via dependencies:
 dependencies:
   - name: chargereportserver
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/chargereportserver
   - name: ftdreceiver
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/ftdreceiver
   - name: glpdatasink
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/glpdatasink
   - name: mtd
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/mtd
   - name: photon
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/photon
   - name: positianstream
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/positianstream
   - name: positianui
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/positianui
   - name: roadnetworkservice
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/roadnetworkservice
   - name: tcmappingeditor
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/tcmappingeditor
   - name: tcmsky
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/tcmsky
   - name: tcservice
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/tcservice
   - name: tileserver
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/tileserver
   - name: tracker
-    version: 0.0.6
+    version: 0.0.13
     repository: file://charts/tracker
   - name: tripbuilder
-    version: 0.0.4
+    version: 0.0.13
     repository: file://charts/tripbuilder

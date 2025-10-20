@@ -1,6 +1,6 @@
 {{/* Render ConfigMap if enabled */}}
 {{- define "library.configmap" -}}
-{{- if (.Values.configmap.enabled | default false) }}
+{{- if ((.Values.configmap).enabled) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

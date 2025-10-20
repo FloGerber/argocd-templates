@@ -1,5 +1,5 @@
 {{- define "library.hpa" }}
-{{- if .Values.hpa.enabled }}
+{{- if ((.Values.hpa).enabled )}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

@@ -1,5 +1,5 @@
 {{- define "library.service" }}
-{{- if .Values.service.enabled }}
+{{- if ((.Values.service).enabled) }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -25,10 +25,11 @@ spec:
       targetPort: {{ .targetPort | default .port }}
       protocol: {{ .protocol | default "TCP" }}
     {{- end }}
-  selector:
-    {{- if .Values.service.selectorLabels }}
+  {{- if .Values.service.selectorLabels }}
+  selector: 
     {{- toYaml .Values.service.selectorLabels | nindent 4 }}
-    {{- else }}
+  {{- else }}
+  selector:
     {{ include "library.selectorLabels" . | nindent 4 }}
     {{- end }}
 {{- end }}

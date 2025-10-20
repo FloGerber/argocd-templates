@@ -1,26 +1,25 @@
 {{- define "library.ingress" -}}
-{{- $ingress := .Values.ingress | default dict }}
-{{- if ($ingress.enabled | default false) }}
+{{- if ( ((.Values.ingress).enabled) | default false) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "library.fullname" . | trim }}
   labels:
     {{- include "library.labels" . | nindent 4 }}
-  {{- with $ingress.annotations }}
+  {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if $ingress.className }}
-  ingressClassName: {{ $ingress.className }}
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
-  {{- if $ingress.tls }}
+  {{- if .Values.ingress.tls }}
   tls:
-    {{- toYaml $ingress.tls | nindent 4 }}
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
   {{- end }}
   rules:
-    {{- range $ingress.hosts }}
+    {{- range .Values.ingress.hosts }}
     - host: {{ .host }}
       http:
         paths:
@@ -29,7 +28,7 @@ spec:
             pathType: {{ .pathType | default "Prefix" }}
             backend:
               service:
-                name: {{ .serviceName | default (include "library.fullname" $) }}
+                name: {{ .serviceName | default (include "library.fullname" $ | trim ) }}
                 port:
                   number: {{ .servicePort }}
           {{- end }}
