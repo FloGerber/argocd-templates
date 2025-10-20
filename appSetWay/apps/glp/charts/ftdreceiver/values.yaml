@@ -131,7 +131,6 @@ containers:
 service:
   enabled: true
   type: ClusterIP
-  clusterIP: 10.224.78.244
   ports:
     - name: serviceport
       port: 8080

@@ -157,7 +157,6 @@ configmap:
 service:
   enabled: true
   type: ClusterIP
-  clusterIP: x.x.x.x
   ports:
     - name: serviceport
       port: 8001

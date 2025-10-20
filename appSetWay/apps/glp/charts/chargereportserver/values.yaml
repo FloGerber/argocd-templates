@@ -151,7 +151,6 @@ service:
       targetPort: 8018
       protocol: TCP
   sessionAffinity: None
-  clusterIP: x.x.x.x
 
 secrets:
   enabled: true

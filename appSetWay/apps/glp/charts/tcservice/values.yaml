@@ -1,5 +1,13 @@
 fullnameOverride: tcservice
 
+# ─────────────────────────────────────────────────────────────
+# Deployment Configuration
+# ─────────────────────────────────────────────────────────────
+
+# TODO: Add ProgressDeadlineSeconds ?
+# TODO: Unify Roling Update Strategy
+# TODO: Check if HostAliases is needed in the K8s Setup with all Services Running in the cluster
+
 deployment:
   enabled: true
   replicas: 1
@@ -14,7 +22,7 @@ deployment:
   podAnnotations:
     prometheus.io/path: /manage/prometheus
     prometheus.io/scrapemulticontainer: "true"
-    redeploytrigger: 9117285
+    redeploytrigger: 9119334a7ff036ff414029aa5eea02bb11724c862857285
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
@@ -58,51 +66,17 @@ deployment:
     automount: false
   shareProcessNamespace: true
 
-initContainers:
-  - name: tcservice-init
-    image:
-      repository: xx
-      tag: xx
-    imagePullPolicy: Always
-    command:
-      - /bin/bash
-      - -c
-      - |
-        set -e
-        clean_tc_db_file=$(echo "$TOLL_CONTEXT_DATABASE_FILE" | sed 's/[?&].*//')
-        echo "Download TCM Tower database from storage account ..." $clean_tc_db_file
-        curl -f -L -o /data/tcmtower.db "$TOLL_CONTEXT_DATABASE_FILE"
-        clean_tcl_db_file=$(echo "$TOLL_CONTEXT_MAPPINGS_DATABASE_FILE" | sed 's/[?&].*//')
-        echo "Download tc_mapping_linker database from storage account ..." $clean_tcl_db_file
-        curl -f -L -o /data/tcmappinglinker.db "$TOLL_CONTEXT_MAPPINGS_DATABASE_FILE"
-    envFrom:
-      - secretRef:
-          name: tcservice-initcontainer-secret
-    resources:
-      limits:
-        cpu: 500m
-        memory: 768Mi
-        ephemeral-storage: 1Gi
-      requests:
-        cpu: 125m
-        memory: 768Mi
-        ephemeral-storage: 1Gi
-    securityContext:
-      allowPrivilegeEscalation: false
-    volumeMounts:
-      - name: data
-        mountPath: /data
+# ─────────────────────────────────────────────────────────────
+# Container Configuration
+# ─────────────────────────────────────────────────────────────
 
-volumes:
-  - name: data
-    emptyDir:
-      sizeLimit: 1Gi
+# TODO: Check unified Resource Basics
 
 containers:
   - name: tcservice
     image:
-      repository: xx
-      tag: xx
+      repository: docker.repo.kapschtraffic.com/geolocationplatformgroup/tolling-engine
+      tag: 1.1.6-202508251027
     imagePullPolicy: Always
     ports:
       - containerPort: 8819
@@ -182,8 +156,8 @@ containers:
 
   - name: tcservice-tower-sidecar
     image:
-      repository: xx
-      tag: xx
+      repository: docker.repo.kapschtraffic.com/servicecatalog/tcm-tower
+      tag: 2.13.1-v3-saas-202509021000
     imagePullPolicy: Always
     ports:
       - containerPort: 8050
@@ -210,7 +184,7 @@ containers:
       - name: SPRING_PROFILES_ACTIVE
         value: sqlite
       - name: API_CORS_ALLOWED_ORIGINS
-        value: https://www-.x.x.x,https://www-.x.x.x,https://www-.x.x.x
+        value: https://www-dev-saas01.alfa.us.ktc-int.net,https://www-dev-saas01.alfa.us.ktc-int.net,https://www-d…
       - name: SERVER_SERVLET_CONTEXT_PATH
         value: /
     lifecycle:
@@ -260,8 +234,8 @@ containers:
 
   - name: tcservice-linker-sidecar
     image:
-      repository: xx
-      tag: xx
+      repository: docker.repo.kapschtraffic.com/geolocationplatformgroup/tc-mapping-linker
+      tag: 1.35.0-saas-202508270901
     imagePullPolicy: Always
     ports:
       - containerPort: 8077
@@ -272,4 +246,279 @@ containers:
         protocol: TCP
     env:
       - name: JAVA_TOOL_OPTIONS
-        value: -XX:MaxRAMPercentage
+        value: -XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError --add-opens=java.base/java.lang=ALL-UNNAMED
+      - name: SERVER_PORT
+        value: "8077"
+      - name: SERVER_SERVLET_CONTEXT_PATH
+      - name: LOGGING_LEVEL_COM_KAPSCHTRAFFIC
+        value: INFO
+      - name: SPRING_PROFILES_ACTIVE
+        value: sqlite
+      - name: SPRING_DATASOURCE_URL
+        value: jdbc:sqlite:/data/tcmappinglinker.db?open_mode=1
+      - name: SPRING_DATASOURCE_HIKARI_READ_ONLY
+        value: "true"
+      - name: SPRING_FLYWAY_ENABLED
+        value: "true"
+      - name: MANAGEMENT_SERVER_PORT
+        value: "18077"
+      - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+        value: info,health,prometheus
+      - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+        value: "true"
+      - name: SAAS_LAYOUT_MAPPING_VERSIONS
+        value: "21"
+      - name: TCM_CACHE_LOCATION_MAPPING_TABLE_ITEM_SEGMENT_SIZE_MB
+        value: "256"
+      - name: TCM_CACHE_LOCATION_MAPPING_TABLE_ITEM_CHO_SIZE_MB
+        value: "256"
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sleep", "20"]
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1400Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 125m
+        memory: 1400Mi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+    probes:
+      liveness:
+        httpGet:
+          path: /manage/health
+          port: 18077
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 10
+      readiness:
+        httpGet:
+          path: /manage/health
+          port: 18077
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        httpGet:
+          path: /manage/health
+          port: 18077
+        periodSeconds: 20
+        timeoutSeconds: 20
+        successThreshold: 1
+        failureThreshold: 11
+    volumeMounts:
+      - name: data
+        mountPath: /data
+        readOnly: true
+
+initContainers:
+  - name: tcservice-init
+    image:
+      repository: docker.repo.kapschtraffic.com/build-and-test/ansible
+      tag: 2.18.8.0-b02
+    imagePullPolicy: Always
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        clean_tc_db_file=$(echo "$TOLL_CONTEXT_DATABASE_FILE" | sed 's/[?&].*//')
+        echo "Download TCM Tower database from storage account ..." $clean_tc_db_file
+        curl -f -L -o /data/tcmtower.db "$TOLL_CONTEXT_DATABASE_FILE"
+        clean_tcl_db_file=$(echo "$TOLL_CONTEXT_MAPPINGS_DATABASE_FILE" | sed 's/[?&].*//')
+        echo "Download tc_mapping_linker database from storage account ..." $clean_tcl_db_file
+        curl -f -L -o /data/tcmappinglinker.db "$TOLL_CONTEXT_MAPPINGS_DATABASE_FILE"
+    envFrom:
+      - secretRef:
+          name: tcservice-initcontainer-secret
+    resources:
+      limits:
+        cpu: 500m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 125m
+        memory: 768Mi
+        ephemeral-storage: 1Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+    volumeMounts:
+      - name: data
+        mountPath: /data
+
+# TODO: Add termination Log Message Path to Template and Variable here
+
+# ─────────────────────────────────────────────────────────────
+# Volume Configuration
+# ─────────────────────────────────────────────────────────────
+
+volumes:
+  - name: data
+    emptyDir:
+      sizeLimit: 1Gi
+
+# ─────────────────────────────────────────────────────────────
+# Service Configuration
+# ─────────────────────────────────────────────────────────────
+
+service:
+  enabled: true
+  type: ClusterIP
+  ports:
+    - name: serviceport
+      port: 8819
+      targetPort: 8819
+      protocol: TCP
+    - name: serviceport-tower
+      port: 8050
+      targetPort: 8050
+      protocol: TCP
+    - name: healthport-tower
+      port: 18050
+      targetPort: 18050
+      protocol: TCP
+    - name: serviceport-linker
+      port: 8077
+      targetPort: 8077
+      protocol: TCP
+    - name: healthport-linker
+      port: 18077
+      targetPort: 18077
+      protocol: TCP
+  sessionAffinity: None
+
+# ─────────────────────────────────────────────────────────────
+# Secrets Configuration
+# ─────────────────────────────────────────────────────────────
+
+# TODO: External Secrets
+secrets:
+  enabled: true
+  type: Opaque
+  data:
+    AZMON_COLLECT_ENV: RmFsc2U=
+    # TODO: Multisecret support, or better user external secret, These should be in a seperate secret only for the init container
+    TOLL_CONTEXT_DATABASE_FILE: aHR0cHM6Ly9kZXZzYWFzMDFzYTM0OGQ4ODQ1Nzk5LmJsb2IuY29yZS53aW5kb3dzLm5ldC90b2xsY29udGV4dC90Y210b3dlcl9CRy0xLUJHLTEtMjEtdjNfMS40LjAtLWdscC1zYWFzLWJnLmRiP3NlPTIxMzAtMDYtMTBUMTAlM0E1NiUzQTAwWiZzcD1ybCZzdj0yMDIyLTExLTAyJnNyPWMmc2lnPUZWZEVOb2owQS9pTjVvTlBWUkRBUEwxMWlkamtwQ3FZUGJoWXc4QjJJdGclM0Q=
+    TOLL_CONTEXT_MAPPINGS_DATABASE_FILE: aHR0cHM6Ly9kZXZzYWFzMDFzYTM0OGQ4ODQ1Nzk5LmJsb2IuY29yZS53aW5kb3dzLm5ldC90Y21hcHBpbmdzL2V1cm9wZS0yNTA3MDdfQkctMS1CRy0xLTIxXzEuNC4wLS1nbHAtc2Fhcy1iZy90Y21hcHBpbmdsaW5rZXJfZXVyb3BlLTI1MDcwN19CRy0xLUJHLTEtMjFfMS40LjAtLWdscC1zYWFzLWJnLmRiP3NlPTIxMzAtMDYtMTBUMTAlM0E1NiUzQTAwWiZzcD1ybCZzdj0yMDIyLTExLTAyJnNyPWMmc2lnPWpHelB0YVBjMmZiR0lhU1NyZ3J6R1cxTkJpaDlKc2dzdWdhSkJEZTlOVjglM0Q=
+
+# ─────────────────────────────────────────────────────────────
+# Horizontal Pod Autoscaling Configuration
+# ─────────────────────────────────────────────────────────────
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        container: tcservice
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 300m
+    - type: ContainerResource
+      containerResource:
+        container: tcservice-tower-sidecar
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 300m
+    - type: ContainerResource
+      containerResource:
+        container: tcservicebg-linker-sidecar
+        name: cpu
+        target:
+          type: AverageValue
+          averageValue: 300m
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 180
+
+# ─────────────────────────────────────────────────────────────
+# Network Policy Configuration
+# ─────────────────────────────────────────────────────────────
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  podSelector:
+    matchLabels:
+      app: tcservice
+  ingress:
+    - from:
+        - podSelector:
+          matchLabels:
+            app: k8s-ansible-helper
+        - podSelector:
+            matchLabels:
+              app: tripbuilder
+        - podSelector:
+            matchLabels:
+              app: kong
+        - podSelector:
+            matchLabels:
+              app: mtd
+      ports:
+        - port: 8819
+          protocol: TCP
+        - port: 8050
+          protocol: TCP
+        - port: 8077
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              kubernetes.azure.com/managedby: aks
+        - podSelector:
+            matchLabels:
+              app: k8s-ansible-helper
+      ports:
+        - port: 8819
+          protocol: TCP
+        - port: 18050
+          protocol: TCP
+        - port: 18077
+          protocol: TCP
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/cluster-service: "true"
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+    - to:
+        - ipBlock:
+            cidr: 10.184.104.18/32
+        - ipBlock:
+          cidr: 10.184.104.22/32
+      ports:
+        - port: 443
+          protocol: TCP
