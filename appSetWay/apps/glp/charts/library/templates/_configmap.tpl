@@ -10,12 +10,13 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+{{- if .Values.configmap.data }}
 data:
   {{- range $key, $value := .Values.configmap.data }}
   {{ $key }}: {{ $value | quote }}
-  {{- else }}
+  {{- end}}
   # no data entries defined
-  {{- end }}
+{{- end }}
 {{- with .Values.configmap.binaryData }}
 binaryData:
   {{- toYaml . | nindent 2 }}

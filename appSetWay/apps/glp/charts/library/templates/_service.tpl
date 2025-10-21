@@ -27,7 +27,7 @@ spec:
     {{- end }}
   {{- if .Values.service.selectorLabels }}
   selector: 
-    {{- toYaml .Values.service.selectorLabels | nindent 4 }}
+    {{- toYaml .Values.service.selectorLabels | nindent 4 | trim }}
   {{- else }}
   selector:
     {{ include "library.selectorLabels" . | nindent 4 }}

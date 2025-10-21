@@ -1,6 +1,5 @@
 {{- define "library.secrets" }}
-{{- $secrets := .Values.secrets | default dict }}
-{{- if $secrets.enabled }}
+{{- if ((.Values.secrets).enabled) }}
 apiVersion: v1
 kind: Secret
 metadata:
