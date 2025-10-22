@@ -33,9 +33,10 @@ datacenters:
     size: 3
     # racks:
     #   - name: rack1
-    storageConfig:
-      storageClassName: standard
-      size: 10Gi
+    # storageConfig:
+    #   cassandraDataVolumeClaimSpec:
+    #     storageClassName: standard
+    #     size: 10Gi
     # resources:
     #   requests:
     #     cpu: "2000m"
