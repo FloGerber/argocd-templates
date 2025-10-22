@@ -15,7 +15,7 @@ argocd-apps:
         type: AllAtOnce # explicit, but this is the default
       template:
         metadata:
-          name: "operator-{{ path.basename }}"
+          name: "{{ path.basename }}"
         spec:
           project: default
           source:
