@@ -7,7 +7,6 @@ argocd-apps:
             repoURL: https://github.com/FloGerber/argocd-templates.git
             revision: HEAD
             directories:
-              - path: appSetWay/apps/*
               - path: appSetWay/operator/*
       ignoreApplicationDifferences:
         - jsonPointers:
