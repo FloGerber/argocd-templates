@@ -1,7 +1,7 @@
 k8ssandra-operator:
   # Set Scope for operator
   global:
-    clusterScoped: false
+    clusterScoped: true
     watchNamespaces:
       - cassandra-cluster
       - cassandra
