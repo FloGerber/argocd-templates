@@ -21,12 +21,12 @@ cassandra:
   #   limits:
   #     cpu: "2000m"
   #     memory: "8Gi"
-  config:
-    cassandraYaml: {}
-    jvmOptions: {}
-  storageConfig: {}  # cluster-level storage defaults (can be overridden per-dc)
-  tolerations: []
-  podSecurityContext: {}
+  # config:
+  #   cassandraYaml: {}
+  #   jvmOptions: {}
+  # storageConfig: {}  # cluster-level storage defaults (can be overridden per-dc)
+  # tolerations: []
+  # podSecurityContext: {}
 
 datacenters:
   - name: dc1
