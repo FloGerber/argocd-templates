@@ -16,7 +16,7 @@ argocd-apps:
         type: AllAtOnce # explicit, but this is the default
       template:
         metadata:
-          name: "{{ .path.segments 2 }}-{{ .path.basename }}"
+          name: "{{ index .path.segments 1 }}-{{ .path.basename }}"
         spec:
           project: default
           source:
