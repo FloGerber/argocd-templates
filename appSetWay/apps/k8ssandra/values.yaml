@@ -33,6 +33,14 @@ datacenters:
     size: 3
     # racks:
     #   - name: rack1
+    storageConfig:
+      cassandraDataVolumeClaimSpec:
+        storageClassName: standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
     # storageConfig:
     #   cassandraDataVolumeClaimSpec:
     #     storageClassName: standard
