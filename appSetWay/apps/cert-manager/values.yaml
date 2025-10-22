@@ -1,18 +1,18 @@
 cert-manager:
-  global:
-    # Priority best practices, https://cert-manager.io/docs/installation/best-practice/#priority-class-name
-    priorityClassName: system-cluster-critical
+  # global:
+  #   # Priority best practices, https://cert-manager.io/docs/installation/best-practice/#priority-class-name
+  #   priorityClassName: system-cluster-critical
 
-  dns01RecursiveNameservers: "9.9.9.9:53,149.112.112.112:53"
-  dns01RecursiveNameserversOnly: true
+  # dns01RecursiveNameservers: "9.9.9.9:53,149.112.112.112:53"
+  # dns01RecursiveNameserversOnly: true
 
-  podLabels:
-    # enable cert-manager to use workload identity
-    azure.workload.identity/use: "true"
-  serviceAccount:
-    labels:
-      # enable cert-manager to use workload identity
-      azure.workload.identity/use: "true"
+  # podLabels:
+  #   # enable cert-manager to use workload identity
+  #   azure.workload.identity/use: "true"
+  # serviceAccount:
+  #   labels:
+  #     # enable cert-manager to use workload identity
+  #     azure.workload.identity/use: "true"
 
   # High Availability best practices
   # https://cert-manager.io/docs/installation/best-practice/#high-availability
@@ -25,22 +25,22 @@ cert-manager:
     podDisruptionBudget:
       enabled: true
       minAvailable: 1
-    validatingWebhookConfiguration:
-      namespaceSelector:
-        # additional Azure-specific selectors
-        matchExpressions:
-          - key: cert-manager.io/disable-validation
-            operator: NotIn
-            values:
-              - "true"
-          - key: control-plane
-            operator: NotIn
-            values:
-              - "true"
-          - key: kubernetes.azure.com/managedby
-            operator: NotIn
-            values:
-              - aks
+    # validatingWebhookConfiguration:
+    #   namespaceSelector:
+    #     # additional Azure-specific selectors
+    #     matchExpressions:
+    #       - key: cert-manager.io/disable-validation
+    #         operator: NotIn
+    #         values:
+    #           - "true"
+    #       - key: control-plane
+    #         operator: NotIn
+    #         values:
+    #           - "true"
+    #       - key: kubernetes.azure.com/managedby
+    #         operator: NotIn
+    #         values:
+    #           - aks
   cainjector:
     replicaCount: 2
     podDisruptionBudget:
