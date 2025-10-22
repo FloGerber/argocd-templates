@@ -7,20 +7,20 @@ auth:
   enabled: true
 
 # secrets handling: operator will expect secrets in-cluster when using external provider
-secretsProvider: external
+secretsProvider: internal
 
 # Cassandra top-level settings
 cassandra:
   clusterName: "prod-cass"
   serverVersion: "5.0.5"
-  mgmtAPIHeap: "512Mi"
-  defaultResources:
-    requests:
-      cpu: "500m"
-      memory: "2Gi"
-    limits:
-      cpu: "2000m"
-      memory: "8Gi"
+  # mgmtAPIHeap: "512Mi"
+  # defaultResources:
+  #   requests:
+  #     cpu: "500m"
+  #     memory: "2Gi"
+  #   limits:
+  #     cpu: "2000m"
+  #     memory: "8Gi"
   config:
     cassandraYaml: {}
     jvmOptions: {}
@@ -31,22 +31,22 @@ cassandra:
 datacenters:
   - name: dc1
     size: 3
-    racks:
-      - name: rack1
+    # racks:
+    #   - name: rack1
     storageConfig:
-      storageClassName: gp3
-      size: 200Gi
-    resources:
-      requests:
-        cpu: "2000m"
-        memory: "6Gi"
-      limits:
-        cpu: "8000m"
-        memory: "16Gi"
+      storageClassName: standard
+      size: 10Gi
+    # resources:
+    #   requests:
+    #     cpu: "2000m"
+    #     memory: "6Gi"
+    #   limits:
+    #     cpu: "8000m"
+    #     memory: "16Gi"
 
 # Reaper (repairs) settings
 reaper:
-  enabled: true
+  enabled: false
   serviceAccountName: "reaper-sa"
   affinity: {}
   autoScheduling:
