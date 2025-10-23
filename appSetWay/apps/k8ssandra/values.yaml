@@ -57,7 +57,7 @@ datacenters:
 # Reaper (repairs) settings
 reaper:
   enabled: true
-  serviceAccountName: "reaper-sa"
+  #serviceAccountName: "reaper-sa"
   affinity: {}
   autoScheduling:
     enabled: true
