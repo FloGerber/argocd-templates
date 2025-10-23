@@ -1,0 +1,16 @@
+apiVersion: v2
+name: redis
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.0.1
+appVersion: "8.2.2" # external-dns release
+
+# pull in external charts via dependencies
+dependencies:
+  - name: redis
+    version: 23.2.1
+    repository: https://charts.bitnami.com/bitnami

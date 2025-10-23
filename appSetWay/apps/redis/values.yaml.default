@@ -1,0 +1,3 @@
+replica:
+  kind: StatefulSet
+  replicaCount: 3
