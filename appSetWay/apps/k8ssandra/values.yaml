@@ -13,6 +13,7 @@ auth:
 cassandra:
   clusterName: "prod-cass"
   serverVersion: "5.0.5"
+  softPodAntiAffinity : true
   # mgmtAPIHeap: "512Mi"
   # defaultResources:
   #   requests:
@@ -55,7 +56,7 @@ datacenters:
 
 # Reaper (repairs) settings
 reaper:
-  enabled: false
+  enabled: true
   serviceAccountName: "reaper-sa"
   affinity: {}
   autoScheduling:
