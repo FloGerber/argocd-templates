@@ -24,25 +24,24 @@ reaper:
   {{- with .Values.reaper.serviceAccountName }}
   serviceAccountName: {{ . | quote }}
   {{- end }}
-
   {{- with .Values.reaper.affinity }}
   affinity:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.autoScheduling }}
   autoScheduling:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.cassandraUserSecretRef }}
   cassandraUserSecretRef:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.containerImage }}
   containerImage:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.deploymentMode }}
@@ -55,7 +54,7 @@ reaper:
 
   {{- with .Values.reaper.httpManagement }}
   httpManagement:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.keyspace }}
@@ -64,33 +63,34 @@ reaper:
 
   {{- with .Values.reaper.livenessProbe }}
   livenessProbe:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
+
   {{- with .Values.reaper.readinessProbe }}
   readinessProbe:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.metadata }}
   metadata:
     {{- if .labels }}
     labels:
-{{ toYaml .labels | nindent 6 }}
+{{ toYaml .labels | indent 6 }}
     {{- end }}
     {{- if .annotations }}
     annotations:
-{{ toYaml .annotations | nindent 6 }}
+{{ toYaml .annotations | indent 6 }}
     {{- end }}
   {{- end }}
 
   {{- with .Values.reaper.podSecurityContext }}
   podSecurityContext:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.resources }}
   resources:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.secretsProvider }}
@@ -99,16 +99,17 @@ reaper:
 
   {{- with .Values.reaper.securityContext }}
   securityContext:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.telemetry }}
   telemetry:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.tolerations }}
   tolerations:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
+
 {{- end }}

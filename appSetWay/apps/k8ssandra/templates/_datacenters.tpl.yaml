@@ -17,40 +17,50 @@
 {{ toYaml .annotations | nindent 6 }}
     {{- end }}
     {{- end }}
+
   size: {{ $dc.size }} # The Number of Cassandra pods in this Datacenter.
+
   {{- if or $dc.racks (and (not $dc.racks) false) }}
   {{- if $dc.racks }}
   racks:
 {{ toYaml $dc.racks | nindent 4 }}
   {{- end }}
   {{- end }}
+
   serverVersion: {{ $dc.serverVersion | default $root.Values.cassandra.serverVersion | quote }}
+
   {{- with $dc.storageConfig }}
   storageConfig: {{ toYaml . | nindent 4 }}
   {{- end }}
+
   {{- with $dc.config }}
   config:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
+
   {{- with $dc.nodeSelector }}
   nodeSelector:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
+
   {{- with $dc.tolerations }}
   tolerations:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
+
   {{- with $dc.affinity }}
   affinity:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
+
   {{- with $dc.podSecurityContext }}
   podSecurityContext:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
+
   {{- with $dc.managementApiAuth }}
   managementApiAuth:
-{{ toYaml . | nindent 4 }}
+{{ toYaml . | indent 4 }}
   {{- end }}
   {{- with $dc.mgmtAPIHeap }}
   mgmtAPIHeap: {{ . }}
