@@ -29,7 +29,7 @@ cassandra:
   # podSecurityContext: {}
 
 datacenters:
-  - name: dc1
+  - name: prod-dc-glp
     size: 3
     # racks:
     #   - name: rack1
