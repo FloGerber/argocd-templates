@@ -58,36 +58,36 @@ datacenters:
 reaper:
   enabled: true
   #serviceAccountName: "reaper-sa"
-  affinity: {}
+  # affinity: {}
   autoScheduling:
     enabled: true
     # optionally other fields like reconciliationPeriod etc
   # cassandraUserSecretRef:
   #   name: "reaper-cassandra-credentials"
   deploymentMode: "PER_DC"
-  heapSize: "2Gi"
+  # heapSize: "2Gi"
   httpManagement:
     enabled: false
   keyspace: "reaper_db"
-  livenessProbe: {}
-  readinessProbe: {}
-  metadata:
-    labels: {}
-    annotations: {}
+  # livenessProbe: {}
+  # readinessProbe: {}
+  # metadata:
+  #   labels: {}
+  #   annotations: {}
   podSecurityContext:
     runAsNonRoot: true
-  resources:
-    requests:
-      cpu: "100m"
-      memory: "512Mi"
-    limits:
-      cpu: "300m"
-      memory: "1Gi"
-  secretsProvider: "external"
+  # resources:
+  #   requests:
+  #     cpu: "100m"
+  #     memory: "512Mi"
+  #   limits:
+  #     cpu: "300m"
+  #     memory: "1Gi"
+  # secretsProvider: "external"
   securityContext:
     runAsNonRoot: true
-  telemetry: {}
-  tolerations: []
+  # telemetry: {}
+  # tolerations: []
 
 # Medusa backups
 medusa:
