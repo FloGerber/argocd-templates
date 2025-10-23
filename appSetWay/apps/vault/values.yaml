@@ -11,21 +11,10 @@ global:
   # TLS for end-to-end encrypted transport
   tlsDisable: true
 
-  # Create PodSecurityPolicy for pods
-  psp:
-    enable: true
-    # Annotation for PodSecurityPolicy.
-    # This is a multi-line templated string map, and can also be set as YAML.
-    annotations: |
-      seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default,runtime/default
-      apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default
-      seccomp.security.alpha.kubernetes.io/defaultProfileName:  runtime/default
-      apparmor.security.beta.kubernetes.io/defaultProfileName:  runtime/default
-
   serverTelemetry:
     # Enable integration with the Prometheus Operator
     # See the top level serverTelemetry section below before enabling this feature.
-    prometheusOperator: true
+    prometheusOperator: false
 
   # Affinity Settings for injector pods
   # This can either be a multi-line string or YAML matching the PodSpec's affinity field.
