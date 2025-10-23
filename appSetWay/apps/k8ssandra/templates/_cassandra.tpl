@@ -82,6 +82,5 @@ serverEncryptionStores:
 superuserSecretRef:
 {{ toYaml . | indent 2 }}
 {{- end }}
-
 datacenters: {{ include "k8ssandra.datacenters" . | indent 2 }}
 {{- end -}}

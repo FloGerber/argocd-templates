@@ -10,25 +10,21 @@
     {{- with $dc.metadata }}
     {{- if .labels }}
     labels:
-{{ toYaml .labels | nindent 6 }}
+{{ toYaml .labels | indent 6 }}
     {{- end }}
     {{- if .annotations }}
     annotations:
-{{ toYaml .annotations | nindent 6 }}
+{{ toYaml .annotations | indent 6 }}
     {{- end }}
     {{- end }}
-
   size: {{ $dc.size }} # The Number of Cassandra pods in this Datacenter.
-
   {{- if or $dc.racks (and (not $dc.racks) false) }}
   {{- if $dc.racks }}
   racks:
 {{ toYaml $dc.racks | nindent 4 }}
   {{- end }}
   {{- end }}
-
   serverVersion: {{ $dc.serverVersion | default $root.Values.cassandra.serverVersion | quote }}
-
   {{- with $dc.storageConfig }}
   storageConfig: {{ toYaml . | nindent 4 }}
   {{- end }}
@@ -67,11 +63,11 @@
   {{- end }}
   {{- if $dc.resources }}
   resources:
-{{ toYaml $dc.resources | nindent 4 }}
+{{ toYaml $dc.resources | indent 4 }}
   {{- else if $root.Values.cassandra.defaultResources }}
   # fallback to top-level defaultResources when datacenter-specific resources not provided
   resources:
-{{ toYaml $root.Values.cassandra.defaultResources | nindent 4 }}
+{{ toYaml $root.Values.cassandra.defaultResources | indent 4 }}
   {{- end }}
   {{- with $dc.telemetry }}
   telemetry:
