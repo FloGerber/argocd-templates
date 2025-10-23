@@ -26,44 +26,35 @@
   {{- end }}
   serverVersion: {{ $dc.serverVersion | default $root.Values.cassandra.serverVersion | quote }}
   {{- with $dc.storageConfig }}
-  storageConfig:
-{{ toYaml . | nindent 4 }}
+  storageConfig: {{ toYaml . | nindent 4 }}
   {{- end }}
-
   {{- with $dc.config }}
   config:
 {{ toYaml . | nindent 4 }}
   {{- end }}
-
   {{- with $dc.nodeSelector }}
   nodeSelector:
 {{ toYaml . | nindent 4 }}
   {{- end }}
-
   {{- with $dc.tolerations }}
   tolerations:
 {{ toYaml . | nindent 4 }}
   {{- end }}
-
   {{- with $dc.affinity }}
   affinity:
 {{ toYaml . | nindent 4 }}
   {{- end }}
-
   {{- with $dc.podSecurityContext }}
   podSecurityContext:
 {{ toYaml . | nindent 4 }}
   {{- end }}
-
   {{- with $dc.managementApiAuth }}
   managementApiAuth:
 {{ toYaml . | nindent 4 }}
   {{- end }}
-
   {{- with $dc.mgmtAPIHeap }}
   mgmtAPIHeap: {{ . }}
   {{- end }}
-
   {{- if $dc.resources }}
   resources:
 {{ toYaml $dc.resources | nindent 4 }}
@@ -72,7 +63,6 @@
   resources:
 {{ toYaml $root.Values.cassandra.defaultResources | nindent 4 }}
   {{- end }}
-
   {{- with $dc.telemetry }}
   telemetry:
 {{ toYaml . | nindent 4 }}

@@ -9,7 +9,6 @@ serverVersion: {{ .Values.cassandra.serverVersion | default .Values.cassandra.ve
 {{- with .Values.cassandra.softPodAntiAffinity }}
 softPodAntiAffinity: {{ . }}
 {{- end }}
-
 {{- with .Values.cassandra.metadata }}
 metadata:
   {{- if .commonLabels }}
@@ -21,7 +20,6 @@ metadata:
 {{ toYaml . | nindent 4 }}
   {{- end }}
   {{- end }}
-
 {{- with .Values.cassandra.config }}
 config:
   {{- if .cassandraYaml }}
@@ -33,57 +31,45 @@ config:
 {{ toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
-
 {{- with .Values.cassandra.managementApiAuth }}
 managementApiAuth:
 {{ toYaml . | nindent 2 }}
 {{- end -}}
-
 {{- with .Values.cassandra.mgmtAPIHeap }}
 mgmtAPIHeap: {{ . }}
 {{- end }}
-
 {{- with .Values.cassandra.podSecurityContext }}
 podSecurityContext:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
 {{- with .Values.cassandra.resources }}
 # top-level default resources (still per-DC overrides possible)
 resources:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
 {{- with .Values.cassandra.telemetry }}
 telemetry:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
 {{- with .Values.cassandra.storageConfig }}
 storageConfig:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
 {{- with .Values.cassandra.tolerations }}
 tolerations:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
 {{- with .Values.cassandra.clientEncryptionStores }}
 clientEncryptionStores:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
 {{- with .Values.cassandra.serverEncryptionStores }}
 serverEncryptionStores:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
 {{- with .Values.cassandra.superuserSecretRef }}
 superuserSecretRef:
 {{ toYaml . | nindent 2 }}
 {{- end }}
-
-datacenters:
-{{ include "k8ssandra.datacenters" . | indent 2 }}
+datacenters: {{ include "k8ssandra.datacenters" . | indent 2 }}
 {{- end -}}

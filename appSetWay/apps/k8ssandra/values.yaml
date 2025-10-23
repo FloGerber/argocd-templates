@@ -7,7 +7,7 @@ auth:
   enabled: true
 
 # secrets handling: operator will expect secrets in-cluster when using external provider
-secretsProvider: internal
+#secretsProvider: internal
 
 # Cassandra top-level settings
 cassandra:

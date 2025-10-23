@@ -2,35 +2,31 @@ apiVersion: k8ssandra.io/v1alpha1
 kind: K8ssandraCluster
 metadata:
   name: {{ include "k8ssandra.fullname" . }}
-  namespace: {{ .Values.namespace | quote }}
-  labels:
-{{ include "k8ssandra.labels" . | indent 2 }}
-  annotations:
-{{ include "k8ssandra.annotations" . | indent 2 }}
+#   labels:
+# {{ include "k8ssandra.labels" . | indent 2 }}
+#   annotations:
+# {{ include "k8ssandra.annotations" . | indent 2 }}
 spec:
   # Whether authentication is enabled for Cassandra, Reaper, and Medusa.
   # Highly recommended to keep this true.
   auth: {{ default true .Values.auth.enabled }}
-
   # secretsProvider: "internal" (K8s secrets) or "external" (external secret store)
+  {{- with .Values.secretsProvider }}
   secretsProvider: {{ .Values.secretsProvider | quote }}
-
+  {{- end -}}
   # Cassandra cluster configuration (datacenters, racks, storage, JVM, etc.)
   cassandra:
 {{ include "k8ssandra.cassandra" . | indent 4 }}
-
   # Reaper handles automatic repair scheduling for Cassandra. (optional)
 {{- if ((.Values.reaper).enabled) -}}
   reaper:
 {{ include "k8ssandra.reaper" . | indent 4 }}
 {{- end -}}
-
   # Medusa manages backups and restores for Cassandra. (optional)
 {{- if ((.Values.medusa).enabled) -}}
   medusa:
 {{ include "k8ssandra.medusa" . | indent 4 }}
 {{- end -}}
-
 # Optional list of external datacenters (for multi-cluster replication setup).
   {{- if .Values.externalDatacenters }}
   externalDatacenters:
