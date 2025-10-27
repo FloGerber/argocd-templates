@@ -42,7 +42,7 @@ datacenters:
           # You will still see out-of-sync on the resource :(
           argocd.argoproj.io/compare-options: IgnoreExtraneous,
         }
-      labels: { argocd.argoproj.io/instance: cassandra }
+      labels: { argocd.argoproj.io/instance: app-k8ssandra }
     size: 2
     # racks:
     #   - name: rack1
