@@ -2,10 +2,14 @@ apiVersion: k8ssandra.io/v1alpha1
 kind: K8ssandraCluster
 metadata:
   name: {{ include "k8ssandra.fullname" . }}
+{{- if .Values.labels }}
   labels:
 {{ include "k8ssandra.labels" . | indent 4 }}
+{{- end }}
+{{- if .Values.annotations }}
   annotations:
 {{ include "k8ssandra.annotations" . | indent 4 }}
+{{- end }}
 spec:
   # Whether authentication is enabled for Cassandra, Reaper, and Medusa.
   # Highly recommended to keep this true.

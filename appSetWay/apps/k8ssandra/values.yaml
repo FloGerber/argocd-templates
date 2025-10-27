@@ -1,7 +1,7 @@
 # Updated enterprise-ready values.yaml aligned with latest K8ssandraClusterSpec
 #namespace: "k8ssandra" #"cassandra-cluster"
-annotations: {}
-labels: {}
+# annotations: {}
+# labels: {}
 
 # Authentication: whether authentication is enabled for Cassandra & auxiliary components
 auth:
@@ -42,7 +42,7 @@ datacenters:
           # You will still see out-of-sync on the resource :(
           argocd.argoproj.io/compare-options: IgnoreExtraneous,
         }
-      labels: { argocd.argoproj.io/instance: cassandra-cluster }
+      labels: { argocd.argoproj.io/instance: cassandra }
     size: 1
     # racks:
     #   - name: rack1
