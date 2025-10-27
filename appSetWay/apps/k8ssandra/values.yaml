@@ -33,19 +33,9 @@ cassandra:
 datacenters:
   - name: prod-dc-glp
     metadata:
-      annotations: {
-          # Avoid pruning CassandraDatacenter.
-          # We do not manage it directly.
-          # We just want to see what is happening there.
-          argocd.argoproj.io/sync-options: Prune=false,
-          # Do not show out-of-sync on the app
-          # You will still see out-of-sync on the resource :(
-          argocd.argoproj.io/compare-options: IgnoreExtraneous,
-        }
-      labels:
+      annotations:
         {
-          argocd.argoproj.io/instance: cassandra-kdp-addon-cassandra-cluster,
-          app.kubernetes.io/instance: cassandra-kdp-addon-cassandra-cluster,
+          argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
         }
     size: 2
     # racks:
