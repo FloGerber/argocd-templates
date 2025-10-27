@@ -1,12 +1,7 @@
 # Updated enterprise-ready values.yaml aligned with latest K8ssandraClusterSpec
 #namespace: "k8ssandra" #"cassandra-cluster"
-annotations: {
-  argocd.argoproj.io/sync-options: Prune=false,
-  argocd.argoproj.io/compare-options: IgnoreExtraneous
-}
-labels: {
-  argocd.argoproj.io/instance: cassandra-cluster
-}
+annotations: {}
+labels: {}
 
 # Authentication: whether authentication is enabled for Cassandra & auxiliary components
 auth:
@@ -19,7 +14,7 @@ auth:
 cassandra:
   clusterName: "kdp-addon-cassandra-cluster"
   serverVersion: "5.0.5"
-  softPodAntiAffinity : true
+  softPodAntiAffinity: true
   # mgmtAPIHeap: "512Mi"
   defaultResources:
     requests:
@@ -39,17 +34,15 @@ datacenters:
   - name: prod-dc-glp
     metadata:
       annotations: {
-        # Avoid pruning CassandraDatacenter. 
-        # We do not manage it directly.
-        # We just want to see what is happening there. 
-        argocd.argoproj.io/sync-options: Prune=false,
-        # Do not show out-of-sync on the app
-        # You will still see out-of-sync on the resource :(
-        argocd.argoproj.io/compare-options: IgnoreExtraneous
-      }
-      labels: {
-        argocd.argoproj.io/instance: cassandra-cluster
-      }
+          # Avoid pruning CassandraDatacenter.
+          # We do not manage it directly.
+          # We just want to see what is happening there.
+          argocd.argoproj.io/sync-options: Prune=false,
+          # Do not show out-of-sync on the app
+          # You will still see out-of-sync on the resource :(
+          argocd.argoproj.io/compare-options: IgnoreExtraneous,
+        }
+      labels: { argocd.argoproj.io/instance: cassandra-cluster }
     size: 1
     # racks:
     #   - name: rack1
@@ -145,8 +138,6 @@ security:
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
-
 
 # Resource defaults (can be overridden per-datacenter)
 defaultResources:
