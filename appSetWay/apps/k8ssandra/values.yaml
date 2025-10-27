@@ -43,7 +43,7 @@ datacenters:
           argocd.argoproj.io/compare-options: IgnoreExtraneous,
         }
       labels: { argocd.argoproj.io/instance: cassandra }
-    size: 1
+    size: 2
     # racks:
     #   - name: rack1
     storageConfig:
