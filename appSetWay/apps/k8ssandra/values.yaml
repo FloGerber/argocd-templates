@@ -1,5 +1,5 @@
 # Updated enterprise-ready values.yaml aligned with latest K8ssandraClusterSpec
-namespace: "k8ssandra" #"cassandra-cluster"
+#namespace: "k8ssandra" #"cassandra-cluster"
 annotations: {}
 
 # Authentication: whether authentication is enabled for Cassandra & auxiliary components
