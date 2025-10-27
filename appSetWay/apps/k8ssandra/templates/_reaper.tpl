@@ -73,6 +73,9 @@ reaper:
 
   {{- with .Values.reaper.metadata }}
   metadata:
+    commonLabels:
+      app: {{ include "k8ssandra.fullname" . }}-reaper
+      version: {{ .Values.cassandra.serverVersion | default .Values.cassandra.version | quote }}
     {{- if .labels }}
     labels:
 {{ toYaml .labels | indent 6 }}
