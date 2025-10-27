@@ -44,8 +44,8 @@ datacenters:
         }
       labels:
         {
-          argocd.argoproj.io/instance: app-k8ssandra,
-          app.kubernetes.io/instance: app-k8ssandra,
+          argocd.argoproj.io/instance: cassandra-kdp-addon-cassandra-cluster,
+          app.kubernetes.io/instance: cassandra-kdp-addon-cassandra-cluster,
         }
     size: 2
     # racks:
