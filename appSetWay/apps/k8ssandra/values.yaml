@@ -11,7 +11,7 @@ auth:
 
 # Cassandra top-level settings
 cassandra:
-  clusterName: "prod-cass"
+  clusterName: "kdp-addon-cassandra-cluster"
   serverVersion: "5.0.5"
   softPodAntiAffinity : true
   # mgmtAPIHeap: "512Mi"
@@ -31,7 +31,7 @@ cassandra:
 
 datacenters:
   - name: prod-dc-glp
-    size: 3
+    size: 1
     # racks:
     #   - name: rack1
     storageConfig:
