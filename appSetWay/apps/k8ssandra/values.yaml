@@ -41,7 +41,7 @@ datacenters:
       # Avoid pruning CassandraDatacenter. 
       # We do not manage it directly.
       # We just want to see what is happening there. 
-      argocd.argoproj.io/sync-options: Prune=false
+      argocd.argoproj.io/sync-options: Prune=false,
       # Do not show out-of-sync on the app
       # You will still see out-of-sync on the resource :(
       argocd.argoproj.io/compare-options: IgnoreExtraneous
