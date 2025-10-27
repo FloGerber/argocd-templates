@@ -15,6 +15,9 @@
 
 {{/* Common labels */}}
 {{- define "k8ssandra.labels" -}}
+{{- if .Values.labels }}
+{{ toYaml .Values.labels | nindent 0 }}
+{{- end }}
 #app.kubernetes.io/name: {{ include "k8ssandra.fullname" . }}
 #app.kubernetes.io/instance: {{ .Release.Name }}
 #app.kubernetes.io/version: {{ .Chart.AppVersion }}

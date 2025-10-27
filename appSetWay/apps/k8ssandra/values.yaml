@@ -1,6 +1,17 @@
 # Updated enterprise-ready values.yaml aligned with latest K8ssandraClusterSpec
 #namespace: "k8ssandra" #"cassandra-cluster"
-annotations: {}
+annotations: {
+  # Avoid pruning CassandraDatacenter. 
+  # We do not manage it directly.
+  # We just want to see what is happening there. 
+  argocd.argoproj.io/sync-options: Prune=false
+  # Do not show out-of-sync on the app
+  # You will still see out-of-sync on the resource :(
+  argocd.argoproj.io/compare-options: IgnoreExtraneous
+}
+labels: {
+  argocd.argoproj.io/instance: cassandra-cluster
+}
 
 # Authentication: whether authentication is enabled for Cassandra & auxiliary components
 auth:
@@ -31,6 +42,18 @@ cassandra:
 
 datacenters:
   - name: prod-dc-glp
+    annotations: {
+      # Avoid pruning CassandraDatacenter. 
+      # We do not manage it directly.
+      # We just want to see what is happening there. 
+      argocd.argoproj.io/sync-options: Prune=false
+      # Do not show out-of-sync on the app
+      # You will still see out-of-sync on the resource :(
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+    }
+    labels: {
+      argocd.argoproj.io/instance: cassandra-cluster
+    }
     size: 1
     # racks:
     #   - name: rack1
