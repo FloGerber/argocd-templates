@@ -15,6 +15,11 @@ cassandra:
   clusterName: "kdp-addon-cassandra-cluster"
   serverVersion: "5.0.5"
   softPodAntiAffinity: true
+  metadata:
+    commonAnnotations:
+      {
+        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
+      }
   # mgmtAPIHeap: "512Mi"
   defaultResources:
     requests:
@@ -32,11 +37,11 @@ cassandra:
 
 datacenters:
   - name: prod-dc-glp
-    metadata:
-      annotations:
-        {
-          argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
-        }
+    # metadata:
+    #   annotations:
+    #     {
+    #       argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
+    #     }
     size: 2
     # racks:
     #   - name: rack1
