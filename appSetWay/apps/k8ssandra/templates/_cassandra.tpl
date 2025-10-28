@@ -11,6 +11,12 @@ softPodAntiAffinity: {{ . }}
 {{- end }}
 {{- with .Values.cassandra.metadata }}
 metadata:
+  {{- if .labels }}
+{{ toYaml . | indent 2 }}
+  {{- end }}
+  {{- if .annotations }}
+{{ toYaml . | indent 2 }}
+  {{- end }}
   {{- if .commonLabels }}
 {{ toYaml . | indent 2 }}
   {{- end }}

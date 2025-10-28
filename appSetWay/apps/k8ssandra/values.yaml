@@ -16,7 +16,7 @@ cassandra:
   serverVersion: "5.0.5"
   softPodAntiAffinity: true
   metadata:
-    commonAnnotations:
+    annotations:
       {
         argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
       }
