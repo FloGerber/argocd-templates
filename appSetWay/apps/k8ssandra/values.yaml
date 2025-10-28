@@ -61,6 +61,11 @@ datacenters:
                 port: 8080
               initialDelaySeconds: 35
               periodSeconds: 10
+            resources:
+              limits:
+                memory: 6Gi
+              requests:
+                memory: 4Gi
     storageConfig:
       cassandraDataVolumeClaimSpec:
         storageClassName: standard
