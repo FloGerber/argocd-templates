@@ -13,7 +13,7 @@ auth:
 # Cassandra top-level settings
 cassandra:
   clusterName: "kdp-addon-cassandra-cluster"
-  serverVersion: "4.1.10"
+  serverVersion: "4.1.8"
   softPodAntiAffinity: true
   metadata:
     annotations:
