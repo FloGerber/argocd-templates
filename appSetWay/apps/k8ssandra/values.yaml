@@ -24,10 +24,10 @@ cassandra:
   defaultResources:
     requests:
       cpu: "200m"
-      memory: "200Mi"
+      memory: "2Gi"
     limits:
       cpu: "500m"
-      memory: "500Mi"
+      memory: "3Gi"
   # config:
   #   cassandraYaml: {}
   #   jvmOptions: {}
@@ -43,8 +43,8 @@ datacenters:
     #       argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
     #     }
     size: 2
-    # racks:
-    #   - name: rack1
+    racks:
+      - name: rack1
     storageConfig:
       cassandraDataVolumeClaimSpec:
         storageClassName: standard
