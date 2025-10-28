@@ -71,10 +71,10 @@ datacenters:
             storage: 1Gi
     racks:
       - name: r1
-    config:
-      jvm-server-options:
-        initial_heap_size: "512m"
-        max_heap_size: "512m"
+    # config:
+    #   jvm-server-options:
+    #     initial_heap_size: "512m"
+    #     max_heap_size: "512m"
 
 # Reaper (repairs) settings
 reaper:
