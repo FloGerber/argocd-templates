@@ -24,10 +24,10 @@ cassandra:
   defaultResources:
     requests:
       cpu: "200m"
-      memory: "2Gi"
+      memory: "4Gi"
     limits:
-      cpu: "500m"
-      memory: "3Gi"
+      cpu: "1500m"
+      memory: "6Gi"
   # config:
   #   cassandraYaml: {}
   #   jvmOptions: {}
