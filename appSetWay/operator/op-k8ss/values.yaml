@@ -2,10 +2,10 @@ k8ssandra-operator:
   # Set Scope for operator
   global:
     clusterScoped: true
-    watchNamespaces:
-      - cassandra-cluster
-      - cassandra
-      - k8ssandra
+    # watchNamespaces:
+    #   - cassandra-cluster
+    #   - cassandra
+    #   - k8ssandra
 
   # Set Replicas for Operator
   replicaCount: 3
