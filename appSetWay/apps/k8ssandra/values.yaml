@@ -43,7 +43,7 @@ datacenters:
     #       argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
     #     }
     managementApiAuth:
-    insecure: {}
+      insecure: {}
     size: 1
     podTemplateSpec:
       spec:
