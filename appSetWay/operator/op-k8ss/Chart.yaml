@@ -7,12 +7,12 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.0.3
+version: 0.0.4
 appVersion: "1.27.0" # Cass Operator version  version.
 
 # pull in external charts via dependencies:
 # Strimzi Operator helm chart
 dependencies:
   - name: k8ssandra-operator
-    version: 1.26.0
+    version: 1.24.0
     repository: https://helm.k8ssandra.io/stable

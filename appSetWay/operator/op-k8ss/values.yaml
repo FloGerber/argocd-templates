@@ -7,16 +7,16 @@ k8ssandra-operator:
     #   - cassandra
     #   - k8ssandra
 
-  # Set Replicas for Operator
-  replicaCount: 3
+  # # Set Replicas for Operator
+  # replicaCount: 3
 
-  # Resources (optional tuning)
-  resources:
-    limits:
-      cpu: 100m
-      memory: 256Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+  # # Resources (optional tuning)
+  # resources:
+  #   limits:
+  #     cpu: 100m
+  #     memory: 256Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 128Mi
 
-  disableCrdUpgraderJob: true
+  disableCrdUpgraderJob: false
