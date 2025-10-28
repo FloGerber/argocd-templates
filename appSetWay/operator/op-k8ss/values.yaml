@@ -18,3 +18,5 @@ k8ssandra-operator:
     requests:
       cpu: 100m
       memory: 128Mi
+
+  disableCrdUpgraderJob: true
