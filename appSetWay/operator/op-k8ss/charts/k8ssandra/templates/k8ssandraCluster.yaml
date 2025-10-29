@@ -22,17 +22,18 @@ spec:
   cassandra:
 {{ include "k8ssandra.cassandra" . | indent 4 }}
 
-  # Reaper handles automatic repair scheduling for Cassandra. (optional)
 {{- if ((.Values.reaper).enabled) }}
+  # Reaper handles automatic repair scheduling for Cassandra. (optional)
 {{ include "k8ssandra.reaper" . | indent 2 }}
 {{- end }}
 
-  # Medusa manages backups and restores for Cassandra. (optional)
 {{- if ((.Values.medusa).enabled) }}
+  # Medusa manages backups and restores for Cassandra. (optional)
 {{ include "k8ssandra.medusa" . | indent 2 }}
 {{- end }}
-  # Optional list of external datacenters (for multi-cluster replication setup).
+
   {{- if .Values.externalDatacenters }}
+  # Optional list of external datacenters (for multi-cluster replication setup).
   externalDatacenters:
 {{ toYaml .Values.externalDatacenters | indent 4 }}
   {{- end }}
