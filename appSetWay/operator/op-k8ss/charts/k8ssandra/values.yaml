@@ -18,7 +18,7 @@ cassandra:
   metadata:
     annotations:
       {
-        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
+        argocd.argoproj.io/tracking-id: op-k8ss:k8ssandra.io/K8ssandraCluster:op-k8ss/op-k8ss,
       }
   # mgmtAPIHeap: "512Mi"
   defaultResources:
@@ -107,7 +107,7 @@ reaper:
   metadata:
     annotations:
       {
-        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
+        aargocd.argoproj.io/tracking-id: op-k8ss:k8ssandra.io/K8ssandraCluster:op-k8ss/op-k8ss,
       }
   podSecurityContext:
     runAsNonRoot: true
