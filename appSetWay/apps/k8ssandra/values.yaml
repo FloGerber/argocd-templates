@@ -14,11 +14,11 @@ cassandra:
   clusterName: "kdp-addon-cassandra-cluster"
   serverVersion: "4.1.10"
   # softPodAntiAffinity: true
-  # metadata:
-  #   annotations:
-  #     {
-  #       argocd.argoproj.io/tracking-id: op-k8ss:k8ssandra.io/K8ssandraCluster:op-k8ss/op-k8ss,
-  #     }
+  metadata:
+    annotations:
+      {
+        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
+      }
   # mgmtAPIHeap: "512Mi"
   # defaultResources:
   #   requests:
