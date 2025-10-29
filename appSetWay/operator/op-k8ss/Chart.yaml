@@ -16,6 +16,3 @@ dependencies:
   - name: k8ssandra-operator
     version: 1.27.0
     repository: https://helm.k8ssandra.io/stable
-  - name: kdp-k8ssandra
-    version: 0.0.5
-    repository: file://charts/k8ssandra
