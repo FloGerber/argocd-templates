@@ -13,7 +13,9 @@ metadata:
 spec:
   # Whether authentication is enabled for Cassandra, Reaper, and Medusa.
   # Highly recommended to keep this true.
-  auth: {{ default true .Values.auth.enabled }}
+  {{- with .Values.auth.enabled }}
+  auth: {{ default true . }}
+  {{- end }}
   # secretsProvider: "internal" (K8s secrets) or "external" (external secret store)
   {{- with .Values.secretsProvider }}
   secretsProvider: {{ .Values.secretsProvider | quote }}
