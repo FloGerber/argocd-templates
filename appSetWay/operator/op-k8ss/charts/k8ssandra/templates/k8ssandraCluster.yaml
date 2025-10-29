@@ -11,13 +11,13 @@ metadata:
 {{ include "k8ssandra.annotations" . | indent 4 }}
 {{- end }}
 spec:
+  {{- if .Values.auth }}
   # Whether authentication is enabled for Cassandra, Reaper, and Medusa.
   # Highly recommended to keep this true.
-  {{- with .Values.auth.enabled }}
-  auth: {{ default true . }}
+  auth: {{ .Values.auth | default true }}
   {{- end }}
+  {{- if .Values.secretsProvider }}
   # secretsProvider: "internal" (K8s secrets) or "external" (external secret store)
-  {{- with .Values.secretsProvider }}
   secretsProvider: {{ .Values.secretsProvider | quote }}
   {{- end }}
   # Cassandra cluster configuration (datacenters, racks, storage, JVM, etc.)
