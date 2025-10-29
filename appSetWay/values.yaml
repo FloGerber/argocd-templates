@@ -1,5 +1,43 @@
 argocd-apps:
   applicationsets:
+    cluster-applicationset:
+      namespace: argocd
+      generators:
+        - git:
+            repoURL: https://github.com/FloGerber/argocd-templates.git
+            revision: HEAD
+            directories:
+              - path: appSetWay/apps/cert-manager
+      ignoreApplicationDifferences:
+        - jsonPointers:
+            - /spec/syncPolicy
+      strategy:
+        type: AllAtOnce # explicit, but this is the default
+      template:
+        metadata:
+          name: "cluster-{{ path.basename }}"
+        spec:
+          project: default
+          source:
+            repoURL: https://github.com/FloGerber/argocd-templates.git
+            targetRevision: HEAD
+            helm:
+              valueFiles:
+                - "values.yaml"
+            path: "{{path}}"
+          destination:
+            server: https://kubernetes.default.svc
+            namespace: "{{path.basename}}"
+          syncPolicy:
+            automated:
+              prune: true
+              selfHeal: true
+            syncOptions:
+              - CreateNamespace=true
+              - ServerSideApply=true
+      syncPolicy:
+        # Set Application finalizer
+        preserveResourcesOnDeletion: false
     operator-applicationset:
       namespace: argocd
       generators:
@@ -46,6 +84,8 @@ argocd-apps:
             revision: HEAD
             directories:
               - path: appSetWay/apps/*
+              - path: appSetWay/apps/cert-manager
+                exclude: true
       ignoreApplicationDifferences:
         - jsonPointers:
             - /spec/syncPolicy
