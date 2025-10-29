@@ -69,6 +69,12 @@
   resources:
 {{ toYaml $root.Values.cassandra.defaultResources | indent 4 }}
   {{- end }}
+
+  {{- with $dc.stargate }}
+  stargate:
+{{ toYaml . | indent 4 }}
+  {{-end}}
+
   {{- with $dc.telemetry }}
   telemetry:
 {{ toYaml . | nindent 4 }}

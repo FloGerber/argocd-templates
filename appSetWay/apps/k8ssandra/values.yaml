@@ -76,13 +76,16 @@ datacenters:
             storage: 1Gi
     racks:
       - name: r1
+    stargate:
+      size: 1
+      heapSize: 256M
     # config:
     #   jvm-server-options:
     #     initial_heap_size: "512m"
     #     max_heap_size: "512m"
 
 stargate:
-  enabled: true
+  enabled: false
 
 # Reaper (repairs) settings
 reaper:
