@@ -77,6 +77,7 @@ datacenters:
     racks:
       - name: r1
     stargate:
+      allowStargateOnDataNodes: true
       size: 1
       heapSize: 256M
     # config:
