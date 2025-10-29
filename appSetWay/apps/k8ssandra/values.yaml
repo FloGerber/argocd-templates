@@ -104,9 +104,11 @@ reaper:
   keyspace: "reaper_db"
   # livenessProbe: {}
   # readinessProbe: {}
-  # metadata:
-  #   labels: {}
-  #   annotations: {}
+  metadata:
+    annotations:
+      {
+        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
+      }
   podSecurityContext:
     runAsNonRoot: true
   # resources:
