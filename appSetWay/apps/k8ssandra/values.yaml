@@ -105,7 +105,7 @@ reaper:
 
 # Medusa backups
 medusa:
-  enabled: true
+  enabled: false
   storage:
     provider: s3
     bucket: "cassandra-backups"
