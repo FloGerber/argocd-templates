@@ -7,7 +7,7 @@ argocd-apps:
             repoURL: https://github.com/FloGerber/argocd-templates.git
             revision: HEAD
             directories:
-              - path: appSetWay/apps/cert-manager
+              - path: appSetWay/cluster-base/*
       ignoreApplicationDifferences:
         - jsonPointers:
             - /spec/syncPolicy
@@ -84,8 +84,6 @@ argocd-apps:
             revision: HEAD
             directories:
               - path: appSetWay/apps/*
-              - path: appSetWay/apps/cert-manager
-                exclude: true
       ignoreApplicationDifferences:
         - jsonPointers:
             - /spec/syncPolicy
