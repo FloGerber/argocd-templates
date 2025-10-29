@@ -4,30 +4,29 @@
 # labels: {}
 
 # Authentication: whether authentication is enabled for Cassandra & auxiliary components
-auth:
-  enabled: true
+# auth: "false"
 
 # secrets handling: operator will expect secrets in-cluster when using external provider
-#secretsProvider: internal
+# secretsProvider: internal
 
 # Cassandra top-level settings
 cassandra:
   clusterName: "kdp-addon-cassandra-cluster"
-  serverVersion: "4.0.1"
-  softPodAntiAffinity: true
-  metadata:
-    annotations:
-      {
-        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
-      }
+  serverVersion: "4.1.10"
+  # softPodAntiAffinity: true
+  # metadata:
+  #   annotations:
+  #     {
+  #       argocd.argoproj.io/tracking-id: op-k8ss:k8ssandra.io/K8ssandraCluster:op-k8ss/op-k8ss,
+  #     }
   # mgmtAPIHeap: "512Mi"
-  defaultResources:
-    requests:
-      cpu: "200m"
-      memory: "4Gi"
-    limits:
-      cpu: "1500m"
-      memory: "6Gi"
+  # defaultResources:
+  #   requests:
+  #     cpu: "200m"
+  #     memory: "4Gi"
+  #   limits:
+  #     cpu: "1500m"
+  #     memory: "6Gi"
   # config:
   #   cassandraYaml: {}
   #   jvmOptions: {}
@@ -42,30 +41,9 @@ datacenters:
     #     {
     #       argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
     #     }
-    managementApiAuth:
-      insecure: {}
-    size: 1
-    podTemplateSpec:
-      spec:
-        containers:
-          - name: "cassandra"
-            livenessProbe:
-              httpGet:
-                path: /api/v0/probes/liveness
-                port: 8080
-              initialDelaySeconds: 20
-              periodSeconds: 20
-            readinessProbe:
-              httpGet:
-                path: /api/v0/probes/readiness
-                port: 8080
-              initialDelaySeconds: 35
-              periodSeconds: 10
-            resources:
-              limits:
-                memory: 6Gi
-              requests:
-                memory: 4Gi
+    # managementApiAuth:
+    #   insecure: {}
+    size: 2
     storageConfig:
       cassandraDataVolumeClaimSpec:
         storageClassName: standard
@@ -74,22 +52,19 @@ datacenters:
         resources:
           requests:
             storage: 1Gi
-    racks:
-      - name: r1
     stargate:
-      allowStargateOnDataNodes: true
       size: 1
       heapSize: 256M
     config:
       jvmOptions:
-        heapSize: 512
+        heapSize: 512M
 
 stargate:
   enabled: false
 
 # Reaper (repairs) settings
 reaper:
-  enabled: true
+  enabled: false
   #serviceAccountName: "reaper-sa"
   # affinity: {}
   autoScheduling:
@@ -104,11 +79,11 @@ reaper:
   keyspace: "reaper_db"
   # livenessProbe: {}
   # readinessProbe: {}
-  metadata:
-    annotations:
-      {
-        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
-      }
+  # metadata:
+  #   annotations:
+  #     {
+  #       aargocd.argoproj.io/tracking-id: op-k8ss:k8ssandra.io/K8ssandraCluster:op-k8ss/op-k8ss,
+  #     }
   podSecurityContext:
     runAsNonRoot: true
   # resources:
