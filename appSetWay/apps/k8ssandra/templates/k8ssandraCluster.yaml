@@ -26,12 +26,12 @@ spec:
 
 {{- if ((.Values.reaper).enabled) }}
   # Reaper handles automatic repair scheduling for Cassandra. (optional)
-{{ include "k8ssandra.reaper" . | indent 4 }}
+{{ include "k8ssandra.reaper" . | indent 2 }}
 {{- end }}
 
 {{- if ((.Values.medusa).enabled) }}
   # Medusa manages backups and restores for Cassandra. (optional)
-{{ include "k8ssandra.medusa" . | indent 4 }}
+{{ include "k8ssandra.medusa" . | indent 2 }}
 {{- end }}
 
   {{- if .Values.externalDatacenters }}
