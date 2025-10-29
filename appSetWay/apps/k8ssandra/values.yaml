@@ -64,7 +64,7 @@ stargate:
 
 # Reaper (repairs) settings
 reaper:
-  enabled: false
+  enabled: true
   #serviceAccountName: "reaper-sa"
   # affinity: {}
   autoScheduling:
