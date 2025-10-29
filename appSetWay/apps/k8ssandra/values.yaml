@@ -69,35 +69,39 @@ reaper:
   # affinity: {}
   autoScheduling:
     enabled: true
-    # optionally other fields like reconciliationPeriod etc
-  # cassandraUserSecretRef:
-  #   name: "reaper-cassandra-credentials"
-  deploymentMode: "PER_DC"
-  # heapSize: "2Gi"
+  telemetry:
+    prometheus:
+      enabled: true
+    mcac:
+      enabled: false
+    cassandra:
+      endpoint:
+        address: 0.0.0.0
+  podSecurityContext:
+    fsGroup: 1001
+    runAsGroup: 1001
+    runAsUser: 1001
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  initContainerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    privileged: false
+    capabilities:
+      drop:
+        - ALL
+        - CAP_NET_RAW
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    privileged: false
+    capabilities:
+      drop:
+        - ALL
+        - CAP_NET_RAW
   httpManagement:
     enabled: false
-  keyspace: "reaper_db"
-  # livenessProbe: {}
-  # readinessProbe: {}
-  # metadata:
-  #   annotations:
-  #     {
-  #       aargocd.argoproj.io/tracking-id: op-k8ss:k8ssandra.io/K8ssandraCluster:op-k8ss/op-k8ss,
-  #     }
-  podSecurityContext:
-    runAsNonRoot: true
-  # resources:
-  #   requests:
-  #     cpu: "100m"
-  #     memory: "512Mi"
-  #   limits:
-  #     cpu: "300m"
-  #     memory: "1Gi"
-  # secretsProvider: "external"
-  securityContext:
-    runAsNonRoot: true
-  # telemetry: {}
-  # tolerations: []
 
 # Medusa backups
 medusa:
