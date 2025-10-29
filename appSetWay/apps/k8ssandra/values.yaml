@@ -65,47 +65,47 @@ stargate:
 # Reaper (repairs) settings
 reaper:
   enabled: true
-  #serviceAccountName: "reaper-sa"
-  # affinity: {}
-  autoScheduling:
-    enabled: true
-  telemetry:
-    prometheus:
-      enabled: true
-    mcac:
-      enabled: false
-    cassandra:
-      endpoint:
-        address: 0.0.0.0
-  podSecurityContext:
-    fsGroup: 1001
-    runAsGroup: 1001
-    runAsUser: 1001
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  initContainerSecurityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    privileged: false
-    capabilities:
-      drop:
-        - ALL
-        - CAP_NET_RAW
-  securityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    privileged: false
-    capabilities:
-      drop:
-        - ALL
-        - CAP_NET_RAW
-  httpManagement:
-    enabled: false
+  # #serviceAccountName: "reaper-sa"
+  # # affinity: {}
+  # autoScheduling:
+  #   enabled: true
+  # telemetry:
+  #   prometheus:
+  #     enabled: true
+  #   mcac:
+  #     enabled: false
+  #   cassandra:
+  #     endpoint:
+  #       address: 0.0.0.0
+  # podSecurityContext:
+  #   fsGroup: 1001
+  #   runAsGroup: 1001
+  #   runAsUser: 1001
+  #   runAsNonRoot: true
+  #   seccompProfile:
+  #     type: RuntimeDefault
+  # initContainerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   privileged: false
+  #   capabilities:
+  #     drop:
+  #       - ALL
+  #       - CAP_NET_RAW
+  # securityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   privileged: false
+  #   capabilities:
+  #     drop:
+  #       - ALL
+  #       - CAP_NET_RAW
+  # httpManagement:
+  #   enabled: false
 
 # Medusa backups
 medusa:
-  enabled: false
+  enabled: true
   storage:
     provider: s3
     bucket: "cassandra-backups"
