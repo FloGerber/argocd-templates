@@ -1,0 +1,38 @@
+{{/* Name helpers */}}
+{{- define "k8ssandra.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{ .Values.fullnameOverride }}
+{{- else if .Values.nameOverride }}
+{{ .Values.nameOverride }}
+{{- else }}
+{{- printf "%s" .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
+{{- define "k8ssandra.name" -}}
+{{ .Chart.Name }}
+{{- end }}
+
+{{/* Common labels */}}
+{{- define "k8ssandra.labels" -}}
+{{- if .Values.labels }}
+{{ toYaml .Values.labels | nindent 0 }}
+{{- end }}
+#app.kubernetes.io/name: {{ include "k8ssandra.fullname" . }}
+#app.kubernetes.io/instance: {{ .Release.Name }}
+#app.kubernetes.io/version: {{ .Chart.AppVersion }}
+#app.kubernetes.io/managed-by: {{ .Release.Service }}
+#helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+{{- end }}
+
+{{- define "k8ssandra.annotations" -}}
+{{- if .Values.annotations }}
+{{ toYaml .Values.annotations | nindent 0 }}
+{{- end }}
+{{- end }}
+
+{{- define "k8ssandra.metrics.annotations" -}}
+{{- if .Values.metrics.prometheusAnnotations }}
+{{ toYaml .Values.metrics.annotations }}
+{{- end -}}
+{{- end -}}
