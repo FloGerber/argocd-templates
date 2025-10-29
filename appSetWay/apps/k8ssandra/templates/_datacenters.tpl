@@ -73,7 +73,7 @@
   {{- with $dc.stargate }}
   stargate:
 {{ toYaml . | indent 4 }}
-  {{-end}}
+  {{- end }}
 
   {{- with $dc.telemetry }}
   telemetry:
