@@ -9,6 +9,9 @@
 # secrets handling: operator will expect secrets in-cluster when using external provider
 # secretsProvider: internal
 
+prometheus:
+  enabled: false
+
 # Cassandra top-level settings
 cassandra:
   clusterName: "kdp-addon-cassandra-cluster"
@@ -22,6 +25,14 @@ cassandra:
   persistence:
     storageClassName: standard
     size: 10Gi
+  telemetry:
+    prometheus:
+      enabled: false
+  #   mcac:
+  #     enabled: false
+  #   cassandra:
+  #     endpoint:
+  #       address: 192.168.1.100
   # mgmtAPIHeap: "512Mi"
   # defaultResources:
   #   requests:

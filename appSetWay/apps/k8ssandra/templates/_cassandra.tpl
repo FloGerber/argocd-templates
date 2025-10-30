@@ -57,9 +57,18 @@ resources:
 {{ toYaml . | indent 2 }}
 {{- end }}
 
-{{- with .Values.cassandra.telemetry }}
+{{- if .Values.cassandra.telemetry }}
 telemetry:
 {{ toYaml . | indent 2 }}
+{{- else if .Values.prometheus.enabled }}
+telemetry:
+  prometheus:
+    enabled: true
+  mcac:
+    enabled: false
+  cassandra:
+    endpoint:
+      address: 0.0.0.0
 {{- end }}
 
 {{- with .Values.cassandra.persistence }}
