@@ -103,8 +103,8 @@ reaper:
   #     drop:
   #       - ALL
   #       - CAP_NET_RAW
-  httpManagement:
-    enabled: false
+  # httpManagement:
+  #   enabled: false
 
 # Medusa backups
 medusa:
