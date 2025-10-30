@@ -109,9 +109,9 @@ reaper:
 # Medusa backups
 medusa:
   enabled: true
-  storage:
-    provider: s3_compatible
-    bucket: "cassandra-backups"
+  storageProperties:
+    storageProvider: s3_compatible
+    bucketName: "cassandra-backups"
     prefix: "prod-cluster"
     host: minio-service.minio.svc.cluster.local
     port: 9000
