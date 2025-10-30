@@ -1,6 +1,6 @@
 minio:
   tenant:
-    name: kdp-minio
+    name: kdp-minio-1
     pools:
       - servers: 1
         name: pool-0
