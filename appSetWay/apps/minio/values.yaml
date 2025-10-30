@@ -1,2 +1,7 @@
 tenant:
   name: kdp-minio
+  pools:
+    - servers: 2
+      name: pool-0
+      volumesPerServer: 2
+      size: 10Gi
