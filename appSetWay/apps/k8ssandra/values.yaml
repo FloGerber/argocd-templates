@@ -52,9 +52,6 @@ datacenters:
         resources:
           requests:
             storage: 1Gi
-    stargate:
-      size: 1
-      heapSize: 256M
     config:
       jvmOptions:
         heapSize: 512M
@@ -72,8 +69,9 @@ reaper:
       }
   # #serviceAccountName: "reaper-sa"
   # # affinity: {}
-  # autoScheduling:
-  #   enabled: true
+  autoScheduling:
+    enabled: true
+  heapSize: 256Mi
   # telemetry:
   #   prometheus:
   #     enabled: true
