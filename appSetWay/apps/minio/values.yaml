@@ -4,7 +4,7 @@ minio:
     pools:
       - servers: 1
         name: pool-0
-        volumesPerServer: 2
+        volumesPerServer: 4
         size: 10Gi
     bucket:
       - name: cassandra-backups
