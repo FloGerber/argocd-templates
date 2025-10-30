@@ -25,6 +25,21 @@
   {{- end }}
   {{- end }}
   serverVersion: {{ $dc.serverVersion | default $root.Values.cassandra.serverVersion | quote }}
+
+  {{- with $dc.persistence }}
+  storageConfig:
+    cassandraDataVolumeClaimSpec:
+      {{- if .storageClassName }}
+      storageClassName: {{ .storageClassName }}
+      {{- end }}
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .size }}
+  {{- end }}
+
+
   {{- with $dc.storageConfig }}
   storageConfig: {{ toYaml . | nindent 4 }}
   {{- end }}

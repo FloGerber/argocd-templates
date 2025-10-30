@@ -19,6 +19,9 @@ cassandra:
       {
         argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
       }
+  persistence:
+    storageClassName: standard
+    size: 10Gi
   # mgmtAPIHeap: "512Mi"
   # defaultResources:
   #   requests:
@@ -43,15 +46,11 @@ datacenters:
     #     }
     # managementApiAuth:
     #   insecure: {}
-    size: 2
-    storageConfig:
-      cassandraDataVolumeClaimSpec:
-        storageClassName: standard
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Gi
+    size: 3
+    persistence:
+      storageClassName: standard
+      size: 10Gi
+
     config:
       jvmOptions:
         heapSize: 512M

@@ -62,9 +62,17 @@ telemetry:
 {{ toYaml . | indent 2 }}
 {{- end }}
 
-{{- with .Values.cassandra.storageConfig }}
+{{- with .Values.cassandra.persistence }}
 storageConfig:
-{{ toYaml . | indent 2 }}
+  cassandraDataVolumeClaimSpec:
+    {{- if .storageClassName }}
+    storageClassName: {{ .storageClassName }}
+    {{- end }}
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: {{ .size }}
 {{- end }}
 
 {{- with .Values.cassandra.tolerations }}
