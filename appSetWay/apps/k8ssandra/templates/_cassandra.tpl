@@ -58,17 +58,13 @@ resources:
 {{- end }}
 
 {{- if .Values.cassandra.telemetry }}
-telemetry:
-{{ toYaml . | indent 2 }}
+telemetry: {{ toYaml .Values.cassandra.telemetry | nindent 2 }}
 {{- else if .Values.prometheus.enabled }}
 telemetry:
   prometheus:
     enabled: true
   mcac:
     enabled: false
-  cassandra:
-    endpoint:
-      address: 0.0.0.0
 {{- end }}
 
 {{- with .Values.cassandra.persistence }}
@@ -103,5 +99,6 @@ serverEncryptionStores:
 superuserSecretRef:
 {{ toYaml . | indent 2 }}
 {{- end }}
+
 datacenters: {{ include "k8ssandra.datacenters" . | indent 2 }}
 {{- end -}}

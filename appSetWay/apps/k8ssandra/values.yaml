@@ -10,7 +10,7 @@
 # secretsProvider: internal
 
 prometheus:
-  enabled: false
+  enabled: true
 
 # Cassandra top-level settings
 cassandra:
@@ -25,14 +25,6 @@ cassandra:
   persistence:
     storageClassName: standard
     size: 10Gi
-  telemetry:
-    prometheus:
-      enabled: false
-  #   mcac:
-  #     enabled: false
-  #   cassandra:
-  #     endpoint:
-  #       address: 192.168.1.100
   # mgmtAPIHeap: "512Mi"
   # defaultResources:
   #   requests:
@@ -61,7 +53,6 @@ datacenters:
     persistence:
       storageClassName: standard
       size: 10Gi
-
     config:
       jvmOptions:
         heapSize: 512M

@@ -25,24 +25,21 @@ reaper:
   {{- with .Values.reaper.serviceAccountName }}
   serviceAccountName: {{ . | quote }}
   {{- end }}
+
   {{- with .Values.reaper.affinity }}
-  affinity:
-{{ toYaml . | indent 4 }}
+  affinity: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.autoScheduling }}
-  autoScheduling:
-{{ toYaml . | indent 4 }}
+  autoScheduling: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.cassandraUserSecretRef }}
-  cassandraUserSecretRef:
-{{ toYaml . | indent 4 }}
+  cassandraUserSecretRef: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.containerImage }}
-  containerImage:
-{{ toYaml . | indent 4 }}
+  containerImage: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.deploymentMode }}
@@ -54,8 +51,7 @@ reaper:
   {{- end }}
 
   {{- with .Values.reaper.httpManagement }}
-  httpManagement:
-{{ toYaml . | indent 4 }}
+  httpManagement: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.keyspace }}
@@ -63,35 +59,29 @@ reaper:
   {{- end }}
 
   {{- with .Values.reaper.livenessProbe }}
-  livenessProbe:
-{{ toYaml . | indent 4 }}
+  livenessProbe: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.readinessProbe }}
-  readinessProbe:
-{{ toYaml . | indent 4 }}
+  readinessProbe: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.metadata }}
   metadata:
     {{- if .labels }}
-    labels:
-{{ toYaml .labels | indent 6 }}
+    labels: {{ toYaml .labels | nindent 6 }}
     {{- end }}
     {{- if .annotations }}
-    annotations:
-{{ toYaml .annotations | indent 6 }}
+    annotations: {{ toYaml .annotations | nindent 6 }}
     {{- end }}
   {{- end }}
 
   {{- with .Values.reaper.podSecurityContext }}
-  podSecurityContext:
-{{ toYaml . | indent 4 }}
+  podSecurityContext: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.resources }}
-  resources:
-{{ toYaml . | indent 4 }}
+  resources: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.secretsProvider }}
@@ -99,18 +89,15 @@ reaper:
   {{- end }}
 
   {{- with .Values.reaper.securityContext }}
-  securityContext:
-{{ toYaml . | indent 4 }}
+  securityContext: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.telemetry }}
-  telemetry:
-{{ toYaml . | indent 4 }}
+  telemetry: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- with .Values.reaper.tolerations }}
-  tolerations:
-{{ toYaml . | indent 4 }}
+  tolerations: {{ toYaml . | nindent 4 }}
   {{- end }}
 
 {{- end }}
