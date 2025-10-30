@@ -114,7 +114,7 @@ medusa:
     bucketName: "cassandra-backups"
     prefix: "prod-cluster"
     storageSecretRef:
-      name: medusa-bucket-key
+      name: storage-user
     host: minio-service.minio.svc.cluster.local
     port: 9000
     secure: false
