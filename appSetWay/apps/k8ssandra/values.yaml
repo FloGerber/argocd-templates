@@ -10,7 +10,7 @@
 # secretsProvider: internal
 
 prometheus:
-  enabled: true
+  enabled: false
 
 # Cassandra top-level settings
 cassandra:
