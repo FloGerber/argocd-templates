@@ -1,0 +1,18 @@
+apiVersion: v2
+name: minio
+description: MinIO operator.
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.0.1
+appVersion: "7.1.1" # Kong Gateway operator version.
+
+# pull in external charts via dependencies:
+# Strimzi Operator helm chart
+dependencies:
+  - name: operator
+    version: 7.1.1
+    repository: https://operator.min.io/
