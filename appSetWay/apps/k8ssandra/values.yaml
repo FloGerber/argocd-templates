@@ -113,6 +113,8 @@ medusa:
     storageProvider: s3_compatible
     bucketName: "cassandra-backups"
     prefix: "prod-cluster"
+    storageSecretRef:
+      name: medusa-bucket-key
     host: minio-service.minio.svc.cluster.local
     port: 9000
     secure: false
