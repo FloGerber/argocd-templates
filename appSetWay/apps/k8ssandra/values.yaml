@@ -108,7 +108,7 @@ reaper:
 
 # Medusa backups
 medusa:
-  enabled: true
+  enabled: false
   storageProperties:
     storageProvider: s3_compatible
     bucketName: "cassandra-backups"
@@ -135,23 +135,22 @@ externalSecrets:
     medusa: secret/data/k8ssandra/prod/medusa
 
 # Security policy applied to pods
-security:
-  runAsNonRoot: true
-  fsGroup: 999
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  podSecurityContext: {}
+# security:
+#   runAsNonRoot: true
+#   fsGroup: 999
+#   allowPrivilegeEscalation: false
+#   readOnlyRootFilesystem: true
+#   podSecurityContext: {}
 
 # Pod placement defaults
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
 # Resource defaults (can be overridden per-datacenter)
-defaultResources:
-  requests:
-    cpu: "500m"
-    memory: "2Gi"
-  limits:
-    cpu: "2000m"
-    memory: "8Gi"
+# defaultResources:
+#   requests:
+#     cpu: "500m"
+#     memory: "2Gi"
+#   limits:
+#     cpu: "2000m"
+#     memory: "8Gi"
