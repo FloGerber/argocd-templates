@@ -103,18 +103,19 @@ reaper:
   #     drop:
   #       - ALL
   #       - CAP_NET_RAW
-  # httpManagement:
-  #   enabled: false
+  httpManagement:
+    enabled: false
 
 # Medusa backups
 medusa:
-  enabled: false
+  enabled: true
   storage:
-    provider: s3
+    provider: s3_compatible
     bucket: "cassandra-backups"
     prefix: "prod-cluster"
-    region: "eu-central-1"
-    retentionDays: 30
+    host: minio-service.minio.svc.cluster.local
+    port: 9000
+    secure: false
 
 # Optional: list of external DC names (strings)
 externalDatacenters: []
