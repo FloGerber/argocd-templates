@@ -84,7 +84,7 @@ medusa:
   enabled: true
   storageProperties:
     storageProvider: s3_compatible
-    bucketName: "cassandra-backups"
+    bucketName: "cassandra-backup"
     prefix: "test"
     storageSecretRef:
       name: medusa-bucket-key
