@@ -63,11 +63,11 @@ stargate:
 # Reaper (repairs) settings
 reaper:
   enabled: true
-  # metadata:
-  #   annotations:
-  #     {
-  #       argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
-  #     }
+  metadata:
+    annotations:
+      {
+        argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
+      }
   # #serviceAccountName: "reaper-sa"
   # # affinity: {}
   autoScheduling:

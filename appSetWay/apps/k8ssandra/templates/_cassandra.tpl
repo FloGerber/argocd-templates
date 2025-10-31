@@ -46,9 +46,14 @@ managementApiAuth:
 mgmtAPIHeap: {{ . }}
 {{- end }}
 
-{{- with .Values.cassandra.podSecurityContext }}
+{{- if .Values.cassandra.podSecurityContext }}
+podSecurityContext: {{ toYaml .Values.cassandra.podSecurityContext | nindent 2 }}
+{{- else }}
 podSecurityContext:
-{{ toYaml . | indent 2 }}
+  fsGroup: 999
+  runAsGroup: 999
+  runAsUser: 999
+  runAsNonRoot: true
 {{- end }}
 
 {{- with .Values.cassandra.resources }}
@@ -65,6 +70,54 @@ telemetry:
     enabled: true
   mcac:
     enabled: false
+{{- end }}
+
+{{- if .Values.cassandra.initContainers }}
+initContainers: {{ toYaml .Values.cassandra.initContainers | nindent 2 }}
+{{- else }}
+initContainers:
+  - name: server-config-init-base
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      privileged: false
+      capabilities:
+        drop:
+        - ALL
+        - CAP_NET_RAW
+  - name: server-config-init
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      privileged: false
+      capabilities:
+        drop:
+        - ALL
+        - CAP_NET_RAW
+{{- end }}
+
+{{- if .Values.cassandra.containers }}
+containers: {{ toYaml .Values.cassandra.containers | nindent 2 }}
+{{- else }}
+containers:
+  - name: cassandra
+    securityContext:
+      allowPrivilegeEscalation: false
+      #readOnlyRootFilesystem: true
+      privileged: false
+      capabilities:
+        drop:
+        - ALL
+        - CAP_NET_RAW
+  - name: server-system-logger
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      privileged: false
+      capabilities:
+        drop:
+        - ALL
+        - CAP_NET_RAW
 {{- end }}
 
 {{- with .Values.cassandra.persistence }}
