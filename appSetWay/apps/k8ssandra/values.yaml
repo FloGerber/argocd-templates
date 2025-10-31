@@ -26,19 +26,24 @@ cassandra:
     storageClassName: standard
     size: 10Gi
   # mgmtAPIHeap: "512Mi"
-  # defaultResources:
+  # resources:
   #   requests:
-  #     cpu: "200m"
+  #     cpu: "2"
   #     memory: "4Gi"
   #   limits:
-  #     cpu: "1500m"
-  #     memory: "6Gi"
-  # config:
-  #   cassandraYaml: {}
-  #   jvmOptions: {}
-  # storageConfig: {}  # cluster-level storage defaults (can be overridden per-dc)
-  # tolerations: []
-  # podSecurityContext: {}
+  #     cpu: "8"
+  #     memory: "8Gi"
+  config:
+    cassandraYaml:
+      read_request_timeout: 15000ms
+      write_request_timeout: 15000ms
+      counter_write_request_timeout: 15000ms
+      request_timeout: 15000ms
+      concurrent_reads: 16
+      concurrent_writes: 16
+    jvmOptions:
+      heap_initial_size: 512M
+      heap_max_size: 4096M
 
 datacenters:
   - name: prod-dc-glp
@@ -68,44 +73,11 @@ reaper:
       {
         argocd.argoproj.io/tracking-id: app-k8ssandra:k8ssandra.io/K8ssandraCluster:k8ssandra/app-k8ssandra,
       }
-  # #serviceAccountName: "reaper-sa"
-  # # affinity: {}
-  autoScheduling:
-    enabled: true
+  # autoScheduling:
+  #   enabled: false
   heapSize: 256Mi
-  # telemetry:
-  #   prometheus:
-  #     enabled: true
-  #   mcac:
-  #     enabled: false
-  #   cassandra:
-  #     endpoint:
-  #       address: 0.0.0.0
-  # podSecurityContext:
-  #   fsGroup: 1001
-  #   runAsGroup: 1001
-  #   runAsUser: 1001
-  #   runAsNonRoot: true
-  #   seccompProfile:
-  #     type: RuntimeDefault
-  # initContainerSecurityContext:
-  #   allowPrivilegeEscalation: false
-  #   readOnlyRootFilesystem: true
-  #   privileged: false
-  #   capabilities:
-  #     drop:
-  #       - ALL
-  #       - CAP_NET_RAW
-  # securityContext:
-  #   allowPrivilegeEscalation: false
-  #   readOnlyRootFilesystem: true
-  #   privileged: false
-  #   capabilities:
-  #     drop:
-  #       - ALL
-  #       - CAP_NET_RAW
-  httpManagement:
-    enabled: false
+  # httpManagement:
+  #   enabled: false
 
 # Medusa backups
 medusa:
@@ -134,24 +106,3 @@ externalSecrets:
     serverTls: secret/data/k8ssandra/prod/tls/server
     clientTls: secret/data/k8ssandra/prod/tls/client
     medusa: secret/data/k8ssandra/prod/medusa
-
-# Security policy applied to pods
-# security:
-#   runAsNonRoot: true
-#   fsGroup: 999
-#   allowPrivilegeEscalation: false
-#   readOnlyRootFilesystem: true
-#   podSecurityContext: {}
-
-# Pod placement defaults
-nodeSelector: {}
-tolerations: []
-affinity: {}
-# Resource defaults (can be overridden per-datacenter)
-# defaultResources:
-#   requests:
-#     cpu: "500m"
-#     memory: "2Gi"
-#   limits:
-#     cpu: "2000m"
-#     memory: "8Gi"

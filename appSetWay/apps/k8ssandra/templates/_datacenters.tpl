@@ -3,7 +3,6 @@
   Each element must follow the CRD shape (see k8ssandra docs).
 */ -}}
 {{- define "k8ssandra.datacenters" -}}
-{{- $root := . }}
 {{- range $i, $dc := .Values.datacenters }}
 - metadata:
     name: {{ $dc.name | quote }}
@@ -21,7 +20,7 @@
   racks: {{ toYaml $dc.racks | nindent 4 }}
   {{- end }}
   {{- end }}
-  serverVersion: {{ $dc.serverVersion | default $root.Values.cassandra.serverVersion | quote }}
+  serverVersion: {{ $dc.serverVersion | default $.Values.cassandra.serverVersion | quote }}
 
   {{- with $dc.persistence }}
   storageConfig:

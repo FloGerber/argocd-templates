@@ -22,6 +22,16 @@
 {{- define "k8ssandra.reaper" -}}
 {{- $root := . -}}
 reaper:
+  {{- with .Values.reaper.metadata }}
+  metadata:
+    {{- if .labels }}
+    labels: {{ toYaml .labels | nindent 6 }}
+    {{- end }}
+    {{- if .annotations }}
+    annotations: {{ toYaml .annotations | nindent 6 }}
+    {{- end }}
+  {{- end }}
+
   {{- with .Values.reaper.serviceAccountName }}
   serviceAccountName: {{ . | quote }}
   {{- end }}
@@ -30,8 +40,11 @@ reaper:
   affinity: {{ toYaml . | nindent 4 }}
   {{- end }}
 
-  {{- with .Values.reaper.autoScheduling }}
-  autoScheduling: {{ toYaml . | nindent 4 }}
+  {{- if .Values.reaper.autoScheduling }}
+  autoScheduling: {{ toYaml .Values.reaper.autoScheduling | nindent 4 }}
+  {{- else }}
+  autoScheduling:
+    enabled: true
   {{- end }}
 
   {{- with .Values.reaper.cassandraUserSecretRef }}
@@ -66,18 +79,43 @@ reaper:
   readinessProbe: {{ toYaml . | nindent 4 }}
   {{- end }}
 
-  {{- with .Values.reaper.metadata }}
-  metadata:
-    {{- if .labels }}
-    labels: {{ toYaml .labels | nindent 6 }}
-    {{- end }}
-    {{- if .annotations }}
-    annotations: {{ toYaml .annotations | nindent 6 }}
-    {{- end }}
+  {{- if .Values.reaper.initContainerSecurityContext }}
+  initContainerSecurityContext: {{ toYaml .Values.reaper.initContainerSecurityContext | nindent 4 }}
+  {{- else }}
+  initContainerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    privileged: false
+    capabilities:
+      drop:
+      - ALL
+      - CAP_NET_RAW
   {{- end }}
 
-  {{- with .Values.reaper.podSecurityContext }}
-  podSecurityContext: {{ toYaml . | nindent 4 }}
+  {{- if .Values.reaper.podSecurityContext }}
+  podSecurityContext: {{ toYaml .Values.reaper.podSecurityContext | nindent 4 }}
+  {{- else }}
+  podSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    privileged: false
+    capabilities:
+      drop:
+      - ALL
+      - CAP_NET_RAW
+  {{- end }}
+
+  {{- if .Values.reaper.securityContext }}
+  securityContext: {{ toYaml .Values.reaper.securityContext | nindent 4 }}
+  {{- else }}
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    privileged: false
+    capabilities:
+      drop:
+      - ALL
+      - CAP_NET_RAW
   {{- end }}
 
   {{- with .Values.reaper.resources }}
@@ -87,13 +125,15 @@ reaper:
   {{- with .Values.reaper.secretsProvider }}
   secretsProvider: {{ . | quote }}
   {{- end }}
-
-  {{- with .Values.reaper.securityContext }}
-  securityContext: {{ toYaml . | nindent 4 }}
-  {{- end }}
-
-  {{- with .Values.reaper.telemetry }}
-  telemetry: {{ toYaml . | nindent 4 }}
+  
+  {{- if .Values.reaper.telemetry }}
+  telemetry: {{ toYaml .Values.reaper.telemetry | nindent 4 }}
+  {{- else if .Values.prometheus.enabled }}
+  telemetry:
+    prometheus:
+      enabled: true
+    mcac:
+      enabled: false
   {{- end }}
 
   {{- with .Values.reaper.tolerations }}

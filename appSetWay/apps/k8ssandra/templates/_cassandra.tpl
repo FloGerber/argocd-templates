@@ -28,12 +28,10 @@ metadata:
 {{- with .Values.cassandra.config }}
 config:
   {{- if .cassandraYaml }}
-  cassandraYaml:
-{{ toYaml . | nindent 4 }}
+  cassandraYaml: {{ toYaml .cassandraYaml | nindent 4 }}
   {{- end }}
   {{- if .jvmOptions }}
-  jvmOptions:
-{{ toYaml . | nindent 4 }}
+  jvmOptions: {{ toYaml .jvmOptions | nindent 4 }}
   {{- end }}
 {{- end }}
 
