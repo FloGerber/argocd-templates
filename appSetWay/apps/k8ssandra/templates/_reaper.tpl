@@ -96,13 +96,12 @@ reaper:
   podSecurityContext: {{ toYaml .Values.reaper.podSecurityContext | nindent 4 }}
   {{- else }}
   podSecurityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    privileged: false
-    capabilities:
-      drop:
-      - ALL
-      - CAP_NET_RAW
+    fsGroup: 1001
+    runAsGroup: 1001
+    runAsUser: 1001
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   {{- end }}
 
   {{- if .Values.reaper.securityContext }}
