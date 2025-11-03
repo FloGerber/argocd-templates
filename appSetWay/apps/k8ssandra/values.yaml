@@ -63,7 +63,8 @@ datacenters:
         heapSize: 512M
   - name: testinger
     size: 3
-    persistence: size 5Gi
+    persistence:
+      size: 5Gi
 
 stargate:
   enabled: false
