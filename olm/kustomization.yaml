@@ -1,0 +1,3 @@
+resources:
+  - https://github.com/operator-framework/operator-lifecycle-manager/releases/latest/download/crds.yaml
+  - https://github.com/operator-framework/operator-lifecycle-manager/releases/latest/download/olm.yaml
