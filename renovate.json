@@ -2,14 +2,25 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "enabledManagers": ["argocd"],
   "argocd": {
-    "managerFilePatterns": ["/^renovate/renovate\\.yaml$/"]
+    "managerFilePatterns": ["/\\.ya?ml$/"]
   },
   "packageRules": [
+     {
+      "description": "Automerge minor + patch dependency updates weekly DISABLED",
+      "labels": ["dependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "platformAutomerge": false,
+      "ignoreTests": false,
+      "automerge": false
+    },
     {
-      "description": "Let Renovate update itself (the renovate Helm chart) and auto-merge it",
+      "description": "Renovate self-update — always its own MR, auto-merged",
       "matchManagers": ["argocd"],
       "matchDatasources": ["helm"],
       "matchPackageNames": ["renovate"],
+      "groupName": "renovate self-update",
+      "additionalBranchPrefix": "self/",
+      "labels": ["renovate-self-update"],
       "automerge": true,
       "platformAutomerge": false
     }
