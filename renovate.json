@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "enabledManagers": ["argocd"],
+  "enabledManagers": ["argocd", "helmv3"],
   "argocd": {
     "managerFilePatterns": ["/\\.ya?ml$/"]
   },
