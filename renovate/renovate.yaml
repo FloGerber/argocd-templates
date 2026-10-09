@@ -18,7 +18,7 @@ spec:
           - name: RENOVATE_PR_CONCURRENT_LIMIT
             value: '0'
         cronjob:
-          schedule: '15,45 1,13,12 * * *'
+          schedule: '20,45 1,14,12 * * *'
           timeZone: 'Europe/Vienna'
         renovate:
           config: |
