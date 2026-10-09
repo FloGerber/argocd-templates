@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "enabledManagers": ["argocd"],
+  "argocd": {
+    "managerFilePatterns": ["/^renovate/renovate\\.yaml$/"]
+  },
+  "packageRules": [
+    {
+      "description": "Let Renovate update itself (the renovate Helm chart) and auto-merge it",
+      "matchManagers": ["argocd"],
+      "matchDatasources": ["helm"],
+      "matchPackageNames": ["renovate"],
+      "automerge": true,
+      "platformAutomerge": false
+    }
+  ]
+}
