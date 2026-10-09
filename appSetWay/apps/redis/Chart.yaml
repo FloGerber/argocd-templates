@@ -12,5 +12,5 @@ appVersion: "8.2.2" # external-dns release
 # pull in external charts via dependencies
 dependencies:
   - name: redis
-    version: 23.2.1
+    version: 23.2.12
     repository: https://charts.bitnami.com/bitnami
