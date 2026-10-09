@@ -11,13 +11,15 @@ spec:
     targetRevision: '46.330.0'
     helm:
       values: |
+        # RENOVATE_TOKEN (a GitHub PAT or App token) is read from this secret.
+        # Create it with: kubectl -n renovate create secret generic renovate-secrets \
+        #   --from-literal=RENOVATE_TOKEN=ghp_xxx
+        existingSecret: renovate-secrets
         envList:
-          - name: GITHUB_COM_TOKEN
-            value: XXXX
           - name: RENOVATE_PR_CONCURRENT_LIMIT
             value: '0'
         cronjob:
-          schedule: '15,45 1,13,12 * * *' 
+          schedule: '15,45 1,13,12 * * *'
           timeZone: 'Europe/Vienna'
         image:
           registry: XXXX/cache
@@ -25,24 +27,16 @@ spec:
         renovate:
           config: |
             {
-              "platform": "gitlab",
-              "endpoint": "XXXX",
-              "token": "XXXX",
+              "platform": "github",
               "autodiscover": false,
-              "repositories": ["TKG/argocd"],
-              "printConfig": true,
-              "hostRules": [
-                {
-                  "matchHost": "XXXX",
-                  "httpsCertificateAuthority": "XXXX"
-                }
-              ]
+              "repositories": ["FloGerber/argocd-templates"],
+              "printConfig": true
             }
           persistence:
             cache:
               enabled: false
         redis:
-          enabled: false        
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: renovate
