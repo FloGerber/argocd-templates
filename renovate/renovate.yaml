@@ -21,9 +21,6 @@ spec:
         cronjob:
           schedule: '15,45 1,13,12 * * *'
           timeZone: 'Europe/Vienna'
-        image:
-          registry: XXXX/cache
-          repository: renovate/renovate
         renovate:
           config: |
             {
