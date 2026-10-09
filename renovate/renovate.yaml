@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: renovate
+  namespace: argocd
+spec:
+  project: shared-services
+  source:
+    repoURL: 'https://docs.renovatebot.com/helm-charts'
+    chart: renovate
+    targetRevision: '46.330.0'
+    helm:
+      values: |
+        envList:
+          - name: GITHUB_COM_TOKEN
+            value: XXXX
+          - name: HTTP_PROXY
+            value: http:/XXX
+          - name: HTTPS_PROXY
+            value: http://XXXX
+          - name: NO_PROXY
+            value: 127.0.0.1,localhost,.local,.internal,kubernetes.default.svc,.svc,cluster.local,.svc.cluster.local,10.95.0.0/21,172.21.124.0/23,172.21.126.0/24,10.95.8.0/21,10.95.18.0/23
+          - name: RENOVATE_PR_CONCURRENT_LIMIT
+            value: '0'
+        cronjob:
+          schedule: '15,45 1,13,12 * * *' 
+          timeZone: 'Europe/Vienna'
+        image:
+          registry: XXXX/cache
+          repository: renovate/renovate
+        renovate:
+          config: |
+            {
+              "platform": "gitlab",
+              "endpoint": "XXXX",
+              "token": "XXXX",
+              "autodiscover": false,
+              "repositories": ["TKG/argocd"],
+              "printConfig": true,
+              "hostRules": [
+                {
+                  "matchHost": "XXXX",
+                  "httpsCertificateAuthority": "XXXX"
+                }
+              ]
+            }
+          persistence:
+            cache:
+              enabled: false
+        redis:
+          enabled: false        
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: renovate
+  syncPolicy:
+    automated: {}
+    syncOptions:
+    - CreateNamespace=true
