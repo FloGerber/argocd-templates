@@ -12,8 +12,7 @@ spec:
     helm:
       values: |
         # RENOVATE_TOKEN (a GitHub PAT or App token) is read from this secret.
-        # Create it with: kubectl -n renovate create secret generic renovate-secrets \
-        #   --from-literal=RENOVATE_TOKEN=ghp_xxx
+        # Create it with: kubectl -n renovate create secret generic renovate-secrets --from-literal=RENOVATE_TOKEN=ghp_xxx
         existingSecret: renovate-secrets
         envList:
           - name: RENOVATE_PR_CONCURRENT_LIMIT
