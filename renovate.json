@@ -16,7 +16,6 @@
     {
       "description": "Renovate self-update — always its own MR, auto-merged",
       "matchManagers": ["argocd"],
-      "matchDatasources": ["helm"],
       "matchPackageNames": ["renovate"],
       "groupName": "renovate self-update",
       "additionalBranchPrefix": "self/",
