@@ -1,0 +1,119 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: harbor
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: registry-1.docker.io/bitnami
+    chart: harbor
+    targetRevision: 30.3.2
+    helm:
+      releaseName: harbor
+      values: |
+        # extraDeploy:
+        # - apiVersion: bitnami.com/v1alpha1
+        #   kind: SealedSecret
+        #   metadata:
+        #     creationTimestamp: null
+        #     name: harbor-core-cert
+        #     namespace: harbor
+        #   spec:
+        #     encryptedData:
+        #       tls.crt: xxxxxxx
+        #       tls.key: xxxxxx
+        #     template:
+        #       metadata:
+        #         creationTimestamp: null
+        #         name: harbor-core-cert
+        #         namespace: harbor
+        #       type: kubernetes.io/tls
+        # - apiVersion: secretgen.carvel.dev/v1alpha1
+        #   kind: SecretImport
+        #   metadata:
+        #     name: stern-tkg-tls
+        #   spec:
+        #     fromNamespace: stern-tkg-certificates
+        # global:
+        #   imagePullSecrets: 
+        #     - name: bsi-repo
+        #   storageClass: tkgpersistentvolumes
+        # imagePullSecrets:
+        #   - name: bsi-repo
+        adminPassword: "Start001!"
+        # core:
+        #   csrfKey: xxxx
+        #   secret: xxxx
+        #   secretKey: xxxx
+        #   secretName: harbor-core-cert
+        #   tokenCert: tls.crt
+        #   tokenKey: tls.key
+        exposureType: ingress
+        # ingress:
+        #   extraTls:
+        #   - hosts:
+        #     - xxxx
+        #     secretName: stern-tkg-tls
+        #   hostname: xxxxx
+        #   secrets:
+        #   - certificate: |
+        #       xxxxxxx
+        #     name: XXXX-tls
+        #   tls: true
+        # externalURL: https://XXXXX
+        ipFamily:
+          ipv4:
+            enabled: true
+          ipv6:
+            enabled: false
+        jobservice:
+          secret: BcohpRrzL8cQM5ne
+          updateStrategy:
+            type: Recreate
+        logLevel: debug
+        metrics:
+          enabled: false
+          serviceMonitor:
+            enabled: false
+        persistence:
+          persistentVolumeClaim:
+            registry:
+              size: 4Gi
+            trivy:
+              size: 1Gi
+            jobservice:
+              size: 5Gi
+        postgresql:
+          enabled: true
+          primary:
+            resourcesPreset: none
+          architecture: standalone
+          auth:
+            enablePostgresUser: true
+            postgresPassword: not-secure-database-password
+        # externalDatabase:
+        #   host: cl-shared-psql-prod-rw.postgresql.svc.cluster.local
+        #   port: 5432
+        #   user: harbor
+        #   sslmode: disable
+        #   coreDatabase: "registry"
+        #   existingSecret: "pg-harbor-rw-creds"
+        #   existingSecretPasswordKey: "XXX"
+        redis:
+          enabled: true
+        # registry:
+        #   secret: XXXXX
+        #   updateStrategy:
+        #     type: Recreate
+        #   server:
+        #     resourcesPreset: "none"
+        trivy:
+          enabled: true
+        # proxy:
+        #   httpProxy: http://XXXX:8080
+        #   httpsProxy: http://XXX:8080
+        #   noProxy: 127.0.0.1,localhost,.local,.internal,kubernetes.default.svc,.svc,cluster.local,.svc.cluster.local,
+  destination:
+    namespace: harbor
+    server: https://kubernetes.default.svc
