@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: registry-1.docker.io/bitnami
     chart: harbor
-    targetRevision: 30.3.2
+    targetRevision: latest
     helm:
       releaseName: harbor
       values: |
