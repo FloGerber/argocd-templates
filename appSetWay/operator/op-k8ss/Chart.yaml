@@ -14,5 +14,5 @@ appVersion: "1.28.0" # Cass Operator version  version.
 # Strimzi Operator helm chart
 dependencies:
   - name: k8ssandra-operator
-    version: 1.28.0
+    version: 1.33.0
     repository: https://helm.k8ssandra.io/stable
