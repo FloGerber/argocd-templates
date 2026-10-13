@@ -14,5 +14,5 @@ appVersion: "0.26.0" # CloudnativPG operator version.
 # Strimzi Operator helm chart
 dependencies:
   - name: cloudnative-pg
-    version: 0.26.0
+    version: 0.29.1
     repository: https://cloudnative-pg.github.io/charts
