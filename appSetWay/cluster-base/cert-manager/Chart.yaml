@@ -12,5 +12,5 @@ appVersion: "1.18.0" # external-dns release
 # pull in external charts via dependencies
 dependencies:
   - name: cert-manager
-    version: 1.18.0
+    version: v1.21.2
     repository: https://charts.jetstack.io
