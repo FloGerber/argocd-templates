@@ -14,5 +14,5 @@ appVersion: "1.4.0" # Strimzi Kafka operator version.
 # Strimzi Operator helm chart
 dependencies:
   - name: strimzi-drain-cleaner
-    version: 1.4.0
+    version: 1.7.0
     repository: https://strimzi.io/charts
