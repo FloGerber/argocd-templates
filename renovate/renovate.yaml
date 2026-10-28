@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://docs.renovatebot.com/helm-charts'
     chart: renovate
-    targetRevision: '46.369.6'
+    targetRevision: '46.388.1'
     helm:
       values: |
         # RENOVATE_TOKEN (a GitHub PAT or App token) is read from this secret.
