@@ -12,5 +12,5 @@ appVersion: "8.1.4" # external-dns release
 # pull in external charts via dependencies
 dependencies:
   - name: valkey
-    version: 0.8.1
+    version: 0.12.1
     repository: https://valkey.io/valkey-helm/
